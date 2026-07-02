@@ -1,4 +1,9 @@
-import { useAuth, useSignIn, useSignUp, useSSO } from "@clerk/expo";
+import {
+  useAuth,
+  useSignIn,
+  useSignUp,
+  useSSO,
+} from "@clerk/expo";
 import { Image as ExpoImage } from "expo-image";
 import { type Href, Link, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
@@ -79,6 +84,8 @@ const socialOptions = [
 ] as const;
 
 const HOME_ROUTE = "/" as Href;
+const unsupportedSocialStrategyMessage =
+  "does not match one of the allowed values for parameter strategy";
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (!error) {
@@ -117,6 +124,10 @@ function getErrorMessage(error: unknown, fallback: string) {
 
 function showAuthError(title: string, error: unknown, fallback: string) {
   Alert.alert(title, getErrorMessage(error, fallback));
+}
+
+function isUnsupportedSocialStrategyError(error: unknown) {
+  return getErrorMessage(error, "").includes(unsupportedSocialStrategyMessage);
 }
 
 export function AuthScreen({ mode }: AuthScreenProps) {
@@ -339,6 +350,14 @@ export function AuthScreen({ mode }: AuthScreenProps) {
         router.replace(HOME_ROUTE);
       }
     } catch (error) {
+      if (isUnsupportedSocialStrategyError(error)) {
+        Alert.alert(
+          `${option.label} is not enabled`,
+          `Enable ${option.id === "apple" ? "Apple" : "Facebook"} as a social connection in your Clerk Dashboard, then try again.`,
+        );
+        return;
+      }
+
       showAuthError(
         "Social sign in failed",
         error,
