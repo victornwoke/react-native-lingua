@@ -1,17 +1,35 @@
 import { useAuth } from "@clerk/expo";
-import { Link, Redirect } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { type Href, Link, Redirect, useRouter } from "expo-router";
+import { useState } from "react";
+import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+const ONBOARDING_ROUTE = "/onboarding" as Href;
+
 export default function Index() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const router = useRouter();
+  const { isLoaded, isSignedIn, signOut } = useAuth();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  async function handleSignOut() {
+    setIsSigningOut(true);
+
+    try {
+      await signOut();
+      router.replace(ONBOARDING_ROUTE);
+    } catch {
+      Alert.alert("Sign out failed", "Please try again.");
+    } finally {
+      setIsSigningOut(false);
+    }
+  }
 
   if (!isLoaded) {
     return null;
   }
 
   if (!isSignedIn) {
-    return <Redirect href="/onboarding" />;
+    return <Redirect href={ONBOARDING_ROUTE} />;
   }
 
   return (
@@ -39,6 +57,16 @@ export default function Index() {
               <Text className="btn-primary-text">View Onboarding</Text>
             </Pressable>
           </Link>
+
+          <Pressable
+            disabled={isSigningOut}
+            onPress={handleSignOut}
+            className="min-h-[54px] w-full max-w-[320px] items-center justify-center rounded-[16px] border border-[#EEF0F6] bg-white px-8 active:opacity-85 disabled:opacity-60"
+          >
+            <Text className="font-poppins-semibold text-[16px] leading-[22px] text-[#020A2F]">
+              {isSigningOut ? "Signing out..." : "Sign Out"}
+            </Text>
+          </Pressable>
         </View>
       </ScrollView>
     </SafeAreaView>
