@@ -27,11 +27,13 @@ export function VerificationModal({
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const inputRefs = useRef<(TextInput | null)[]>([]);
+  const isSubmittingRef = useRef(false);
   const [digits, setDigits] = useState<string[]>(
     Array.from({ length: CODE_LENGTH }, () => ""),
   );
   const [focusedIndex, setFocusedIndex] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const activeIndex = Math.min(focusedIndex, CODE_LENGTH - 1);
   const digitBoxSize = width < 370 ? 42 : 46;
 
@@ -59,25 +61,40 @@ export function VerificationModal({
   }, [focusCodeInput]);
 
   async function finishIfComplete(nextDigits: string[]) {
-    if (isSubmitting) {
+    const nextCode = nextDigits.join("");
+
+    if (isSubmittingRef.current || nextCode.length !== CODE_LENGTH) {
       return;
     }
 
-    const nextCode = nextDigits.join("");
+    isSubmittingRef.current = true;
+    setIsSubmitting(true);
 
-    if (nextCode.length === CODE_LENGTH) {
-      setIsSubmitting(true);
+    try {
+      const didVerify = await onVerifyCode(nextCode);
 
-      try {
-        const didVerify = await onVerifyCode(nextCode);
-
-        if (!didVerify) {
-          setDigits(Array.from({ length: CODE_LENGTH }, () => ""));
-          focusCodeInput(0);
-        }
-      } finally {
-        setIsSubmitting(false);
+      if (!didVerify) {
+        setDigits(Array.from({ length: CODE_LENGTH }, () => ""));
+        focusCodeInput(0);
       }
+    } finally {
+      isSubmittingRef.current = false;
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleResendCode() {
+    if (isResending) {
+      return;
+    }
+
+    setIsResending(true);
+
+    try {
+      await onResendCode();
+      focusCodeInput(activeIndex);
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -121,18 +138,15 @@ export function VerificationModal({
   }
 
   return (
-    <Modal
-      animationType="fade"
-      onRequestClose={onClose}
-      transparent
-      visible
-    >
+    <Modal animationType="fade" onRequestClose={onClose} transparent visible>
       <KeyboardAvoidingView
         behavior={process.env.EXPO_OS === "ios" ? "padding" : "height"}
         style={styles.keyboardView}
       >
         <View style={styles.backdrop}>
-          <View style={[styles.modalCard, { paddingBottom: insets.bottom + 22 }]}>
+          <View
+            style={[styles.modalCard, { paddingBottom: insets.bottom + 22 }]}
+          >
             <Pressable
               accessibilityLabel="Close verification modal"
               hitSlop={12}
@@ -196,14 +210,20 @@ export function VerificationModal({
                 {"Didn't receive it? "}
               </Text>
               <Pressable
+                disabled={isResending || isSubmitting}
                 hitSlop={8}
                 onPress={() => {
-                  void onResendCode();
-                  focusCodeInput(activeIndex);
+                  void handleResendCode();
                 }}
               >
-                <Text className="font-poppins-bold text-[13px] leading-[19px] text-[#6A45F6]">
-                  Resend
+                <Text
+                  className={
+                    isResending || isSubmitting
+                      ? "font-poppins-bold text-[13px] leading-[19px] text-[#A1A7BC]"
+                      : "font-poppins-bold text-[13px] leading-[19px] text-[#6A45F6]"
+                  }
+                >
+                  {isResending ? "Resending..." : "Resend"}
                 </Text>
               </Pressable>
             </View>

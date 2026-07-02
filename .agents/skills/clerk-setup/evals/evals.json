@@ -4,7 +4,7 @@
     {
       "id": 1,
       "prompt": "hey i just created a new next.js app with create-next-app and i want to add auth. i heard clerk is good, can you set it up? im using the app router btw and tailwind. project is at ./my-saas-app",
-      "expected_output": "Installs @clerk/nextjs, wraps layout with ClerkProvider inside <body>, creates middleware.ts with clerkMiddleware, sets up .env.local with publishable and secret keys, detects shadcn if present",
+      "expected_output": "Installs @clerk/nextjs, wraps layout with ClerkProvider inside <body>, creates middleware.ts or proxy.ts with clerkMiddleware, sets up .env.local with publishable and secret keys, detects shadcn if present",
       "files": [],
       "expectations": [
         "Installs @clerk/nextjs via npm/pnpm/bun",
