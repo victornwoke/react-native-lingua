@@ -44,3 +44,5 @@ example
 
 prompts/
 prompt_materials/
+
+.env

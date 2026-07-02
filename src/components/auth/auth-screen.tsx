@@ -1,8 +1,11 @@
+import { useAuth, useSignIn, useSignUp, useSSO } from "@clerk/expo";
 import { Image as ExpoImage } from "expo-image";
 import { type Href, Link, useRouter } from "expo-router";
+import * as WebBrowser from "expo-web-browser";
 import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
+  Alert,
   Image,
   Keyboard,
   KeyboardAvoidingView,
@@ -24,6 +27,8 @@ import { images } from "@/constants/images";
 
 import { VerificationModal } from "./verification-modal";
 
+WebBrowser.maybeCompleteAuthSession();
+
 type AuthMode = "sign-up" | "sign-in";
 
 type AuthScreenProps = {
@@ -31,6 +36,7 @@ type AuthScreenProps = {
 };
 
 type AuthField = "email" | "password";
+type SocialOption = (typeof socialOptions)[number];
 
 const authCopy = {
   "sign-up": {
@@ -56,21 +62,69 @@ const socialOptions = [
     id: "google",
     label: "Continue with Google",
     logo: images.socialGoogle,
+    strategy: "oauth_google",
   },
   {
     id: "facebook",
     label: "Continue with Facebook",
     logo: images.socialFacebook,
+    strategy: "oauth_facebook",
   },
   {
     id: "apple",
     label: "Continue with Apple",
     logo: images.socialApple,
+    strategy: "oauth_apple",
   },
 ] as const;
 
+const HOME_ROUTE = "/" as Href;
+
+function getErrorMessage(error: unknown, fallback: string) {
+  if (!error) {
+    return fallback;
+  }
+
+  if (error instanceof Error && error.message) {
+    return error.message;
+  }
+
+  if (typeof error === "object") {
+    const errorRecord = error as Record<string, unknown>;
+    const message = errorRecord.longMessage ?? errorRecord.message;
+
+    if (typeof message === "string") {
+      return message;
+    }
+
+    if (Array.isArray(errorRecord.errors)) {
+      const [firstError] = errorRecord.errors;
+
+      if (typeof firstError === "object" && firstError !== null) {
+        const firstErrorRecord = firstError as Record<string, unknown>;
+        const firstMessage =
+          firstErrorRecord.longMessage ?? firstErrorRecord.message;
+
+        if (typeof firstMessage === "string") {
+          return firstMessage;
+        }
+      }
+    }
+  }
+
+  return fallback;
+}
+
+function showAuthError(title: string, error: unknown, fallback: string) {
+  Alert.alert(title, getErrorMessage(error, fallback));
+}
+
 export function AuthScreen({ mode }: AuthScreenProps) {
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useAuth();
+  const { signIn, fetchStatus: signInFetchStatus } = useSignIn();
+  const { signUp, fetchStatus: signUpFetchStatus } = useSignUp();
+  const { startSSOFlow } = useSSO();
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -84,10 +138,15 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   const hasPasswordField = mode === "sign-up";
   const [isVerificationVisible, setIsVerificationVisible] = useState(false);
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [isSocialSubmitting, setIsSocialSubmitting] = useState(false);
   const [focusedField, setFocusedField] = useState<AuthField | null>(null);
   const [keyboardHeight, setKeyboardHeight] = useState(0);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const isSubmitting =
+    signInFetchStatus === "fetching" ||
+    signUpFetchStatus === "fetching" ||
+    isSocialSubmitting;
   const isKeyboardVisible = keyboardHeight > 0;
   const isCompact = height < 780;
   const mascotFrameHeight = isKeyboardVisible ? 0 : isCompact ? 96 : 112;
@@ -114,11 +173,187 @@ export function AuthScreen({ mode }: AuthScreenProps) {
     return true;
   }
 
-  function handleSocialSignIn(optionId: string) {
-    // Alternate auth flows are independent from email/password validation.
-    // Social login can proceed without blocking on local email/password state.
-    setIsVerificationVisible(true);
+  async function handlePrimaryAuth() {
+    if (!canOpenVerification()) {
+      Alert.alert(
+        "Check your details",
+        hasPasswordField
+          ? "Enter a valid email address and password to continue."
+          : "Enter a valid email address to continue.",
+      );
+      return;
+    }
+
+    const trimmedEmail = email.trim();
+
+    try {
+      if (mode === "sign-up") {
+        const signUpResult = await signUp.password({
+          emailAddress: trimmedEmail,
+          password,
+        });
+
+        if (signUpResult.error) {
+          showAuthError(
+            "Sign up failed",
+            signUpResult.error,
+            "We could not create your account.",
+          );
+          return;
+        }
+
+        const verificationResult = await signUp.verifications.sendEmailCode();
+
+        if (verificationResult.error) {
+          showAuthError(
+            "Verification failed",
+            verificationResult.error,
+            "We could not send your verification code.",
+          );
+          return;
+        }
+      } else {
+        const signInResult = await signIn.emailCode.sendCode({
+          emailAddress: trimmedEmail,
+        });
+
+        if (signInResult.error) {
+          showAuthError(
+            "Sign in failed",
+            signInResult.error,
+            "We could not send your sign-in code.",
+          );
+          return;
+        }
+      }
+
+      setIsVerificationVisible(true);
+    } catch (error) {
+      showAuthError(
+        mode === "sign-up" ? "Sign up failed" : "Sign in failed",
+        error,
+        "Something went wrong. Please try again.",
+      );
+    }
   }
+
+  async function handleVerifyCode(code: string) {
+    try {
+      if (mode === "sign-up") {
+        const verificationResult = await signUp.verifications.verifyEmailCode({
+          code,
+        });
+
+        if (verificationResult.error) {
+          showAuthError(
+            "Verification failed",
+            verificationResult.error,
+            "That code did not work. Please try again.",
+          );
+          return false;
+        }
+
+        const finalizeResult = await signUp.finalize();
+
+        if (finalizeResult.error) {
+          showAuthError(
+            "Sign up failed",
+            finalizeResult.error,
+            "We could not finish creating your account.",
+          );
+          return false;
+        }
+      } else {
+        const verificationResult = await signIn.emailCode.verifyCode({ code });
+
+        if (verificationResult.error) {
+          showAuthError(
+            "Verification failed",
+            verificationResult.error,
+            "That code did not work. Please try again.",
+          );
+          return false;
+        }
+
+        const finalizeResult = await signIn.finalize();
+
+        if (finalizeResult.error) {
+          showAuthError(
+            "Sign in failed",
+            finalizeResult.error,
+            "We could not finish signing you in.",
+          );
+          return false;
+        }
+      }
+
+      setIsVerificationVisible(false);
+      router.replace(HOME_ROUTE);
+      return true;
+    } catch (error) {
+      showAuthError(
+        "Verification failed",
+        error,
+        "Something went wrong while checking your code.",
+      );
+      return false;
+    }
+  }
+
+  async function handleResendCode() {
+    try {
+      const result =
+        mode === "sign-up"
+          ? await signUp.verifications.sendEmailCode()
+          : await signIn.emailCode.sendCode();
+
+      if (result.error) {
+        showAuthError(
+          "Resend failed",
+          result.error,
+          "We could not send a new code.",
+        );
+        return;
+      }
+
+      Alert.alert("Code sent", "Check your email for a new code.");
+    } catch (error) {
+      showAuthError(
+        "Resend failed",
+        error,
+        "Something went wrong while sending a new code.",
+      );
+    }
+  }
+
+  async function handleSocialSignIn(option: SocialOption) {
+    setIsSocialSubmitting(true);
+
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: option.strategy,
+      });
+
+      if (createdSessionId && setActive) {
+        await setActive({ session: createdSessionId });
+        router.replace(HOME_ROUTE);
+      }
+    } catch (error) {
+      showAuthError(
+        "Social sign in failed",
+        error,
+        `${option.label} is not available right now.`,
+      );
+    } finally {
+      setIsSocialSubmitting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      router.replace(HOME_ROUTE);
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener(
@@ -180,6 +415,10 @@ export function AuthScreen({ mode }: AuthScreenProps) {
     setTimeout(() => {
       scrollToField(field);
     }, 120);
+  }
+
+  if (!isLoaded || isSignedIn) {
+    return null;
   }
 
   return (
@@ -286,7 +525,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                       return;
                     }
 
-                    setIsVerificationVisible(true);
+                    void handlePrimaryAuth();
                   }}
                   placeholder="alex@gmail.com"
                   placeholderTextColor="#020A2F"
@@ -319,7 +558,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                         scrollToField("password");
                       }}
                       onPressIn={() => focusInput(passwordInputRef, "password")}
-                      onSubmitEditing={() => setIsVerificationVisible(true)}
+                      onSubmitEditing={() => void handlePrimaryAuth()}
                       placeholder="•••••••••"
                       placeholderTextColor="#020A2F"
                       ref={passwordInputRef}
@@ -355,12 +594,9 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
             <Pressable
               onPress={() => {
-                if (!canOpenVerification()) {
-                  return;
-                }
-
-                setIsVerificationVisible(true);
+                void handlePrimaryAuth();
               }}
+              disabled={isSubmitting}
               className="mt-[14px] min-h-[52px] items-center justify-center rounded-[15px] border-b-[4px] border-[#4C2BCD] bg-[#6842F5] px-8"
               style={({ pressed }) => [pressed && styles.primaryButtonPressed]}
             >
@@ -388,7 +624,8 @@ export function AuthScreen({ mode }: AuthScreenProps) {
                 <Pressable
                   className="min-h-[48px] flex-row items-center rounded-[15px] border border-[#EEF0F6] bg-white px-[28px]"
                   key={option.id}
-                  onPress={() => handleSocialSignIn(option.id)}
+                  disabled={isSubmitting}
+                  onPress={() => void handleSocialSignIn(option)}
                   style={({ pressed }) => [
                     pressed && styles.socialButtonPressed,
                   ]}
@@ -424,7 +661,11 @@ export function AuthScreen({ mode }: AuthScreenProps) {
       </KeyboardAvoidingView>
 
       {isVerificationVisible ? (
-        <VerificationModal onClose={() => setIsVerificationVisible(false)} />
+        <VerificationModal
+          onClose={() => setIsVerificationVisible(false)}
+          onResendCode={handleResendCode}
+          onVerifyCode={handleVerifyCode}
+        />
       ) : null}
     </SafeAreaView>
   );

@@ -1,4 +1,3 @@
-import { type Href, useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
   KeyboardAvoidingView,
@@ -14,13 +13,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type VerificationModalProps = {
   onClose: () => void;
+  onResendCode: () => Promise<void>;
+  onVerifyCode: (code: string) => Promise<boolean>;
 };
 
 const CODE_LENGTH = 6;
-const HOME_ROUTE = "/" as Href;
 
-export function VerificationModal({ onClose }: VerificationModalProps) {
-  const router = useRouter();
+export function VerificationModal({
+  onClose,
+  onResendCode,
+  onVerifyCode,
+}: VerificationModalProps) {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const inputRefs = useRef<(TextInput | null)[]>([]);
@@ -28,6 +31,7 @@ export function VerificationModal({ onClose }: VerificationModalProps) {
     Array.from({ length: CODE_LENGTH }, () => ""),
   );
   const [focusedIndex, setFocusedIndex] = useState(0);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const activeIndex = Math.min(focusedIndex, CODE_LENGTH - 1);
   const digitBoxSize = width < 370 ? 42 : 46;
 
@@ -54,12 +58,26 @@ export function VerificationModal({ onClose }: VerificationModalProps) {
     };
   }, [focusCodeInput]);
 
-  function finishIfComplete(nextDigits: string[]) {
+  async function finishIfComplete(nextDigits: string[]) {
+    if (isSubmitting) {
+      return;
+    }
+
     const nextCode = nextDigits.join("");
 
     if (nextCode.length === CODE_LENGTH) {
-      onClose();
-      router.replace(HOME_ROUTE);
+      setIsSubmitting(true);
+
+      try {
+        const didVerify = await onVerifyCode(nextCode);
+
+        if (!didVerify) {
+          setDigits(Array.from({ length: CODE_LENGTH }, () => ""));
+          focusCodeInput(0);
+        }
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   }
 
@@ -77,7 +95,7 @@ export function VerificationModal({ onClose }: VerificationModalProps) {
 
       setDigits(nextDigits);
       focusCodeInput(Math.min(index + numericValue.length, CODE_LENGTH - 1));
-      finishIfComplete(nextDigits);
+      void finishIfComplete(nextDigits);
       return;
     }
 
@@ -91,7 +109,7 @@ export function VerificationModal({ onClose }: VerificationModalProps) {
       setFocusedIndex(index);
     }
 
-    finishIfComplete(nextDigits);
+    void finishIfComplete(nextDigits);
   }
 
   function handleDigitBackspace(index: number) {
@@ -144,6 +162,7 @@ export function VerificationModal({ onClose }: VerificationModalProps) {
                     autoComplete={index === 0 ? "one-time-code" : "off"}
                     caretHidden
                     inputMode="numeric"
+                    editable={!isSubmitting}
                     key={`code-digit-${index}`}
                     keyboardType="number-pad"
                     onChangeText={(value) => handleDigitChange(value, index)}
@@ -178,7 +197,10 @@ export function VerificationModal({ onClose }: VerificationModalProps) {
               </Text>
               <Pressable
                 hitSlop={8}
-                onPress={() => focusCodeInput(activeIndex)}
+                onPress={() => {
+                  void onResendCode();
+                  focusCodeInput(activeIndex);
+                }}
               >
                 <Text className="font-poppins-bold text-[13px] leading-[19px] text-[#6A45F6]">
                   Resend

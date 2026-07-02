@@ -1,4 +1,5 @@
-import { type Href, useRouter } from "expo-router";
+import { useAuth } from "@clerk/expo";
+import { type Href, Redirect, useRouter } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -7,7 +8,16 @@ import { images } from "@/constants/images";
 const SIGN_UP_ROUTE = "/sign-up" as Href;
 
 export default function OnboardingScreen() {
+  const { isLoaded, isSignedIn } = useAuth();
   const router = useRouter();
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (isSignedIn) {
+    return <Redirect href="/" />;
+  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
