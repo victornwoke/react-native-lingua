@@ -1,8 +1,10 @@
-import { useRouter } from "expo-router";
+import { type Href, useRouter } from "expo-router";
 import { Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
+
+const SIGN_UP_ROUTE = "/sign-up" as Href;
 
 export default function OnboardingScreen() {
   const router = useRouter();
@@ -66,7 +68,7 @@ export default function OnboardingScreen() {
 
         <View className="absolute bottom-4 left-[28px] right-[28px]">
           <Pressable
-            onPress={() => router.push("/sign-up")}
+            onPress={() => router.push(SIGN_UP_ROUTE)}
             className="min-h-[72px] flex-row items-center justify-center rounded-[22px] border-b-[5px] border-[#4427C8] bg-[#5F39F7] px-8 active:opacity-90"
           >
             <Text className="font-poppins-bold text-[22px] leading-[30px] text-white">
