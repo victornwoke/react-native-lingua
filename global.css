@@ -1,0 +1,450 @@
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/utilities.css";
+
+@import "nativewind/theme";
+
+@layer theme {
+  @theme {
+    /* Typography - Font Family */
+    --font-sans: "Poppins-Regular";
+    --font-poppins: "Poppins-Regular";
+    --font-poppins-regular: "Poppins-Regular";
+    --font-poppins-medium: "Poppins-Medium";
+    --font-poppins-semibold: "Poppins-SemiBold";
+    --font-poppins-bold: "Poppins-Bold";
+
+    /* Brand Colors - Primary */
+    --color-lingua-purple: #6c4ef5;
+    --color-lingua-deep-purple: #5b3bf6;
+    --color-lingua-blue: #4d8bff;
+    --color-lingua-green: #21c16b;
+
+    /* Semantic Colors */
+    --color-success: #21c16b;
+    --color-warning: #ffc800;
+    --color-streak: #ff8a00;
+    --color-error: #ff4d4f;
+    --color-info: #4d8bff;
+
+    /* Neutral Colors */
+    --color-text-primary: #0d132b;
+    --color-text-secondary: #6b7280;
+    --color-border: #e5e7eb;
+    --color-surface: #f6f7fb;
+    --color-background: #ffffff;
+
+    /* Border Radius */
+    --radius-lingua-sm: 8px;
+    --radius-lingua-md: 12px;
+    --radius-lingua-lg: 16px;
+    --radius-lingua-xl: 20px;
+    --radius-lingua-2xl: 24px;
+
+    /* Shadows */
+    --shadow-lingua-card: 0 10px 30px rgb(13 19 43 / 0.06);
+    --shadow-lingua-button: 0 8px 18px rgb(108 78 245 / 0.22);
+    --shadow-lingua-sm: 0 2px 8px rgb(13 19 43 / 0.04);
+    --shadow-lingua-md: 0 4px 12px rgb(13 19 43 / 0.08);
+    --shadow-lingua-lg: 0 8px 24px rgb(13 19 43 / 0.12);
+  }
+}
+
+@layer utilities {
+  /* Screen & Layout Utilities */
+  .screen {
+    @apply flex-1 bg-background;
+  }
+
+  .safe-area {
+    @apply flex-1 bg-background;
+  }
+
+  .container {
+    @apply px-4;
+  }
+
+  /* Card Utilities */
+  .card {
+    @apply rounded-lg border border-border bg-background;
+    box-shadow: 0px 10px 30px rgba(13, 19, 43, 0.06);
+  }
+
+  .card-pressed {
+    @apply shadow-sm;
+  }
+
+  .card-elevated {
+    @apply shadow-md;
+  }
+
+  /* Typography Utilities - Headings */
+  .h1 {
+    @apply font-poppins-bold text-[32px] leading-[38.4px] tracking-[0px] text-text-primary;
+  }
+
+  .h2 {
+    @apply font-poppins-semibold text-[24px] leading-[31.2px] tracking-[0px] text-text-primary;
+  }
+
+  .h3 {
+    @apply font-poppins-semibold text-[20px] leading-[26px] tracking-[0px] text-text-primary;
+  }
+
+  .h4 {
+    @apply font-poppins-medium text-[16px] leading-[22.4px] tracking-[0px] text-text-primary;
+  }
+
+  /* Typography Utilities - Body */
+  .body-lg {
+    @apply font-poppins text-[16px] leading-[25.6px] tracking-[0px] text-text-primary;
+  }
+
+  .body-md {
+    @apply font-poppins text-[14px] leading-[22.4px] tracking-[0px] text-text-secondary;
+  }
+
+  .body-sm {
+    @apply font-poppins text-[13px] leading-[20.8px] tracking-[0px] text-text-secondary;
+  }
+
+  .caption {
+    @apply font-poppins text-[11px] leading-[15.4px] tracking-[0px] text-text-secondary;
+  }
+
+  /* Typography Utilities - Labels & Titles */
+  .section-title {
+    @apply font-poppins-bold text-[15px] uppercase leading-[18px] tracking-[0px] text-lingua-deep-purple;
+  }
+
+  .label {
+    @apply font-poppins-semibold text-[12px] uppercase leading-[16px] tracking-[0px] text-text-secondary;
+  }
+
+  /* Button Utilities - Primary */
+  .btn-primary {
+    @apply min-h-[56px] items-center justify-center rounded-md bg-lingua-purple px-6;
+    box-shadow: 0px 8px 18px rgba(108, 78, 245, 0.22);
+  }
+
+  .btn-primary-text {
+    @apply font-poppins-bold text-[16px] leading-[22.4px] tracking-[0px] text-white;
+  }
+
+  .btn-primary-disabled {
+    @apply min-h-[56px] items-center justify-center rounded-md bg-surface px-6;
+  }
+
+  .btn-primary-disabled-text {
+    @apply font-poppins-bold text-[16px] leading-[22.4px] tracking-[0px] text-text-secondary;
+  }
+
+  /* Button Utilities - Secondary */
+  .btn-secondary {
+    @apply min-h-[56px] items-center justify-center rounded-md border border-border bg-background px-6;
+  }
+
+  .btn-secondary-text {
+    @apply font-poppins-bold text-[16px] leading-[22.4px] tracking-[0px] text-text-primary;
+  }
+
+  /* Button Utilities - Tertiary */
+  .btn-tertiary {
+    @apply min-h-[56px] items-center justify-center rounded-md bg-surface px-6;
+  }
+
+  .btn-tertiary-text {
+    @apply font-poppins-bold text-[16px] leading-[22.4px] tracking-[0px] text-text-primary;
+  }
+
+  /* Button Utilities - Icon Button */
+  .btn-icon {
+    @apply h-12 w-12 items-center justify-center rounded-md;
+  }
+
+  /* Color Utilities - Backgrounds */
+  .bg-lingua-purple {
+    @apply bg-[#6c4ef5];
+  }
+
+  .bg-lingua-deep-purple {
+    @apply bg-[#5b3bf6];
+  }
+
+  .bg-lingua-blue {
+    @apply bg-[#4d8bff];
+  }
+
+  .bg-lingua-green {
+    @apply bg-[#21c16b];
+  }
+
+  .bg-success {
+    @apply bg-[#21c16b];
+  }
+
+  .bg-warning {
+    @apply bg-[#ffc800];
+  }
+
+  .bg-streak {
+    @apply bg-[#ff8a00];
+  }
+
+  .bg-error {
+    @apply bg-[#ff4d4f];
+  }
+
+  .bg-info {
+    @apply bg-[#4d8bff];
+  }
+
+  .bg-text-primary {
+    @apply bg-[#0d132b];
+  }
+
+  .bg-text-secondary {
+    @apply bg-[#6b7280];
+  }
+
+  .bg-border {
+    @apply bg-[#e5e7eb];
+  }
+
+  .bg-surface {
+    @apply bg-[#f6f7fb];
+  }
+
+  .bg-background {
+    @apply bg-[#ffffff];
+  }
+
+  /* Color Utilities - Text */
+  .text-lingua-purple {
+    @apply text-[#6c4ef5];
+  }
+
+  .text-lingua-deep-purple {
+    @apply text-[#5b3bf6];
+  }
+
+  .text-lingua-blue {
+    @apply text-[#4d8bff];
+  }
+
+  .text-lingua-green {
+    @apply text-[#21c16b];
+  }
+
+  .text-success {
+    @apply text-[#21c16b];
+  }
+
+  .text-warning {
+    @apply text-[#ffc800];
+  }
+
+  .text-streak {
+    @apply text-[#ff8a00];
+  }
+
+  .text-error {
+    @apply text-[#ff4d4f];
+  }
+
+  .text-info {
+    @apply text-[#4d8bff];
+  }
+
+  .text-text-primary {
+    @apply text-[#0d132b];
+  }
+
+  .text-text-secondary {
+    @apply text-[#6b7280];
+  }
+
+  /* Color Utilities - Border */
+  .border-lingua-purple {
+    @apply border-[#6c4ef5];
+  }
+
+  .border-lingua-deep-purple {
+    @apply border-[#5b3bf6];
+  }
+
+  .border-lingua-blue {
+    @apply border-[#4d8bff];
+  }
+
+  .border-lingua-green {
+    @apply border-[#21c16b];
+  }
+
+  .border-success {
+    @apply border-[#21c16b];
+  }
+
+  .border-warning {
+    @apply border-[#ffc800];
+  }
+
+  .border-streak {
+    @apply border-[#ff8a00];
+  }
+
+  .border-error {
+    @apply border-[#ff4d4f];
+  }
+
+  .border-info {
+    @apply border-[#4d8bff];
+  }
+
+  .border-text-primary {
+    @apply border-[#0d132b];
+  }
+
+  .border-text-secondary {
+    @apply border-[#6b7280];
+  }
+
+  .border-border {
+    @apply border-[#e5e7eb];
+  }
+
+  .border-surface {
+    @apply border-[#f6f7fb];
+  }
+
+  /* Border Radius Utilities */
+  .rounded-sm {
+    @apply rounded-[8px];
+  }
+
+  .rounded-md {
+    @apply rounded-[12px];
+  }
+
+  .rounded-lg {
+    @apply rounded-[16px];
+  }
+
+  .rounded-xl {
+    @apply rounded-[20px];
+  }
+
+  .rounded-2xl {
+    @apply rounded-[24px];
+  }
+
+  /* Shadow Utilities */
+  .shadow-card {
+    box-shadow: 0px 10px 30px rgba(13, 19, 43, 0.06);
+  }
+
+  .shadow-button {
+    box-shadow: 0px 8px 18px rgba(108, 78, 245, 0.22);
+  }
+
+  .shadow-sm {
+    box-shadow: 0px 2px 8px rgba(13, 19, 43, 0.04);
+  }
+
+  .shadow-md {
+    box-shadow: 0px 4px 12px rgba(13, 19, 43, 0.08);
+  }
+
+  .shadow-lg {
+    box-shadow: 0px 8px 24px rgba(13, 19, 43, 0.12);
+  }
+
+  /* Spacing Utilities - Padding */
+  .px-sm {
+    @apply px-[8px];
+  }
+
+  .px-md {
+    @apply px-[12px];
+  }
+
+  .px-lg {
+    @apply px-[16px];
+  }
+
+  .px-xl {
+    @apply px-[20px];
+  }
+
+  .py-sm {
+    @apply py-[8px];
+  }
+
+  .py-md {
+    @apply py-[12px];
+  }
+
+  .py-lg {
+    @apply py-[16px];
+  }
+
+  .py-xl {
+    @apply py-[20px];
+  }
+
+  .p-sm {
+    @apply p-[8px];
+  }
+
+  .p-md {
+    @apply p-[12px];
+  }
+
+  .p-lg {
+    @apply p-[16px];
+  }
+
+  .p-xl {
+    @apply p-[20px];
+  }
+
+  /* Gap Utilities */
+  .gap-sm {
+    @apply gap-[8px];
+  }
+
+  .gap-md {
+    @apply gap-[12px];
+  }
+
+  .gap-lg {
+    @apply gap-[16px];
+  }
+
+  .gap-xl {
+    @apply gap-[20px];
+  }
+
+  /* Opacity Utilities */
+  .disabled-opacity {
+    @apply opacity-50;
+  }
+
+  /* Interactive States */
+  .interactive-scale {
+    @apply transition-transform active:scale-95;
+  }
+
+  .interactive-opacity {
+    @apply transition-opacity active:opacity-70;
+  }
+}
+
+@source not "./AGENTS.md";
+@source not "./CLAUDE.md";
+@source not "./README.md";
+@source not "./.agents";
+@source not "./.claude";
+@source not "./app.json";
+@source not "./assets";
+@source not "./package-lock.json";
+@source not "./package.json";
