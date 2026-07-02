@@ -114,6 +114,12 @@ export function AuthScreen({ mode }: AuthScreenProps) {
     return true;
   }
 
+  function handleSocialSignIn(optionId: string) {
+    // Alternate auth flows are independent from email/password validation.
+    // Social login can proceed without blocking on local email/password state.
+    setIsVerificationVisible(true);
+  }
+
   useEffect(() => {
     const showSubscription = Keyboard.addListener(
       "keyboardWillShow",
@@ -355,7 +361,8 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
                 setIsVerificationVisible(true);
               }}
-              className="mt-[14px] min-h-[52px] items-center justify-center rounded-[15px] border-b-[4px] border-[#4C2BCD] bg-[#6842F5] px-8 active:opacity-90"
+              className="mt-[14px] min-h-[52px] items-center justify-center rounded-[15px] border-b-[4px] border-[#4C2BCD] bg-[#6842F5] px-8"
+              style={({ pressed }) => [pressed && styles.primaryButtonPressed]}
             >
               <Text className="font-poppins-bold text-[17px] leading-[23px] text-white">
                 {copy.button}
@@ -379,15 +386,12 @@ export function AuthScreen({ mode }: AuthScreenProps) {
             <View className="gap-[8px]">
               {socialOptions.map((option) => (
                 <Pressable
-                  className="min-h-[48px] flex-row items-center rounded-[15px] border border-[#EEF0F6] bg-white px-[28px] active:opacity-85"
+                  className="min-h-[48px] flex-row items-center rounded-[15px] border border-[#EEF0F6] bg-white px-[28px]"
                   key={option.id}
-                  onPress={() => {
-                    if (!canOpenVerification()) {
-                      return;
-                    }
-
-                    setIsVerificationVisible(true);
-                  }}
+                  onPress={() => handleSocialSignIn(option.id)}
+                  style={({ pressed }) => [
+                    pressed && styles.socialButtonPressed,
+                  ]}
                 >
                   <View className="w-[54px] items-start">
                     <Image
@@ -472,5 +476,11 @@ const styles = StyleSheet.create({
     marginTop: 5,
     minHeight: 20,
     padding: 0,
+  },
+  primaryButtonPressed: {
+    opacity: 0.9,
+  },
+  socialButtonPressed: {
+    opacity: 0.85,
   },
 });
