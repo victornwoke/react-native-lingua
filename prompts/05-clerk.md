@@ -93,7 +93,7 @@ This approach uses Clerk's [prebuilt native components](https://clerk.com/docs/r
 
 6. ## Verify `app.json` plugins
 
-   Run `npx expo install` to automatically add the required config plugins to your `app.json` file. Then verify that `@clerk/expo` and `expo-secure-store` appear in the `plugins` array:
+   Install the native dependencies with `npx expo install`, then make sure you have manually added `@clerk/expo` and `expo-secure-store` to the `plugins` array in your `app.json` file. `expo install` only installs the packages; it does not automatically edit plugin entries for you.
 
    filename: app.json
 
@@ -227,7 +227,7 @@ This approach uses Clerk's [prebuilt native components](https://clerk.com/docs/r
    Then use the terminal shortcuts to run the app on your preferred platform:
    - Press `i` to open the iOS simulator.
    - Press `a` to open the Android emulator.
-   - Scan the QR code with Expo Go to run the app on a physical device.
+   - Use a development build or device target to run the app on a physical device.
 
 10. ## Create your first user
 
@@ -541,7 +541,7 @@ This approach uses custom flows built with React Native components and **works i
            <ThemedText style={styles.buttonText}>Sign up</ThemedText>
          </Pressable>
          {/* For your debugging purposes. You can just console.log errors, but we put them in the UI for convenience */}
-         {errors && (
+         {__DEV__ && errors && (
            <ThemedText style={styles.debug}>
              {JSON.stringify(errors, null, 2)}
            </ThemedText>
@@ -833,7 +833,7 @@ This approach uses custom flows built with React Native components and **works i
             <ThemedText style={styles.buttonText}>Continue</ThemedText>
           </Pressable>
           {/* For your debugging purposes. You can just console.log errors, but we put them in the UI for convenience */}
-          {errors && (
+          {__DEV__ && errors && (
             <ThemedText style={styles.debug}>
               {JSON.stringify(errors, null, 2)}
             </ThemedText>
@@ -975,7 +975,12 @@ This approach uses custom flows built with React Native components and **works i
             </Link>
           </Show>
           <Show when="signed-in">
-            <Text>Hello {user?.id}</Text>
+            <Text>
+              Hello{" "}
+              {user?.primaryEmailAddress?.emailAddress ||
+                user?.emailAddresses?.[0]?.emailAddress ||
+                "user"}
+            </Text>
             <Pressable style={styles.button} onPress={() => signOut()}>
               <Text style={styles.buttonText}>Sign out</Text>
             </Pressable>

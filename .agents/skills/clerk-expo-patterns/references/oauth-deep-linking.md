@@ -7,68 +7,70 @@
 ```json
 {
   "expo": {
-    "scheme": "myapp"
+    "scheme": "clerkexpo"
   }
 }
 ```
 
-2. Install deps: `npx expo install expo-web-browser expo-auth-session`
+1. Install deps: `npx expo install expo-web-browser expo-auth-session`
 
 ## OAuth with useSSO
 
 ```tsx
-import { useSSO } from '@clerk/expo'
-import * as WebBrowser from 'expo-web-browser'
-import { useEffect } from 'react'
+import { useSSO } from "@clerk/expo";
+import * as WebBrowser from "expo-web-browser";
+import { useEffect } from "react";
+import { Button } from "react-native";
 
-WebBrowser.maybeCompleteAuthSession()
+WebBrowser.maybeCompleteAuthSession();
 
 export function SignInScreen() {
-  const { startSSOFlow } = useSSO()
+  const { startSSOFlow } = useSSO();
 
   const handleGoogle = async () => {
     try {
-      const { createdSessionId, setActive, signIn, signUp } = await startSSOFlow({
-        strategy: 'oauth_google',
-        redirectUrl: 'myapp://oauth-callback',
-      })
+      const { createdSessionId, setActive, signIn, signUp } =
+        await startSSOFlow({
+          strategy: "oauth_google",
+          redirectUrl: "clerkexpo://oauth-callback",
+        });
 
       if (createdSessionId) {
-        await setActive!({ session: createdSessionId })
-      } else if (signUp?.status === 'missing_requirements') {
+        await setActive!({ session: createdSessionId });
+      } else if (signUp?.status === "missing_requirements") {
         // Handle missing fields (e.g. username)
       }
     } catch (err) {
-      console.error(err)
+      console.error(err);
     }
-  }
+  };
 
-  return <Button onPress={handleGoogle} title="Sign in with Google" />
+  return <Button onPress={handleGoogle} title="Sign in with Google" />;
 }
 ```
 
 ## Supported Strategies
 
-| Provider | Strategy |
-|----------|----------|
-| Google | `oauth_google` |
-| Apple | `oauth_apple` |
-| GitHub | `oauth_github` |
+| Provider  | Strategy          |
+| --------- | ----------------- |
+| Google    | `oauth_google`    |
+| Apple     | `oauth_apple`     |
+| GitHub    | `oauth_github`    |
 | Microsoft | `oauth_microsoft` |
-| Facebook | `oauth_facebook` |
+| Facebook  | `oauth_facebook`  |
 
 ## Callback Screen
 
 Create `app/oauth-callback.tsx`:
 
 ```tsx
-import { useEffect } from 'react'
-import * as WebBrowser from 'expo-web-browser'
+import { useEffect } from "react";
+import * as WebBrowser from "expo-web-browser";
 
-WebBrowser.maybeCompleteAuthSession()
+WebBrowser.maybeCompleteAuthSession();
 
 export default function OAuthCallback() {
-  return null
+  return null;
 }
 ```
 
