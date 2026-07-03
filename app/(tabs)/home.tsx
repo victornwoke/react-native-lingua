@@ -9,7 +9,7 @@ import { DailyGoalCard } from "@/components/home/daily-goal-card";
 import { HomeHeader } from "@/components/home/home-header";
 import { NextUpCard } from "@/components/home/next-up-card";
 import { TodayPlanSection } from "@/components/home/today-plan-section";
-import { useHomeDashboard } from "@/hooks/use-home-dashboard";
+import { useHomeDashboard } from "@/hooks/useHomeDashboard";
 
 const AI_TEACHER_ROUTE = "/ai-teacher" as Href;
 
@@ -36,8 +36,13 @@ function getDisplayName(user: ReturnType<typeof useUser>["user"]) {
 export default function HomeScreen() {
   const router = useRouter();
   const { user } = useUser();
-  const { dailyGoalXp, earnedXp, planItems, selectedLanguage, unitLabel } =
-    useHomeDashboard();
+  const {
+    selectedLanguage,
+    dailyGoalXp,
+    earnedXp,
+    unitLabel,
+    planItems,
+  } = useHomeDashboard();
 
   function handleContinueLearning() {
     router.push("/learn" as Href);
