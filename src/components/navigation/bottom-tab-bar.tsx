@@ -30,7 +30,6 @@ type TabConfig = {
 
 const ACTIVE_CIRCLE_SIZE = 54;
 const TAB_BAR_HEIGHT = 84;
-const TAB_BAR_HORIZONTAL_MARGIN = 14;
 const TAB_BAR_HORIZONTAL_PADDING = 6;
 const TAB_BAR_BOTTOM_GAP = 4;
 
@@ -72,6 +71,7 @@ const tabConfig: Record<string, TabConfig> = {
 
 export function BottomTabBar({
   descriptors,
+  insets,
   navigation,
   state,
 }: TabBarProps) {
@@ -112,13 +112,18 @@ export function BottomTabBar({
   const activeCircleStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
+  const bottomOffset = TAB_BAR_BOTTOM_GAP + insets.bottom;
 
   function handleLayout(event: LayoutChangeEvent) {
     setBarWidth(event.nativeEvent.layout.width);
   }
 
   return (
-    <View pointerEvents="box-none" style={styles.wrapper}>
+    <View
+      pointerEvents="box-none"
+      className="absolute left-0 right-0 px-[14px]"
+      style={{ bottom: bottomOffset }}
+    >
       <View style={styles.bar} onLayout={handleLayout}>
         {itemWidth > 0 ? (
           <Animated.View
@@ -164,14 +169,14 @@ export function BottomTabBar({
           return (
             <Pressable
               key={route.key}
-              accessibilityLabel={options?.tabBarAccessibilityLabel}
+              accessibilityLabel={options?.tabBarAccessibilityLabel ?? label}
               accessibilityRole={accessibilityRole}
               accessibilityState={isFocused ? { selected: true } : undefined}
               onLongPress={handleLongPress}
               onPress={handlePress}
-              style={styles.tabButton}
+              className="min-w-0 flex-1 items-center justify-center gap-[3px]"
             >
-              <View style={styles.iconSlot}>
+              <View className="h-[34px] items-center justify-center">
                 <SymbolView
                   name={isFocused ? config.activeIcon : config.icon}
                   size={isFocused ? 26 : 25}
@@ -179,10 +184,9 @@ export function BottomTabBar({
                   type="monochrome"
                   fallback={
                     <Text
-                      style={[
-                        styles.fallbackIcon,
-                        isFocused && styles.activeFallbackIcon,
-                      ]}
+                      className={`font-poppins-semibold text-[20px] leading-[26px] ${
+                        isFocused ? "text-white" : "text-[#8189A7]"
+                      }`}
                     >
                       {config.label.charAt(0)}
                     </Text>
@@ -191,7 +195,10 @@ export function BottomTabBar({
               </View>
 
               {!isFocused ? (
-                <Text numberOfLines={1} style={styles.label}>
+                <Text
+                  numberOfLines={1}
+                  className="max-w-[74px] text-center font-poppins-semibold text-[12px] leading-[17px] text-[#69708B]"
+                >
                   {label}
                 </Text>
               ) : null}
@@ -215,9 +222,6 @@ const styles = StyleSheet.create({
     top: (TAB_BAR_HEIGHT - ACTIVE_CIRCLE_SIZE) / 2,
     width: ACTIVE_CIRCLE_SIZE,
   },
-  activeFallbackIcon: {
-    color: "#FFFFFF",
-  },
   bar: {
     backgroundColor: "#FFFFFF",
     borderCurve: "continuous",
@@ -227,38 +231,5 @@ const styles = StyleSheet.create({
     height: TAB_BAR_HEIGHT,
     paddingHorizontal: TAB_BAR_HORIZONTAL_PADDING,
     position: "relative",
-  },
-  fallbackIcon: {
-    color: "#8189A7",
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 20,
-    lineHeight: 26,
-  },
-  iconSlot: {
-    alignItems: "center",
-    height: 34,
-    justifyContent: "center",
-  },
-  label: {
-    color: "#69708B",
-    fontFamily: "Poppins-SemiBold",
-    fontSize: 12,
-    lineHeight: 17,
-    maxWidth: 74,
-    textAlign: "center",
-  },
-  tabButton: {
-    alignItems: "center",
-    flex: 1,
-    gap: 3,
-    justifyContent: "center",
-    minWidth: 0,
-  },
-  wrapper: {
-    bottom: TAB_BAR_BOTTOM_GAP,
-    left: 0,
-    paddingHorizontal: TAB_BAR_HORIZONTAL_MARGIN,
-    position: "absolute",
-    right: 0,
   },
 });

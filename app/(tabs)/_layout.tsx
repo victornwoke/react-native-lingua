@@ -3,19 +3,15 @@ import { type Href, Redirect } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 
 import { BottomTabBar } from "@/components/navigation/bottom-tab-bar";
-import { useLanguageStore } from "@/store/language-store";
-
-import { languages } from "../../data/languages";
+import { useLanguageStore, useSelectedLanguage } from "@/store/language-store";
 
 const ONBOARDING_ROUTE = "/onboarding" as Href;
 const LANGUAGE_SELECTION_ROUTE = "/language-selection" as Href;
 
 export default function TabLayout() {
   const { isLoaded, isSignedIn } = useAuth();
-  const { hasHydrated, selectedLanguageId } = useLanguageStore();
-  const selectedLanguage = languages.find(
-    (language) => language.id === selectedLanguageId,
-  );
+  const hasHydrated = useLanguageStore((state) => state.hasHydrated);
+  const selectedLanguage = useSelectedLanguage();
 
   if (!isLoaded || !hasHydrated) {
     return null;

@@ -33,12 +33,43 @@ const learnerCounts: Record<string, string> = {
 };
 
 export default function LanguageSelectionScreen() {
-  const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
-  const {
-    selectedLanguageId: storedLanguageId,
-    setSelectedLanguageId: setStoredLanguageId,
-  } = useLanguageStore();
+  const storedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
+  const setStoredLanguageId = useLanguageStore(
+    (state) => state.setSelectedLanguageId,
+  );
+  const hasHydrated = useLanguageStore((state) => state.hasHydrated);
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (!isSignedIn) {
+    return <Redirect href={ONBOARDING_ROUTE} />;
+  }
+
+  if (!hasHydrated) {
+    return null;
+  }
+
+  return (
+    <LanguageSelectionContent
+      storedLanguageId={storedLanguageId}
+      setStoredLanguageId={setStoredLanguageId}
+    />
+  );
+}
+
+type LanguageSelectionContentProps = {
+  storedLanguageId: string | null;
+  setStoredLanguageId: (languageId: string) => void;
+};
+
+function LanguageSelectionContent({
+  storedLanguageId,
+  setStoredLanguageId,
+}: LanguageSelectionContentProps) {
+  const router = useRouter();
   const initialLanguageId =
     storedLanguageId &&
     languages.some((language) => language.id === storedLanguageId)
@@ -62,14 +93,6 @@ export default function LanguageSelectionScreen() {
       return searchableText.includes(query);
     });
   }, [searchQuery]);
-
-  if (!isLoaded) {
-    return null;
-  }
-
-  if (!isSignedIn) {
-    return <Redirect href={ONBOARDING_ROUTE} />;
-  }
 
   function handleContinue() {
     if (!selectedLanguageId) {
