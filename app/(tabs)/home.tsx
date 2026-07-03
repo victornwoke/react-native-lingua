@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { usePostHog } from "posthog-react-native";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -35,6 +36,7 @@ function getDisplayName(user: ReturnType<typeof useUser>["user"]) {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const posthog = usePostHog();
   const { user } = useUser();
   const { dailyGoalXp, earnedXp, planItems, selectedLanguage, unitLabel } =
     useHomeDashboard();
