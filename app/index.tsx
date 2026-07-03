@@ -5,6 +5,7 @@ import { Alert, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 const ONBOARDING_ROUTE = "/onboarding" as Href;
+const LANGUAGE_SELECTION_ROUTE = "/language-selection" as Href;
 
 export default function Index() {
   const router = useRouter();
@@ -48,13 +49,15 @@ export default function Index() {
               Viclingo
             </Text>
             <Text className="max-w-[280px] text-center font-poppins text-[16px] leading-[25px] text-text-secondary">
-              Open the onboarding screen for the AI language teacher flow.
+              Choose your language to start learning with your AI teacher.
             </Text>
           </View>
 
-          <Link href="./onboarding" asChild>
+          <Link href={LANGUAGE_SELECTION_ROUTE} asChild>
             <Pressable className="btn-primary w-full max-w-[320px]">
-              <Text className="btn-primary-text">View Onboarding</Text>
+              <Text className="btn-primary-text">
+                Choose Language
+              </Text>
             </Pressable>
           </Link>
 
