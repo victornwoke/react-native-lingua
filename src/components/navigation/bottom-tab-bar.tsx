@@ -31,7 +31,7 @@ type TabConfig = {
 const ACTIVE_CIRCLE_SIZE = 54;
 const TAB_BAR_HEIGHT = 84;
 const TAB_BAR_HORIZONTAL_PADDING = 6;
-const TAB_BAR_BOTTOM_GAP = 4;
+const TAB_BAR_BOTTOM_GAP = 2;
 
 const tabConfig: Record<string, TabConfig> = {
   home: {
@@ -71,7 +71,6 @@ const tabConfig: Record<string, TabConfig> = {
 
 export function BottomTabBar({
   descriptors,
-  insets,
   navigation,
   state,
 }: TabBarProps) {
@@ -112,7 +111,6 @@ export function BottomTabBar({
   const activeCircleStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: translateX.value }],
   }));
-  const bottomOffset = TAB_BAR_BOTTOM_GAP + insets.bottom;
 
   function handleLayout(event: LayoutChangeEvent) {
     setBarWidth(event.nativeEvent.layout.width);
@@ -122,7 +120,7 @@ export function BottomTabBar({
     <View
       pointerEvents="box-none"
       className="absolute left-0 right-0 px-[14px]"
-      style={{ bottom: bottomOffset }}
+      style={{ bottom: TAB_BAR_BOTTOM_GAP }}
     >
       <View style={styles.bar} onLayout={handleLayout}>
         {itemWidth > 0 ? (
