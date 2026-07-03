@@ -37,10 +37,10 @@ function getDisplayName(user: ReturnType<typeof useUser>["user"]) {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const posthog = usePostHog();
   const { user } = useUser();
   const { dailyGoalXp, earnedXp, planItems, selectedLanguage, unitLabel } =
     useHomeDashboard();
-  const posthog = usePostHog();
 
   useEffect(() => {
     posthog.capture("home_dashboard_viewed", {
@@ -49,8 +49,7 @@ export default function HomeScreen() {
       earned_xp: earnedXp,
       daily_goal_xp: dailyGoalXp,
     });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [dailyGoalXp, earnedXp, posthog, selectedLanguage.id, selectedLanguage.name]);
 
   function handleContinueLearning() {
     posthog.capture("continue_learning_tapped", {
