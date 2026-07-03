@@ -1,8 +1,10 @@
 import { useUser } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 import { ContinueLearningCard } from "@/components/home/continue-learning-card";
 import { DailyGoalCard } from "@/components/home/daily-goal-card";
@@ -38,12 +40,31 @@ export default function HomeScreen() {
   const { user } = useUser();
   const { dailyGoalXp, earnedXp, planItems, selectedLanguage, unitLabel } =
     useHomeDashboard();
+  const posthog = usePostHog();
+
+  useEffect(() => {
+    posthog.capture("home_dashboard_viewed", {
+      language_id: selectedLanguage.id,
+      language_name: selectedLanguage.name,
+      earned_xp: earnedXp,
+      daily_goal_xp: dailyGoalXp,
+    });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   function handleContinueLearning() {
+    posthog.capture("continue_learning_tapped", {
+      language_id: selectedLanguage.id,
+      language_name: selectedLanguage.name,
+    });
     router.push("/learn" as Href);
   }
 
   function handleStartVideoCall() {
+    posthog.capture("ai_teacher_started", {
+      language_id: selectedLanguage.id,
+      language_name: selectedLanguage.name,
+    });
     router.push(AI_TEACHER_ROUTE);
   }
 

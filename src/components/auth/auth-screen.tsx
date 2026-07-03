@@ -7,6 +7,7 @@ import {
 import { Image as ExpoImage } from "expo-image";
 import { type Href, Link, useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
+import { usePostHog } from "posthog-react-native";
 import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -136,6 +137,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   const { signIn, fetchStatus: signInFetchStatus } = useSignIn();
   const { signUp, fetchStatus: signUpFetchStatus } = useSignUp();
   const { startSSOFlow } = useSSO();
+  const posthog = usePostHog();
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -199,6 +201,8 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
     try {
       if (mode === "sign-up") {
+        posthog.capture("sign_up_submitted", { method: "email" });
+
         const signUpResult = await signUp.password({
           emailAddress: trimmedEmail,
           password,
@@ -224,6 +228,8 @@ export function AuthScreen({ mode }: AuthScreenProps) {
           return;
         }
       } else {
+        posthog.capture("sign_in_submitted", { method: "email" });
+
         const signInResult = await signIn.emailCode.sendCode({
           emailAddress: trimmedEmail,
         });
@@ -240,6 +246,10 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
       setIsVerificationVisible(true);
     } catch (error) {
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
+        auth_mode: mode,
+        step: "submit",
+      });
       showAuthError(
         mode === "sign-up" ? "Sign up failed" : "Sign in failed",
         error,
@@ -274,6 +284,15 @@ export function AuthScreen({ mode }: AuthScreenProps) {
           );
           return false;
         }
+
+        const newUserId = signUp.createdUserId;
+        if (newUserId) {
+          posthog.identify(newUserId, {
+            $set: { email: email.trim() },
+            $set_once: { first_sign_up_date: new Date().toISOString() },
+          });
+        }
+        posthog.capture("sign_up_completed", { method: "email" });
       } else {
         const verificationResult = await signIn.emailCode.verifyCode({ code });
 
@@ -296,12 +315,24 @@ export function AuthScreen({ mode }: AuthScreenProps) {
           );
           return false;
         }
+
+        const userId = signIn.createdSessionId;
+        if (userId) {
+          posthog.identify(userId, {
+            $set: { email: email.trim() },
+          });
+        }
+        posthog.capture("sign_in_completed", { method: "email" });
       }
 
       setIsVerificationVisible(false);
       router.replace(HOME_ROUTE);
       return true;
     } catch (error) {
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
+        auth_mode: mode,
+        step: "verify",
+      });
       showAuthError(
         "Verification failed",
         error,
@@ -339,6 +370,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
   async function handleSocialSignIn(option: SocialOption) {
     setIsSocialSubmitting(true);
+    posthog.capture("social_auth_tapped", { provider: option.id, auth_mode: mode });
 
     try {
       const { createdSessionId, setActive } = await startSSOFlow({
@@ -347,6 +379,9 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
+        posthog.capture(mode === "sign-up" ? "sign_up_completed" : "sign_in_completed", {
+          method: option.id,
+        });
         router.replace(HOME_ROUTE);
       }
     } catch (error) {
@@ -358,6 +393,10 @@ export function AuthScreen({ mode }: AuthScreenProps) {
         return;
       }
 
+      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
+        provider: option.id,
+        auth_mode: mode,
+      });
       showAuthError(
         "Social sign in failed",
         error,
