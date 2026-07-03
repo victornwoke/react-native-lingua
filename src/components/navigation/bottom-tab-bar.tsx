@@ -1,4 +1,5 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
+import { usePathname } from "expo-router";
 import { type ComponentProps, useEffect, useMemo, useState } from "react";
 import {
   AccessibilityRole,
@@ -74,8 +75,10 @@ export function BottomTabBar({
   navigation,
   state,
 }: TabBarProps) {
+  const pathname = usePathname();
   const [barWidth, setBarWidth] = useState(0);
   const translateX = useSharedValue(0);
+  const isLessonRoute = pathname.startsWith("/lesson/");
 
   const visibleRoutes = useMemo(
     () => state.routes.filter((route) => tabConfig[route.name]),
@@ -87,8 +90,9 @@ export function BottomTabBar({
   );
   const itemWidth =
     visibleRoutes.length > 0 ? tabContentWidth / visibleRoutes.length : 0;
+  const focusedRouteName = isLessonRoute ? "learn" : state.routes[state.index]?.name;
   const activeVisibleIndex = visibleRoutes.findIndex(
-    (route) => route.key === state.routes[state.index]?.key,
+    (route) => route.name === focusedRouteName,
   );
 
   useEffect(() => {
@@ -116,6 +120,10 @@ export function BottomTabBar({
     setBarWidth(event.nativeEvent.layout.width);
   }
 
+  if (isLessonRoute) {
+    return null;
+  }
+
   return (
     <View
       pointerEvents="box-none"
@@ -131,10 +139,7 @@ export function BottomTabBar({
         ) : null}
 
         {visibleRoutes.map((route) => {
-          const routeIndex = state.routes.findIndex(
-            (stateRoute) => stateRoute.key === route.key,
-          );
-          const isFocused = routeIndex === state.index;
+          const isFocused = route.name === focusedRouteName;
           const config = tabConfig[route.name];
           const options = descriptors[route.key]?.options;
           const label =
