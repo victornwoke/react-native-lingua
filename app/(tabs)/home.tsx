@@ -1,9 +1,10 @@
 import { useUser } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { usePostHog } from "posthog-react-native";
+import { useEffect } from "react";
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { usePostHog } from "posthog-react-native";
 
 import { ContinueLearningCard } from "@/components/home/continue-learning-card";
 import { DailyGoalCard } from "@/components/home/daily-goal-card";
@@ -40,6 +41,15 @@ export default function HomeScreen() {
   const { user } = useUser();
   const { dailyGoalXp, earnedXp, planItems, selectedLanguage, unitLabel } =
     useHomeDashboard();
+
+  useEffect(() => {
+    posthog.capture("home_dashboard_viewed", {
+      language_id: selectedLanguage.id,
+      language_name: selectedLanguage.name,
+      earned_xp: earnedXp,
+      daily_goal_xp: dailyGoalXp,
+    });
+  }, [dailyGoalXp, earnedXp, posthog, selectedLanguage.id, selectedLanguage.name]);
 
   function handleContinueLearning() {
     posthog.capture("continue_learning_tapped", {
