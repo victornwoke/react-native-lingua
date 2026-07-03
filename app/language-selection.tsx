@@ -16,6 +16,7 @@ import { LanguageCard } from "@/components/language/language-card";
 import { ScreenHeader } from "@/components/screen-header";
 import { SearchBar } from "@/components/search-bar";
 import { images } from "@/constants/images";
+import { useLanguageStore } from "@/store/language-store";
 
 import { languages } from "../data/languages";
 
@@ -34,10 +35,18 @@ const learnerCounts: Record<string, string> = {
 export default function LanguageSelectionScreen() {
   const router = useRouter();
   const { isLoaded, isSignedIn } = useAuth();
+  const {
+    selectedLanguageId: storedLanguageId,
+    setSelectedLanguageId: setStoredLanguageId,
+  } = useLanguageStore();
+  const initialLanguageId =
+    storedLanguageId &&
+    languages.some((language) => language.id === storedLanguageId)
+      ? storedLanguageId
+      : (languages[0]?.id ?? "");
   const [searchQuery, setSearchQuery] = useState("");
-  const [selectedLanguageId, setSelectedLanguageId] = useState(
-    languages[0]?.id ?? "",
-  );
+  const [selectedLanguageId, setSelectedLanguageId] =
+    useState(initialLanguageId);
 
   const filteredLanguages = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -60,6 +69,15 @@ export default function LanguageSelectionScreen() {
 
   if (!isSignedIn) {
     return <Redirect href={ONBOARDING_ROUTE} />;
+  }
+
+  function handleContinue() {
+    if (!selectedLanguageId) {
+      return;
+    }
+
+    setStoredLanguageId(selectedLanguageId);
+    router.replace(HOME_ROUTE);
   }
 
   return (
@@ -105,7 +123,7 @@ export default function LanguageSelectionScreen() {
         </ScrollView>
 
         <Pressable
-          onPress={() => router.replace(HOME_ROUTE)}
+          onPress={handleContinue}
           disabled={!selectedLanguageId}
           className="mt-[12px] min-h-[48px] flex-row items-center justify-center rounded-[18px] border-b-[5px] border-[#4427C8] bg-[#5F39F7] px-8 active:opacity-90 disabled:opacity-50"
         >
