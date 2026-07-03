@@ -29,7 +29,9 @@ type TabConfig = {
 };
 
 const ACTIVE_CIRCLE_SIZE = 54;
+const TAB_BAR_HEIGHT = 84;
 const TAB_BAR_HORIZONTAL_MARGIN = 14;
+const TAB_BAR_HORIZONTAL_PADDING = 6;
 const TAB_BAR_BOTTOM_GAP = 4;
 
 const tabConfig: Record<string, TabConfig> = {
@@ -80,7 +82,12 @@ export function BottomTabBar({
     () => state.routes.filter((route) => tabConfig[route.name]),
     [state.routes],
   );
-  const itemWidth = visibleRoutes.length > 0 ? barWidth / visibleRoutes.length : 0;
+  const tabContentWidth = Math.max(
+    barWidth - TAB_BAR_HORIZONTAL_PADDING * 2,
+    0,
+  );
+  const itemWidth =
+    visibleRoutes.length > 0 ? tabContentWidth / visibleRoutes.length : 0;
   const activeVisibleIndex = visibleRoutes.findIndex(
     (route) => route.key === state.routes[state.index]?.key,
   );
@@ -91,7 +98,10 @@ export function BottomTabBar({
     }
 
     translateX.value = withTiming(
-      activeVisibleIndex * itemWidth + itemWidth / 2 - ACTIVE_CIRCLE_SIZE / 2,
+      TAB_BAR_HORIZONTAL_PADDING +
+        activeVisibleIndex * itemWidth +
+        itemWidth / 2 -
+        ACTIVE_CIRCLE_SIZE / 2,
       {
         duration: 220,
         easing: Easing.linear,
@@ -202,7 +212,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     left: 0,
     position: "absolute",
-    top: 9,
+    top: (TAB_BAR_HEIGHT - ACTIVE_CIRCLE_SIZE) / 2,
     width: ACTIVE_CIRCLE_SIZE,
   },
   activeFallbackIcon: {
@@ -214,8 +224,8 @@ const styles = StyleSheet.create({
     borderRadius: 30,
     boxShadow: "0 8px 28px rgba(13, 19, 43, 0.08)",
     flexDirection: "row",
-    height: 84,
-    paddingHorizontal: 6,
+    height: TAB_BAR_HEIGHT,
+    paddingHorizontal: TAB_BAR_HORIZONTAL_PADDING,
     position: "relative",
   },
   fallbackIcon: {
