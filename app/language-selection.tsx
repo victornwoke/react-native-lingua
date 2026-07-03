@@ -12,6 +12,8 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { usePostHog } from "posthog-react-native";
+
 import { LanguageCard } from "@/components/language/language-card";
 import { ScreenHeader } from "@/components/screen-header";
 import { SearchBar } from "@/components/search-bar";
@@ -70,6 +72,7 @@ function LanguageSelectionContent({
   setStoredLanguageId,
 }: LanguageSelectionContentProps) {
   const router = useRouter();
+  const posthog = usePostHog();
   const initialLanguageId =
     storedLanguageId &&
     languages.some((language) => language.id === storedLanguageId)
@@ -99,6 +102,11 @@ function LanguageSelectionContent({
       return;
     }
 
+    const selectedLanguage = languages.find((l) => l.id === selectedLanguageId);
+    posthog.capture("language_selected", {
+      language_id: selectedLanguageId,
+      language_name: selectedLanguage?.name ?? selectedLanguageId,
+    });
     setStoredLanguageId(selectedLanguageId);
     router.replace(HOME_ROUTE);
   }
