@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ScrollView, StyleSheet } from "react-native";
+import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ContinueLearningCard } from "@/components/home/continue-learning-card";
@@ -116,44 +116,31 @@ export default function HomeScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <StatusBar style="dark" />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.content}
-      >
-        <HomeHeader
-          greeting={greetingsByLanguageId[selectedLanguage.id] ?? "Hello"}
-          language={selectedLanguage}
-          streakCount={12}
-          userName={getDisplayName(user)}
-        />
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View className="px-6 pb-[98px] pt-4">
+          <HomeHeader
+            greeting={greetingsByLanguageId[selectedLanguage.id] ?? "Hello"}
+            language={selectedLanguage}
+            streakCount={12}
+            userName={getDisplayName(user)}
+          />
 
-        <DailyGoalCard currentXp={earnedXp} goalXp={dailyGoalXp} />
+          <DailyGoalCard currentXp={earnedXp} goalXp={dailyGoalXp} />
 
-        <ContinueLearningCard
-          languageName={selectedLanguage.name}
-          unitLabel={unitLabel}
-          onPress={handleContinueLearning}
-        />
+          <ContinueLearningCard
+            languageName={selectedLanguage.name}
+            unitLabel={unitLabel}
+            onPress={handleContinueLearning}
+          />
 
-        <TodayPlanSection items={planItems} />
+          <TodayPlanSection items={planItems} />
 
-        <NextUpCard onPress={handleStartVideoCall} />
+          <NextUpCard onPress={handleStartVideoCall} />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  content: {
-    paddingBottom: 98,
-    paddingHorizontal: 24,
-    paddingTop: 16,
-  },
-  safeArea: {
-    backgroundColor: "#FFFFFF",
-    flex: 1,
-  },
-});
