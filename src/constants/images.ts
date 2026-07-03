@@ -12,7 +12,12 @@ const socialGoogle = require("../../assets/images/social-google.png") as ImageSo
 const streakFire = require("../../assets/images/streak-fire.png") as ImageSourcePropType;
 const treasure = require("../../assets/images/treasure.png") as ImageSourcePropType;
 
+const aiTeacherAvatar = {
+  uri: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=320&q=80",
+} as ImageSourcePropType;
+
 export const images = {
+  aiTeacherAvatar,
   earth,
   earthLanguageSelection,
   mascotAuth,
