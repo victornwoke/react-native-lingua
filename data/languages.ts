@@ -31,16 +31,16 @@ export const languages: Language[] = [
     dailyGoalMinutes: 10,
     color: "#FF3B30", // Optional color property for Japanese
   },
-  {
-    id: "korean",
-    code: "ko",
-    name: "Korean",
-    nativeName: "한국어",
-    flag: "https://flagcdn.com/w320/kr.png",
-    description: "Learn useful Korean greetings and friendly everyday phrases.",
-    dailyGoalMinutes: 10,
-    color: "#0F4C81",
-  },
+  // {
+  //   id: "korean",
+  //   code: "ko",
+  //   name: "Korean",
+  //   nativeName: "한국어",
+  //   flag: "https://flagcdn.com/w320/kr.png",
+  //   description: "Learn useful Korean greetings and friendly everyday phrases.",
+  //   dailyGoalMinutes: 10,
+  //   color: "#0F4C81",
+  // },
   {
     id: "german",
     code: "de",
@@ -51,14 +51,14 @@ export const languages: Language[] = [
     dailyGoalMinutes: 10,
     color: "#FFCC00", // Optional color property for German
   },
-  {
-    id: "chinese",
-    code: "zh",
-    name: "Chinese",
-    nativeName: "中文",
-    flag: "https://flagcdn.com/w320/cn.png",
-    description: "Practice beginner Chinese phrases for daily conversations.",
-    dailyGoalMinutes: 10,
-    color: "#DE2910",
-  },
+  // {
+  //   id: "chinese",
+  //   code: "zh",
+  //   name: "Chinese",
+  //   nativeName: "中文",
+  //   flag: "https://flagcdn.com/w320/cn.png",
+  //   description: "Practice beginner Chinese phrases for daily conversations.",
+  //   dailyGoalMinutes: 10,
+  //   color: "#DE2910",
+  // },
 ];

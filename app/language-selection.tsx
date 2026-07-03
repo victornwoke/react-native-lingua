@@ -8,12 +8,13 @@ import {
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { LanguageCard } from "@/components/language/language-card";
+import { ScreenHeader } from "@/components/screen-header";
+import { SearchBar } from "@/components/search-bar";
 import { images } from "@/constants/images";
 
 import { languages } from "../data/languages";
@@ -66,37 +67,17 @@ export default function LanguageSelectionScreen() {
       <StatusBar style="dark" />
 
       <View style={styles.screenContent}>
-        <View className="relative h-[34px] flex-row items-center justify-center">
-            <Pressable
-              onPress={() => router.back()}
-              className="absolute left-0 h-[34px] w-[34px] items-start justify-center active:opacity-70"
-            >
-              <Text className="font-poppins-medium text-[31px] leading-[33px] text-[#030B2F]">
-                ‹
-              </Text>
-            </Pressable>
+        <ScreenHeader
+          title="Choose a language"
+          onBackPress={() => router.back()}
+        />
 
-            <Text className="font-poppins-bold text-[17px] leading-[22px] text-[#030B2F]">
-              Choose a language
-            </Text>
-        </View>
-
-        <View className="mt-[14px] min-h-[44px] flex-row items-center rounded-full border border-[#E6E8F0] bg-[#FAFBFF] px-[18px]">
-          <View className="mr-[12px] h-[20px] w-[20px]">
-            <View className="h-[15px] w-[15px] rounded-full border-[2px] border-[#64708D]" />
-            <View className="absolute bottom-[3px] right-[2px] h-[9px] w-[3px] rotate-[-45deg] rounded-full bg-[#64708D]" />
-          </View>
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search languages"
-            placeholderTextColor="#68708C"
-            autoCapitalize="none"
-            autoCorrect={false}
-            clearButtonMode="while-editing"
-            style={styles.searchInput}
-          />
-        </View>
+        <SearchBar
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          placeholder="Search languages"
+          containerClassName="mt-[14px]"
+        />
 
         <Text className="mt-[18px] font-poppins-bold text-[17px] leading-[22px] text-[#030B2F]">
           Popular
@@ -159,14 +140,6 @@ const styles = StyleSheet.create({
   languageListContent: {
     gap: 8,
     paddingBottom: 2,
-  },
-  searchInput: {
-    color: "#030B2F",
-    flex: 1,
-    fontFamily: "Poppins-Medium",
-    fontSize: 13,
-    lineHeight: 18,
-    paddingVertical: 0,
   },
   earthContainer: {
     alignItems: "center",
