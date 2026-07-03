@@ -20,7 +20,7 @@ import { useLanguageStore } from "@/store/language-store";
 
 import { languages } from "../data/languages";
 
-const HOME_ROUTE = "/" as Href;
+const HOME_ROUTE = "/home" as Href;
 const ONBOARDING_ROUTE = "/onboarding" as Href;
 
 const learnerCounts: Record<string, string> = {

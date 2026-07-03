@@ -1,0 +1,254 @@
+import { SymbolView, type SymbolViewProps } from "expo-symbols";
+import { type ComponentProps, useEffect, useMemo, useState } from "react";
+import {
+  AccessibilityRole,
+  LayoutChangeEvent,
+  Pressable,
+  StyleSheet,
+  Text,
+  View,
+} from "react-native";
+import Animated, {
+  Easing,
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
+import { Tabs } from "expo-router/js-tabs";
+
+import { colors } from "@/theme";
+
+type TabBarProps = Parameters<
+  NonNullable<ComponentProps<typeof Tabs>["tabBar"]>
+>[0];
+
+type TabConfig = {
+  label: string;
+  icon: SymbolViewProps["name"];
+  activeIcon: SymbolViewProps["name"];
+};
+
+const ACTIVE_CIRCLE_SIZE = 54;
+const TAB_BAR_HORIZONTAL_MARGIN = 14;
+const TAB_BAR_BOTTOM_GAP = 4;
+
+const tabConfig: Record<string, TabConfig> = {
+  home: {
+    label: "Home",
+    icon: { ios: "house", android: "home", web: "home" },
+    activeIcon: { ios: "house.fill", android: "home", web: "home" },
+  },
+  learn: {
+    label: "Learn",
+    icon: { ios: "book", android: "menu_book", web: "menu_book" },
+    activeIcon: { ios: "book.fill", android: "menu_book", web: "menu_book" },
+  },
+  "ai-teacher": {
+    label: "AI Teacher",
+    icon: { ios: "graduationcap", android: "school", web: "school" },
+    activeIcon: {
+      ios: "graduationcap.fill",
+      android: "school",
+      web: "school",
+    },
+  },
+  chat: {
+    label: "Chat",
+    icon: { ios: "bubble.left", android: "chat_bubble", web: "chat_bubble" },
+    activeIcon: {
+      ios: "bubble.left.fill",
+      android: "chat_bubble",
+      web: "chat_bubble",
+    },
+  },
+  profile: {
+    label: "Profile",
+    icon: { ios: "person", android: "person", web: "person" },
+    activeIcon: { ios: "person.fill", android: "person", web: "person" },
+  },
+};
+
+export function BottomTabBar({
+  descriptors,
+  navigation,
+  state,
+}: TabBarProps) {
+  const [barWidth, setBarWidth] = useState(0);
+  const translateX = useSharedValue(0);
+
+  const visibleRoutes = useMemo(
+    () => state.routes.filter((route) => tabConfig[route.name]),
+    [state.routes],
+  );
+  const itemWidth = visibleRoutes.length > 0 ? barWidth / visibleRoutes.length : 0;
+  const activeVisibleIndex = visibleRoutes.findIndex(
+    (route) => route.key === state.routes[state.index]?.key,
+  );
+
+  useEffect(() => {
+    if (itemWidth <= 0 || activeVisibleIndex < 0) {
+      return;
+    }
+
+    translateX.value = withTiming(
+      activeVisibleIndex * itemWidth + itemWidth / 2 - ACTIVE_CIRCLE_SIZE / 2,
+      {
+        duration: 220,
+        easing: Easing.linear,
+      },
+    );
+  }, [activeVisibleIndex, itemWidth, translateX]);
+
+  const activeCircleStyle = useAnimatedStyle(() => ({
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  function handleLayout(event: LayoutChangeEvent) {
+    setBarWidth(event.nativeEvent.layout.width);
+  }
+
+  return (
+    <View pointerEvents="box-none" style={styles.wrapper}>
+      <View style={styles.bar} onLayout={handleLayout}>
+        {itemWidth > 0 ? (
+          <Animated.View
+            pointerEvents="none"
+            style={[styles.activeCircle, activeCircleStyle]}
+          />
+        ) : null}
+
+        {visibleRoutes.map((route) => {
+          const routeIndex = state.routes.findIndex(
+            (stateRoute) => stateRoute.key === route.key,
+          );
+          const isFocused = routeIndex === state.index;
+          const config = tabConfig[route.name];
+          const options = descriptors[route.key]?.options;
+          const label =
+            typeof options?.tabBarLabel === "string"
+              ? options.tabBarLabel
+              : typeof options?.title === "string"
+                ? options.title
+                : config.label;
+          const accessibilityRole: AccessibilityRole = "button";
+
+          function handlePress() {
+            const event = navigation.emit({
+              canPreventDefault: true,
+              target: route.key,
+              type: "tabPress",
+            });
+
+            if (!isFocused && !event.defaultPrevented) {
+              navigation.navigate(route.name, route.params);
+            }
+          }
+
+          function handleLongPress() {
+            navigation.emit({
+              target: route.key,
+              type: "tabLongPress",
+            });
+          }
+
+          return (
+            <Pressable
+              key={route.key}
+              accessibilityLabel={options?.tabBarAccessibilityLabel}
+              accessibilityRole={accessibilityRole}
+              accessibilityState={isFocused ? { selected: true } : undefined}
+              onLongPress={handleLongPress}
+              onPress={handlePress}
+              style={styles.tabButton}
+            >
+              <View style={styles.iconSlot}>
+                <SymbolView
+                  name={isFocused ? config.activeIcon : config.icon}
+                  size={isFocused ? 26 : 25}
+                  tintColor={isFocused ? "#FFFFFF" : "#8189A7"}
+                  type="monochrome"
+                  fallback={
+                    <Text
+                      style={[
+                        styles.fallbackIcon,
+                        isFocused && styles.activeFallbackIcon,
+                      ]}
+                    >
+                      {config.label.charAt(0)}
+                    </Text>
+                  }
+                />
+              </View>
+
+              {!isFocused ? (
+                <Text numberOfLines={1} style={styles.label}>
+                  {label}
+                </Text>
+              ) : null}
+            </Pressable>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  activeCircle: {
+    alignItems: "center",
+    backgroundColor: colors.brand.purple,
+    borderRadius: ACTIVE_CIRCLE_SIZE / 2,
+    height: ACTIVE_CIRCLE_SIZE,
+    justifyContent: "center",
+    left: 0,
+    position: "absolute",
+    top: 9,
+    width: ACTIVE_CIRCLE_SIZE,
+  },
+  activeFallbackIcon: {
+    color: "#FFFFFF",
+  },
+  bar: {
+    backgroundColor: "#FFFFFF",
+    borderCurve: "continuous",
+    borderRadius: 30,
+    boxShadow: "0 8px 28px rgba(13, 19, 43, 0.08)",
+    flexDirection: "row",
+    height: 84,
+    paddingHorizontal: 6,
+    position: "relative",
+  },
+  fallbackIcon: {
+    color: "#8189A7",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 20,
+    lineHeight: 26,
+  },
+  iconSlot: {
+    alignItems: "center",
+    height: 34,
+    justifyContent: "center",
+  },
+  label: {
+    color: "#69708B",
+    fontFamily: "Poppins-SemiBold",
+    fontSize: 12,
+    lineHeight: 17,
+    maxWidth: 74,
+    textAlign: "center",
+  },
+  tabButton: {
+    alignItems: "center",
+    flex: 1,
+    gap: 3,
+    justifyContent: "center",
+    minWidth: 0,
+  },
+  wrapper: {
+    bottom: TAB_BAR_BOTTOM_GAP,
+    left: 0,
+    paddingHorizontal: TAB_BAR_HORIZONTAL_MARGIN,
+    position: "absolute",
+    right: 0,
+  },
+});
