@@ -1,7 +1,10 @@
 import { useUser } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
+<<<<<<< HEAD
 import { usePostHog } from "posthog-react-native";
+=======
+>>>>>>> 1bc3e27 (refactor: extract home dashboard logic into a custom hook)
 import { ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
