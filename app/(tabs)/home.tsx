@@ -1,7 +1,7 @@
 import { useUser } from "@clerk/expo";
 import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { ScrollView, StyleSheet, View } from "react-native";
+import { ScrollView, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { ContinueLearningCard } from "@/components/home/continue-learning-card";
@@ -141,8 +141,6 @@ export default function HomeScreen() {
         <TodayPlanSection items={planItems} />
 
         <NextUpCard onPress={handleStartVideoCall} />
-
-        <View className="h-[108px]" />
       </ScrollView>
     </SafeAreaView>
   );
@@ -150,8 +148,9 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   content: {
-    paddingHorizontal: 30,
-    paddingTop: 30,
+    paddingBottom: 98,
+    paddingHorizontal: 24,
+    paddingTop: 16,
   },
   safeArea: {
     backgroundColor: "#FFFFFF",
