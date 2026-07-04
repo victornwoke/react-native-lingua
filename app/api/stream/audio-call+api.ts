@@ -1,5 +1,6 @@
 import { languages } from "../../../data/languages";
 import { lessons } from "../../../data/lessons";
+import { RouteError, getVerifiedClerkUserId } from "./_server";
 
 const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
 const STREAM_AUDIO_CALL_ID_PREFIX = "audio";
@@ -35,22 +36,16 @@ export async function POST(request: Request) {
 
     const apiKey = process.env.STREAM_API_KEY;
     const apiSecret = process.env.STREAM_API_SECRET;
-    const clerkSecretKey = process.env.CLERK_SECRET_KEY;
-
-    if (!apiKey || !apiSecret || !clerkSecretKey) {
+    if (!apiKey || !apiSecret) {
       return Response.json(
         {
-          message:
-            "Add STREAM_API_KEY, STREAM_API_SECRET, and CLERK_SECRET_KEY to your .env.",
+          message: "Add STREAM_API_KEY and STREAM_API_SECRET to your .env.",
         },
         { status: 500 },
       );
     }
 
-    const verifiedClerkUserId = await getVerifiedClerkUserId(
-      authorization,
-      clerkSecretKey,
-    );
+    const verifiedClerkUserId = await getVerifiedClerkUserId(authorization);
     const body = (await request.json()) as AudioCallRequestBody;
     const lessonId = getRequiredString(body.lessonId);
     const languageId = getRequiredString(body.languageId);
@@ -119,6 +114,7 @@ export async function POST(request: Request) {
           members: [{ user_id: streamUserId, role: "admin" }],
           custom: {
             audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+            clerkUserId: verifiedClerkUserId,
             conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
             correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
             goals: lesson.goals.map((g) => g.description).join("; "),
@@ -130,6 +126,7 @@ export async function POST(request: Request) {
             phrases: lesson.phrases
               .map((p) => `${p.text} (${p.translation})`)
               .join("; "),
+            streamUserId,
             teacherPersona: lesson.aiTeacherPrompt.persona,
             teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
             vocabulary: lesson.vocabulary
@@ -202,29 +199,6 @@ export async function POST(request: Request) {
   }
 }
 
-type ClerkSessionTokenPayload = {
-  exp?: number;
-  sid?: string;
-  sub?: string;
-};
-
-type ClerkSessionResponse = {
-  status?: string;
-  user?: {
-    id?: string;
-  };
-  user_id?: string;
-};
-
-class RouteError extends Error {
-  constructor(
-    message: string,
-    readonly status: number,
-  ) {
-    super(message);
-  }
-}
-
 class StreamApiError extends Error {}
 
 function getRequiredString(value: unknown) {
@@ -269,102 +243,6 @@ function createStableHash(value: string) {
   }
 
   return Math.abs(hash).toString(36);
-}
-
-async function getVerifiedClerkUserId(
-  authorization: string,
-  clerkSecretKey: string,
-) {
-  const token = authorization.replace(/^Bearer\s+/i, "");
-  const payload = decodeJwtPayload<ClerkSessionTokenPayload>(token);
-
-  if (!payload.sub) {
-    throw new RouteError("Invalid Clerk session.", 401);
-  }
-
-  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-    throw new RouteError("Your session expired. Please sign in again.", 401);
-  }
-
-  if (!payload.sid) {
-    return payload.sub;
-  }
-
-  try {
-    const response = await fetch(
-      `https://api.clerk.com/v1/sessions/${payload.sid}`,
-      {
-        headers: {
-          Authorization: `Bearer ${clerkSecretKey}`,
-        },
-      },
-    );
-
-    if (response.ok) {
-      const session = (await response.json()) as ClerkSessionResponse;
-      const sessionUserId = getClerkSessionUserId(session);
-
-      if (sessionUserId && sessionUserId !== payload.sub) {
-        throw new RouteError("Invalid Clerk session.", 401);
-      }
-
-      if (session.status && !isUsableClerkSessionStatus(session.status)) {
-        throw new RouteError(
-          getInactiveClerkSessionMessage(session.status),
-          401,
-        );
-      }
-    }
-  } catch (error) {
-    if (error instanceof RouteError) {
-      throw error;
-    }
-
-    console.warn(
-      "Clerk session verification fallback triggered for Stream route.",
-      error,
-    );
-  }
-
-  return payload.sub;
-}
-
-function getClerkSessionUserId(session: ClerkSessionResponse) {
-  return session.user_id ?? session.user?.id;
-}
-
-function isUsableClerkSessionStatus(status: string) {
-  return status === "active" || status === "pending";
-}
-
-function getInactiveClerkSessionMessage(status: string) {
-  if (status === "expired") {
-    return "Your session expired. Please sign in again.";
-  }
-
-  return "Your Clerk session is not active. Please sign in again.";
-}
-
-function decodeJwtPayload<T>(token: string) {
-  const [, encodedPayload] = token.split(".");
-
-  if (!encodedPayload) {
-    throw new RouteError("Invalid Clerk session.", 401);
-  }
-
-  try {
-    const normalizedPayload = encodedPayload
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
-    const paddedPayload = normalizedPayload.padEnd(
-      Math.ceil(normalizedPayload.length / 4) * 4,
-      "=",
-    );
-
-    return JSON.parse(atob(paddedPayload)) as T;
-  } catch {
-    throw new RouteError("Invalid Clerk session.", 401);
-  }
 }
 
 async function streamRequest({
