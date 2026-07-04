@@ -7,6 +7,8 @@ import { Platform } from "react-native";
 import { clerkAuthOptions } from "@/lib/clerk-auth";
 import {
     createStreamAudioSession,
+    endAgentActivity,
+    interruptAgentSession,
     startAgentSession,
     stopAgentSession,
     type AgentSession,
@@ -346,6 +348,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     try {
       setErrorMessage(null);
       muteSpeakerOutput(callManagerRef.current, true);
+      setIsMicOn(true);
+      interruptAgentIfActive(agentSessionRef.current, agentTokenRef.current);
       await call.microphone.enable();
 
       if (!wantsToTalkRef.current) {
@@ -372,6 +376,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     const call = callRef.current;
 
     if (!call) {
+      endAgentActivityIfActive(agentSessionRef.current, agentTokenRef.current);
       muteSpeakerOutput(callManagerRef.current, false);
       setIsMicOn(false);
       return;
@@ -382,6 +387,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     } catch (error) {
       console.error("Failed to stop Stream microphone.", error);
     } finally {
+      endAgentActivityIfActive(agentSessionRef.current, agentTokenRef.current);
       muteSpeakerOutput(callManagerRef.current, false);
       setIsMicOn(false);
     }
@@ -578,6 +584,36 @@ function muteSpeakerOutput(
   } catch (error) {
     console.warn("Could not update Stream speaker mute state.", error);
   }
+}
+
+function interruptAgentIfActive(
+  agentSession: AgentSession | null,
+  clerkSessionToken: string | null,
+) {
+  if (!agentSession || !clerkSessionToken) {
+    return;
+  }
+
+  void interruptAgentSession({
+    callId: agentSession.callId,
+    sessionId: agentSession.sessionId,
+    clerkSessionToken,
+  });
+}
+
+function endAgentActivityIfActive(
+  agentSession: AgentSession | null,
+  clerkSessionToken: string | null,
+) {
+  if (!agentSession || !clerkSessionToken) {
+    return;
+  }
+
+  void endAgentActivity({
+    callId: agentSession.callId,
+    sessionId: agentSession.sessionId,
+    clerkSessionToken,
+  });
 }
 
 async function stopSpeakerAudio() {

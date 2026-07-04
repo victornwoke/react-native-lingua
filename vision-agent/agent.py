@@ -4,6 +4,9 @@ from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
+from fastapi import HTTPException, status
+from fastapi.responses import Response
+from google.genai import types as gemini_types
 from vision_agents.core import Agent, AgentLauncher, Runner, User
 from vision_agents.core.instructions import Instructions
 from vision_agents.plugins import gemini, getstream
@@ -152,6 +155,15 @@ async def create_agent(**kwargs: Any) -> Agent:
                 "gemini-3.1-flash-live-preview",
             ),
             api_key=get_gemini_api_key(),
+            config=gemini_types.LiveConnectConfigDict(
+                realtime_input_config=gemini_types.RealtimeInputConfigDict(
+                    automatic_activity_detection=gemini_types.AutomaticActivityDetectionDict(
+                        disabled=True,
+                    ),
+                    activity_handling=gemini_types.ActivityHandling.START_OF_ACTIVITY_INTERRUPTS,
+                    turn_coverage=gemini_types.TurnCoverage.TURN_INCLUDES_ONLY_ACTIVITY,
+                ),
+            ),
             fps=1,
         ),
     )
@@ -230,14 +242,60 @@ def find_custom_data(value: Any) -> Any:
     return None
 
 
-runner = Runner(
-    AgentLauncher(
-        create_agent=create_agent,
-        join_call=join_call,
-        agent_idle_timeout=90.0,
-        max_sessions_per_call=1,
-    ),
+launcher = AgentLauncher(
+    create_agent=create_agent,
+    join_call=join_call,
+    agent_idle_timeout=90.0,
+    max_sessions_per_call=1,
 )
+
+runner = Runner(launcher)
+
+
+@runner.fast_api.post(
+    "/calls/{call_id}/sessions/{session_id}/interrupt",
+    summary="Interrupt an active agent response",
+)
+async def interrupt_session(call_id: str, session_id: str) -> Response:
+    session = launcher.get_session(session_id)
+
+    if session is None or session.call_id != call_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session with id '{session_id}' not found",
+        )
+
+    await session.agent._flow.interrupt()
+    await send_realtime_activity_signal(session.agent, "activity_start")
+
+    return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+@runner.fast_api.post(
+    "/calls/{call_id}/sessions/{session_id}/activity-end",
+    summary="Mark the end of user activity",
+)
+async def end_activity(call_id: str, session_id: str) -> Response:
+    session = launcher.get_session(session_id)
+
+    if session is None or session.call_id != call_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session with id '{session_id}' not found",
+        )
+
+    await send_realtime_activity_signal(session.agent, "activity_end")
+
+    return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+async def send_realtime_activity_signal(agent: Agent, signal: str) -> None:
+    realtime_session = getattr(agent.llm, "_real_session", None)
+
+    if realtime_session is None:
+        return
+
+    await realtime_session.send_realtime_input(**{signal: {}})
 
 
 if __name__ == "__main__":
