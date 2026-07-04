@@ -1,40 +1,29 @@
 import { useMemo } from "react";
 
 import type { TodayPlanItem } from "@/components/home/today-plan-section";
+import {
+  getActiveLessonForLanguage,
+  getSelectedLearningLanguage,
+  getSortedUnitsForLanguage,
+} from "@/lib/lesson-selection";
 import { useLanguageStore } from "@/store/language-store";
-
-import { languages } from "../../data/languages";
-import { lessons } from "../../data/lessons";
-import { units } from "../../data/units";
+import { useLessonProgressStore } from "@/store/lesson-progress-store";
 
 export function useHomeDashboard() {
   const selectedLanguageId = useLanguageStore(
     (state) => state.selectedLanguageId,
   );
+  const activeLessonIdByLanguageId = useLessonProgressStore(
+    (state) => state.activeLessonIdByLanguageId,
+  );
 
   return useMemo(() => {
-    const selectedLanguage =
-      languages.find((language) => language.id === selectedLanguageId) ??
-      languages[0];
-    const languageUnits = units
-      .filter((unit) => unit.languageId === selectedLanguage.id)
-      .sort((firstUnit, secondUnit) => firstUnit.order - secondUnit.order);
-    const languageLessons = lessons
-      .filter((lesson) => lesson.languageId === selectedLanguage.id)
-      .sort((firstLesson, secondLesson) => {
-        const firstUnitOrder =
-          languageUnits.find((unit) => unit.id === firstLesson.unitId)?.order ??
-          0;
-        const secondUnitOrder =
-          languageUnits.find((unit) => unit.id === secondLesson.unitId)
-            ?.order ?? 0;
-
-        return (
-          firstUnitOrder - secondUnitOrder ||
-          firstLesson.order - secondLesson.order
-        );
-      });
-    const currentLesson = languageLessons[1] ?? languageLessons[0];
+    const selectedLanguage = getSelectedLearningLanguage(selectedLanguageId);
+    const languageUnits = getSortedUnitsForLanguage(selectedLanguage.id);
+    const currentLesson = getActiveLessonForLanguage(
+      selectedLanguage.id,
+      activeLessonIdByLanguageId,
+    );
     const currentUnit = languageUnits.find(
       (unit) => unit.id === currentLesson?.unitId,
     );
@@ -75,11 +64,12 @@ export function useHomeDashboard() {
     ];
 
     return {
+      currentLesson,
       dailyGoalXp,
       earnedXp,
       planItems,
       selectedLanguage,
       unitLabel,
     };
-  }, [selectedLanguageId]);
+  }, [activeLessonIdByLanguageId, selectedLanguageId]);
 }

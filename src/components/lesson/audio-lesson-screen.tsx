@@ -17,6 +17,8 @@ import {
   type LiveCaption,
   useStreamAudioCall,
 } from "@/hooks/use-stream-audio-call";
+import { getSortedLessonsForLanguage } from "@/lib/lesson-selection";
+import { getPostHogLanguageCode, posthog } from "@/lib/posthog";
 
 import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
@@ -28,6 +30,9 @@ export function AudioLessonScreen() {
   const { height, width } = useWindowDimensions();
   const params = useLocalSearchParams();
   const autoStartedLessonIdRef = useRef<string | null>(null);
+  const lessonCompletedRef = useRef(false);
+  const lessonStartedAtRef = useRef<number | null>(null);
+  const lastQuestionIndexRef = useRef(0);
 
   const lessonId =
     typeof params.lessonId === "string" ? params.lessonId : undefined;
@@ -74,6 +79,50 @@ export function AudioLessonScreen() {
     autoStartedLessonIdRef.current = lesson.id;
     void startStreamCall();
   }, [lesson, startStreamCall]);
+
+  useEffect(() => {
+    if (!lesson) {
+      return;
+    }
+
+    lessonCompletedRef.current = false;
+    lessonStartedAtRef.current = Date.now();
+    lastQuestionIndexRef.current = 0;
+
+    posthog.capture("lesson_started", {
+      language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
+      lesson_id: lesson.id,
+      lesson_number: getLessonNumber(lesson),
+    });
+
+    return () => {
+      const startedAt = lessonStartedAtRef.current;
+
+      if (!startedAt || lessonCompletedRef.current) {
+        return;
+      }
+
+      posthog.capture("lesson_abandoned", {
+        last_question_index: lastQuestionIndexRef.current,
+        lesson_id: lesson.id,
+        time_into_lesson_seconds: Math.max(
+          0,
+          Math.round((Date.now() - startedAt) / 1000),
+        ),
+      });
+    };
+  }, [lesson]);
+
+  useEffect(() => {
+    if (!lesson) {
+      return;
+    }
+
+    lastQuestionIndexRef.current = getLastQuestionIndex(
+      streamAudioCall.liveCaptions.length,
+      lesson.activities.length,
+    );
+  }, [lesson, streamAudioCall.liveCaptions.length]);
 
   if (!lesson) {
     return (
@@ -215,6 +264,22 @@ export function AudioLessonScreen() {
       </View>
     </SafeAreaView>
   );
+}
+
+function getLessonNumber(lesson: Lesson) {
+  const lessonIndex = getSortedLessonsForLanguage(lesson.languageId).findIndex(
+    (item) => item.id === lesson.id,
+  );
+
+  return lessonIndex >= 0 ? lessonIndex + 1 : lesson.order;
+}
+
+function getLastQuestionIndex(captionCount: number, activityCount: number) {
+  if (activityCount <= 0) {
+    return 0;
+  }
+
+  return Math.min(Math.max(captionCount - 1, 0), activityCount - 1);
 }
 
 type LiveCaptionBubbleProps = {

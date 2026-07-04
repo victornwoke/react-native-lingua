@@ -47,6 +47,17 @@ def require_env(keys: tuple[str, ...]) -> None:
 
 
 def build_teacher_instructions(metadata: LessonMetadata) -> str:
+    if not has_required_lesson_metadata(metadata):
+        return "\n".join(
+            [
+                "You are the Lingua AI Teacher, but the selected lesson metadata did not load.",
+                "Do not guess the learner's language.",
+                "Do not teach Spanish, French, German, Japanese, Thai, Hindi, or any other language.",
+                "Say only: I couldn't load this lesson. Please go back and reopen it.",
+                "Then stop speaking and wait.",
+            ]
+        )
+
     language_name = metadata.get("languageName") or DEFAULT_LANGUAGE_NAME
     language_code = metadata.get("languageCode") or ""
     language_native_name = metadata.get("languageNativeName") or ""
@@ -132,6 +143,12 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
 
 
 def build_greeting(metadata: LessonMetadata) -> str:
+    if not has_required_lesson_metadata(metadata):
+        return (
+            "Speak aloud now. Say exactly: I couldn't load this lesson. "
+            "Please go back and reopen it. Then stop."
+        )
+
     language_name = metadata.get("languageName") or DEFAULT_LANGUAGE_NAME
     language_code = metadata.get("languageCode") or ""
     language_native_name = metadata.get("languageNativeName") or ""
@@ -201,6 +218,15 @@ def build_language_label(
         return f"{language_name} ({language_code})"
 
     return language_name
+
+
+def has_required_lesson_metadata(metadata: LessonMetadata) -> bool:
+    return bool(
+        metadata.get("languageName")
+        and metadata.get("languageId")
+        and metadata.get("lessonId")
+        and metadata.get("lessonTitle")
+    )
 
 
 class LiveSpeechStreamConversation(StreamConversation):
@@ -374,27 +400,46 @@ async def load_lesson_metadata(call: Any) -> LessonMetadata:
 
 
 def find_custom_data(value: Any) -> Any:
-    if isinstance(value, dict):
-        if "custom" in value:
-            return value["custom"]
+    for path in (
+        ("call", "custom"),
+        ("data", "call", "custom"),
+        ("call", "data", "custom"),
+        ("data", "custom"),
+        ("custom",),
+    ):
+        candidate = get_nested_value(value, path)
 
-        for key in ("data", "call"):
-            nested = value.get(key)
-            found = find_custom_data(nested)
+        if looks_like_lesson_custom_data(candidate):
+            return candidate
 
-            if found is not None:
-                return found
-
-        return None
-
-    for attribute in ("custom", "data", "call"):
-        if hasattr(value, attribute):
-            found = find_custom_data(getattr(value, attribute))
-
-            if found is not None:
-                return found
-
+    logger.warning("Stream call metadata did not include lesson custom data.")
     return None
+
+
+def get_nested_value(value: Any, path: tuple[str, ...]) -> Any:
+    current = value
+
+    for key in path:
+        if current is None:
+            return None
+
+        if isinstance(current, dict):
+            current = current.get(key)
+            continue
+
+        current = getattr(current, key, None)
+
+    return current
+
+
+def looks_like_lesson_custom_data(value: Any) -> bool:
+    if not isinstance(value, dict):
+        return False
+
+    return all(
+        isinstance(value.get(key), str) and value[key].strip()
+        for key in ("languageId", "languageName", "lessonId", "lessonTitle")
+    )
 
 
 launcher = AgentLauncher(

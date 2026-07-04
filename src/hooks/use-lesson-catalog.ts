@@ -2,12 +2,15 @@ import { useMemo } from "react";
 import type { ImageSourcePropType } from "react-native";
 
 import { images } from "@/constants/images";
+import {
+  getActiveLessonForLanguage,
+  getSelectedLearningLanguage,
+  getSortedLessonsForLanguage,
+  getSortedUnitsForLanguage,
+} from "@/lib/lesson-selection";
 import { useLanguageStore } from "@/store/language-store";
 import { useLessonProgressStore } from "@/store/lesson-progress-store";
 
-import { languages } from "../../data/languages";
-import { lessons } from "../../data/lessons";
-import { units } from "../../data/units";
 import type { Lesson } from "../../types/learning";
 
 export type LessonStatus = "completed" | "current" | "upcoming";
@@ -28,33 +31,13 @@ export function useLessonCatalog() {
   );
 
   return useMemo(() => {
-    const selectedLanguage =
-      languages.find((language) => language.id === selectedLanguageId) ??
-      languages[0];
-    const languageUnits = units
-      .filter((unit) => unit.languageId === selectedLanguage.id)
-      .sort((firstUnit, secondUnit) => firstUnit.order - secondUnit.order);
-    const languageLessons = lessons
-      .filter((lesson) => lesson.languageId === selectedLanguage.id)
-      .sort((firstLesson, secondLesson) => {
-        const firstUnitOrder =
-          languageUnits.find((unit) => unit.id === firstLesson.unitId)?.order ??
-          0;
-        const secondUnitOrder =
-          languageUnits.find((unit) => unit.id === secondLesson.unitId)
-            ?.order ?? 0;
-
-        return (
-          firstUnitOrder - secondUnitOrder ||
-          firstLesson.order - secondLesson.order
-        );
-      });
-    const savedActiveLessonId =
-      activeLessonIdByLanguageId[selectedLanguage.id];
-    const activeLesson =
-      languageLessons.find((lesson) => lesson.id === savedActiveLessonId) ??
-      languageLessons[2] ??
-      languageLessons[0];
+    const selectedLanguage = getSelectedLearningLanguage(selectedLanguageId);
+    const languageUnits = getSortedUnitsForLanguage(selectedLanguage.id);
+    const languageLessons = getSortedLessonsForLanguage(selectedLanguage.id);
+    const activeLesson = getActiveLessonForLanguage(
+      selectedLanguage.id,
+      activeLessonIdByLanguageId,
+    );
     const activeLessonIndex = Math.max(
       languageLessons.findIndex((lesson) => lesson.id === activeLesson?.id),
       0,
