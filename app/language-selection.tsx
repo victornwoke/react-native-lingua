@@ -3,12 +3,12 @@ import { type Href, Redirect, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useMemo, useState } from "react";
 import {
-  Image,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -18,6 +18,7 @@ import { LanguageCard } from "@/components/language/language-card";
 import { ScreenHeader } from "@/components/screen-header";
 import { SearchBar } from "@/components/search-bar";
 import { images } from "@/constants/images";
+import { clerkAuthOptions } from "@/lib/clerk-auth";
 import { useLanguageStore } from "@/store/language-store";
 
 import { languages } from "../data/languages";
@@ -35,8 +36,10 @@ const learnerCounts: Record<string, string> = {
 };
 
 export default function LanguageSelectionScreen() {
-  const { isLoaded, isSignedIn } = useAuth();
-  const storedLanguageId = useLanguageStore((state) => state.selectedLanguageId);
+  const { isLoaded, isSignedIn } = useAuth(clerkAuthOptions);
+  const storedLanguageId = useLanguageStore(
+    (state) => state.selectedLanguageId,
+  );
   const setStoredLanguageId = useLanguageStore(
     (state) => state.setSelectedLanguageId,
   );
@@ -82,6 +85,12 @@ function LanguageSelectionContent({
   const [selectedLanguageId, setSelectedLanguageId] =
     useState(initialLanguageId);
 
+  function handleBackPress() {
+    if (router.canGoBack()) {
+      router.back();
+    }
+  }
+
   const filteredLanguages = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
@@ -116,10 +125,7 @@ function LanguageSelectionContent({
       <StatusBar style="dark" />
 
       <View style={styles.screenContent}>
-        <ScreenHeader
-          title="Choose a language"
-          onBackPress={() => router.back()}
-        />
+        <ScreenHeader title="Choose a language" onBackPress={handleBackPress} />
 
         <SearchBar
           value={searchQuery}

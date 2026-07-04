@@ -1,0 +1,19 @@
+[project]
+name = "lingua-vision-agent"
+version = "0.1.0"
+description = "Voice-only AI language teacher for the React Native Lingua Expo app."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "python-dotenv>=1.0.1",
+  "vision-agents[getstream,openai]>=0.6.6",
+]
+
+[dependency-groups]
+dev = [
+  "pyright>=1.1.407",
+]
+
+[tool.pyright]
+pythonVersion = "3.11"
+typeCheckingMode = "basic"

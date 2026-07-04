@@ -8,7 +8,7 @@
     "scheme": "duolingoclone",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "bundleIdentifier": "com.anonymous.Duolingo-clone"
     },
     "android": {
@@ -18,7 +18,8 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "package": "com.anonymous.Duolingoclone"
     },
     "web": {
       "output": "static",
@@ -28,6 +29,22 @@
       "expo-router",
       "expo-secure-store",
       "@clerk/expo",
+      "@stream-io/video-react-native-sdk",
+      [
+        "@config-plugins/react-native-webrtc",
+        {
+          "cameraPermission": "$(PRODUCT_NAME) uses camera access only when a video lesson requires it.",
+          "microphonePermission": "$(PRODUCT_NAME) uses microphone access for live audio teacher lessons."
+        }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 24
+          }
+        }
+      ],
       [
         "expo-splash-screen",
         {

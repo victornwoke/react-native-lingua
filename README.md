@@ -16,6 +16,12 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npx expo start
    ```
 
+## Environment Variables
+
+Copy `.env.example` to `.env` and fill in your local service keys.
+
+For Clerk, `pk_test_...` keys are expected during local development and will show a development-key warning in the simulator. Use `pk_live_...` keys only for production builds. Secret keys such as `CLERK_SECRET_KEY` and `STREAM_API_SECRET` must stay server-side and should never be imported into mobile app code.
+
 In the output, you'll find options to open the app in a
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)

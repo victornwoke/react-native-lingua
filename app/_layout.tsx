@@ -5,6 +5,7 @@ import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect, useRef } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PostHogProvider } from "posthog-react-native";
 
 import { colors, useAppFonts } from "@/theme";
@@ -55,23 +56,25 @@ export default function RootLayout() {
   }
 
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <PostHogProvider
-        client={posthog}
-        autocapture={{
-          captureScreens: false,
-          captureTouches: true,
-          propsToCapture: ["testID"],
-          maxElementsCaptured: 20,
-        }}
-      >
-        <Stack
-          screenOptions={{
-            contentStyle: { backgroundColor: colors.neutral.background },
-            headerShown: false,
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <PostHogProvider
+          client={posthog}
+          autocapture={{
+            captureScreens: false,
+            captureTouches: true,
+            propsToCapture: ["testID"],
+            maxElementsCaptured: 20,
           }}
-        />
-      </PostHogProvider>
-    </ClerkProvider>
+        >
+          <Stack
+            screenOptions={{
+              contentStyle: { backgroundColor: colors.neutral.background },
+              headerShown: false,
+            }}
+          />
+        </PostHogProvider>
+      </ClerkProvider>
+    </GestureHandlerRootView>
   );
 }

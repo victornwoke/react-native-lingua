@@ -3,13 +3,14 @@ import { type Href, Redirect } from "expo-router";
 import { Tabs } from "expo-router/js-tabs";
 
 import { BottomTabBar } from "@/components/navigation/bottom-tab-bar";
+import { clerkAuthOptions } from "@/lib/clerk-auth";
 import { useLanguageStore, useSelectedLanguage } from "@/store/language-store";
 
 const ONBOARDING_ROUTE = "/onboarding" as Href;
 const LANGUAGE_SELECTION_ROUTE = "/language-selection" as Href;
 
 export default function TabLayout() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth(clerkAuthOptions);
   const hasHydrated = useLanguageStore((state) => state.hasHydrated);
   const selectedLanguage = useSelectedLanguage();
 

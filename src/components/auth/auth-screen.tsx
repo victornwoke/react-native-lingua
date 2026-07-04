@@ -1,39 +1,33 @@
-import {
-  useAuth,
-  useSignIn,
-  useSignUp,
-  useSSO,
-} from "@clerk/expo";
+import { useAuth, useClerk, useSignIn, useSignUp, useSSO } from "@clerk/expo";
+import * as AuthSession from "expo-auth-session";
 import { Image as ExpoImage } from "expo-image";
 import { type Href, Link, useRouter } from "expo-router";
-import * as WebBrowser from "expo-web-browser";
 import { usePostHog } from "posthog-react-native";
 import type { RefObject } from "react";
 import { useEffect, useRef, useState } from "react";
 import {
-  Alert,
-  Image,
-  Keyboard,
-  KeyboardAvoidingView,
-  type LayoutChangeEvent,
-  Pressable,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TextInput,
-  useWindowDimensions,
-  View,
+    Alert,
+    Image,
+    Keyboard,
+    KeyboardAvoidingView,
+    type LayoutChangeEvent,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    useWindowDimensions,
+    View,
 } from "react-native";
 import {
-  SafeAreaView,
-  useSafeAreaInsets,
+    SafeAreaView,
+    useSafeAreaInsets,
 } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
+import { clerkAuthOptions } from "@/lib/clerk-auth";
 
 import { VerificationModal } from "./verification-modal";
-
-WebBrowser.maybeCompleteAuthSession();
 
 type AuthMode = "sign-up" | "sign-in";
 
@@ -85,8 +79,12 @@ const socialOptions = [
 ] as const;
 
 const HOME_ROUTE = "/" as Href;
+const SSO_CALLBACK_URL = AuthSession.makeRedirectUri({
+  path: "sso-callback",
+});
 const unsupportedSocialStrategyMessage =
   "does not match one of the allowed values for parameter strategy";
+const alreadySignedInMessage = "already signed in";
 
 function getErrorMessage(error: unknown, fallback: string) {
   if (!error) {
@@ -131,9 +129,16 @@ function isUnsupportedSocialStrategyError(error: unknown) {
   return getErrorMessage(error, "").includes(unsupportedSocialStrategyMessage);
 }
 
+function isAlreadySignedInError(error: unknown) {
+  return getErrorMessage(error, "")
+    .toLowerCase()
+    .includes(alreadySignedInMessage);
+}
+
 export function AuthScreen({ mode }: AuthScreenProps) {
   const router = useRouter();
-  const { isLoaded, isSignedIn } = useAuth();
+  const { setActive } = useClerk();
+  const { isLoaded, isSignedIn } = useAuth(clerkAuthOptions);
   const { signIn, fetchStatus: signInFetchStatus } = useSignIn();
   const { signUp, fetchStatus: signUpFetchStatus } = useSignUp();
   const { startSSOFlow } = useSSO();
@@ -167,6 +172,15 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   const contentMinHeight = isKeyboardVisible
     ? height - insets.top - insets.bottom
     : Math.max(height - insets.top - insets.bottom, 620);
+
+  function handleBackPress() {
+    if (router.canGoBack()) {
+      router.back();
+      return;
+    }
+
+    router.replace("/onboarding");
+  }
 
   function isEmailValid(value: string) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
@@ -246,10 +260,13 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
       setIsVerificationVisible(true);
     } catch (error) {
-      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
-        auth_mode: mode,
-        step: "submit",
-      });
+      posthog.captureException(
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          auth_mode: mode,
+          step: "submit",
+        },
+      );
       showAuthError(
         mode === "sign-up" ? "Sign up failed" : "Sign in failed",
         error,
@@ -285,6 +302,14 @@ export function AuthScreen({ mode }: AuthScreenProps) {
           return false;
         }
 
+        const createdSessionId = signUp.createdSessionId;
+
+        if (!createdSessionId) {
+          throw new Error("Clerk did not create a session for this sign up.");
+        }
+
+        await setActive({ session: createdSessionId });
+
         const newUserId = signUp.createdUserId;
         if (newUserId) {
           posthog.identify(newUserId, {
@@ -316,12 +341,13 @@ export function AuthScreen({ mode }: AuthScreenProps) {
           return false;
         }
 
-        const userId = signIn.createdSessionId;
-        if (userId) {
-          posthog.identify(userId, {
-            $set: { email: email.trim() },
-          });
+        const createdSessionId = signIn.createdSessionId;
+
+        if (!createdSessionId) {
+          throw new Error("Clerk did not create a session for this sign in.");
         }
+
+        await setActive({ session: createdSessionId });
         posthog.capture("sign_in_completed", { method: "email" });
       }
 
@@ -329,10 +355,13 @@ export function AuthScreen({ mode }: AuthScreenProps) {
       router.replace(HOME_ROUTE);
       return true;
     } catch (error) {
-      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
-        auth_mode: mode,
-        step: "verify",
-      });
+      posthog.captureException(
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          auth_mode: mode,
+          step: "verify",
+        },
+      );
       showAuthError(
         "Verification failed",
         error,
@@ -369,22 +398,43 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   }
 
   async function handleSocialSignIn(option: SocialOption) {
+    if (isSignedIn) {
+      router.replace(HOME_ROUTE);
+      return;
+    }
+
     setIsSocialSubmitting(true);
-    posthog.capture("social_auth_tapped", { provider: option.id, auth_mode: mode });
+    posthog.capture("social_auth_tapped", {
+      provider: option.id,
+      auth_mode: mode,
+    });
 
     try {
       const { createdSessionId, setActive } = await startSSOFlow({
         strategy: option.strategy,
+        redirectUrl: SSO_CALLBACK_URL,
       });
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
-        posthog.capture(mode === "sign-up" ? "sign_up_completed" : "sign_in_completed", {
-          method: option.id,
-        });
+        posthog.capture(
+          mode === "sign-up" ? "sign_up_completed" : "sign_in_completed",
+          {
+            method: option.id,
+          },
+        );
         router.replace(HOME_ROUTE);
       }
     } catch (error) {
+      if (isAlreadySignedInError(error)) {
+        posthog.capture("social_auth_already_signed_in", {
+          provider: option.id,
+          auth_mode: mode,
+        });
+        router.replace(HOME_ROUTE);
+        return;
+      }
+
       if (isUnsupportedSocialStrategyError(error)) {
         Alert.alert(
           `${option.label} is not enabled`,
@@ -393,10 +443,13 @@ export function AuthScreen({ mode }: AuthScreenProps) {
         return;
       }
 
-      posthog.captureException(error instanceof Error ? error : new Error(String(error)), {
-        provider: option.id,
-        auth_mode: mode,
-      });
+      posthog.captureException(
+        error instanceof Error ? error : new Error(String(error)),
+        {
+          provider: option.id,
+          auth_mode: mode,
+        },
+      );
       showAuthError(
         "Social sign in failed",
         error,
@@ -509,7 +562,7 @@ export function AuthScreen({ mode }: AuthScreenProps) {
             <Pressable
               accessibilityLabel="Go back"
               hitSlop={12}
-              onPress={() => router.back()}
+              onPress={handleBackPress}
               className="h-[34px] w-[34px] items-start justify-center"
             >
               <Text className="font-poppins-medium text-[32px] leading-[32px] text-[#020A2F]">

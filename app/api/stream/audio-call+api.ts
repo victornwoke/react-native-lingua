@@ -1,0 +1,467 @@
+import { languages } from "../../../data/languages";
+import { lessons } from "../../../data/lessons";
+
+const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
+const STREAM_AUDIO_CALL_ID_PREFIX = "audio";
+const STREAM_MAX_ID_LENGTH = 64;
+const STREAM_CALL_TYPE = "default";
+const TOKEN_VALIDITY_SECONDS = 60 * 60;
+
+type AudioCallRequestBody = {
+  clerkUserId?: unknown;
+  languageId?: unknown;
+  lessonId?: unknown;
+  userImageUrl?: unknown;
+  userName?: unknown;
+};
+
+type StreamRequestOptions = {
+  body: Record<string, unknown>;
+  method: "POST";
+  path: string;
+  serverToken: string;
+};
+
+export async function POST(request: Request) {
+  try {
+    const authorization = request.headers.get("Authorization");
+
+    if (!authorization?.startsWith("Bearer ")) {
+      return Response.json(
+        { message: "Sign in before starting an audio lesson." },
+        { status: 401 },
+      );
+    }
+
+    const apiKey = process.env.STREAM_API_KEY;
+    const apiSecret = process.env.STREAM_API_SECRET;
+    const clerkSecretKey = process.env.CLERK_SECRET_KEY;
+
+    if (!apiKey || !apiSecret || !clerkSecretKey) {
+      return Response.json(
+        {
+          message:
+            "Add STREAM_API_KEY, STREAM_API_SECRET, and CLERK_SECRET_KEY to your .env.",
+        },
+        { status: 500 },
+      );
+    }
+
+    const verifiedClerkUserId = await getVerifiedClerkUserId(
+      authorization,
+      clerkSecretKey,
+    );
+    const body = (await request.json()) as AudioCallRequestBody;
+    const lessonId = getRequiredString(body.lessonId);
+    const languageId = getRequiredString(body.languageId);
+    const requestedClerkUserId = getOptionalString(body.clerkUserId);
+
+    if (!lessonId || !languageId) {
+      return Response.json(
+        { message: "lessonId and languageId are required." },
+        { status: 400 },
+      );
+    }
+
+    if (requestedClerkUserId && requestedClerkUserId !== verifiedClerkUserId) {
+      return Response.json(
+        { message: "You can only start lessons for your own account." },
+        { status: 403 },
+      );
+    }
+
+    const lesson = lessons.find((item) => item.id === lessonId);
+    const language = languages.find((item) => item.id === languageId);
+
+    if (!lesson || !language || lesson.languageId !== language.id) {
+      return Response.json(
+        { message: "The selected lesson does not match this language." },
+        { status: 400 },
+      );
+    }
+
+    const streamUserId = toStreamId(verifiedClerkUserId);
+    const userName =
+      getOptionalString(body.userName) ?? `${language.name} learner`;
+    const userImageUrl = getOptionalString(body.userImageUrl);
+    const serverToken = await createStreamToken({ server: true }, apiSecret);
+
+    await streamRequest({
+      method: "POST",
+      path: "/api/v2/users",
+      serverToken,
+      body: {
+        users: {
+          [streamUserId]: {
+            id: streamUserId,
+            image: userImageUrl,
+            name: userName,
+            role: "user",
+            custom: {
+              clerkUserId: verifiedClerkUserId,
+              selectedLanguageId: language.id,
+            },
+          },
+        },
+      },
+    });
+
+    const callId = createStreamAudioCallId();
+
+    await streamRequest({
+      method: "POST",
+      path: `/api/v2/video/call/${STREAM_CALL_TYPE}/${callId}`,
+      serverToken,
+      body: {
+        video: true,
+        data: {
+          created_by_id: streamUserId,
+          members: [{ user_id: streamUserId, role: "admin" }],
+          custom: {
+            audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+            languageId: language.id,
+            languageName: language.name,
+            lessonId: lesson.id,
+            lessonTitle: lesson.title,
+            teacherPersona: lesson.aiTeacherPrompt.persona,
+          },
+          settings_override: {
+            audio: {
+              default_device: "speaker",
+              mic_default_on: true,
+              speaker_default_on: true,
+            },
+            video: {
+              camera_default_on: false,
+              enabled: true,
+              target_resolution: { height: 480, width: 640 },
+            },
+          },
+          video: true,
+        },
+      },
+    });
+
+    const userToken = await createStreamToken(
+      {
+        exp: Math.floor(Date.now() / 1000) + TOKEN_VALIDITY_SECONDS,
+        user_id: streamUserId,
+      },
+      apiSecret,
+    );
+
+    return Response.json({
+      apiKey,
+      callId,
+      callType: STREAM_CALL_TYPE,
+      languageName: language.name,
+      lessonTitle: lesson.title,
+      token: userToken,
+      user: {
+        id: streamUserId,
+        image: userImageUrl,
+        name: userName,
+      },
+    });
+  } catch (error) {
+    if (error instanceof RouteError) {
+      return Response.json(
+        { message: error.message },
+        { status: error.status },
+      );
+    }
+
+    console.error("Failed to create Stream audio call.", error);
+
+    if (error instanceof StreamApiError) {
+      return Response.json(
+        {
+          message: error.message,
+        },
+        { status: 502 },
+      );
+    }
+
+    return Response.json(
+      {
+        message: "Could not start the Stream audio lesson.",
+      },
+      { status: 500 },
+    );
+  }
+}
+
+type ClerkSessionTokenPayload = {
+  exp?: number;
+  sid?: string;
+  sub?: string;
+};
+
+type ClerkSessionResponse = {
+  status?: string;
+  user?: {
+    id?: string;
+  };
+  user_id?: string;
+};
+
+class RouteError extends Error {
+  constructor(
+    message: string,
+    readonly status: number,
+  ) {
+    super(message);
+  }
+}
+
+class StreamApiError extends Error {}
+
+function getRequiredString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function getOptionalString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+function toStreamId(value: string) {
+  const sanitizedValue = value.replace(/[^A-Za-z0-9@_-]/g, "_");
+
+  if (sanitizedValue.length <= STREAM_MAX_ID_LENGTH) {
+    return sanitizedValue;
+  }
+
+  const hashSuffix = createStableHash(sanitizedValue);
+  const prefixLength = STREAM_MAX_ID_LENGTH - hashSuffix.length - 1;
+
+  return `${sanitizedValue.slice(0, prefixLength)}_${hashSuffix}`;
+}
+
+function createStreamAudioCallId() {
+  const timestampId = Date.now().toString(36);
+  const randomId = crypto.randomUUID().replace(/-/g, "").slice(0, 12);
+  const callId = [STREAM_AUDIO_CALL_ID_PREFIX, timestampId, randomId].join("-");
+
+  return callId.slice(0, STREAM_MAX_ID_LENGTH);
+}
+
+function createStableHash(value: string) {
+  let hash = 0;
+
+  for (let index = 0; index < value.length; index += 1) {
+    hash = Math.imul(31, hash) + value.charCodeAt(index);
+    hash |= 0;
+  }
+
+  return Math.abs(hash).toString(36);
+}
+
+async function getVerifiedClerkUserId(
+  authorization: string,
+  clerkSecretKey: string,
+) {
+  const token = authorization.replace(/^Bearer\s+/i, "");
+  const payload = decodeJwtPayload<ClerkSessionTokenPayload>(token);
+
+  if (!payload.sub) {
+    throw new RouteError("Invalid Clerk session.", 401);
+  }
+
+  if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
+    throw new RouteError("Your session expired. Please sign in again.", 401);
+  }
+
+  if (!payload.sid) {
+    return payload.sub;
+  }
+
+  try {
+    const response = await fetch(
+      `https://api.clerk.com/v1/sessions/${payload.sid}`,
+      {
+        headers: {
+          Authorization: `Bearer ${clerkSecretKey}`,
+        },
+      },
+    );
+
+    if (response.ok) {
+      const session = (await response.json()) as ClerkSessionResponse;
+      const sessionUserId = getClerkSessionUserId(session);
+
+      if (sessionUserId && sessionUserId !== payload.sub) {
+        throw new RouteError("Invalid Clerk session.", 401);
+      }
+
+      if (
+        session.status &&
+        !isUsableClerkSessionStatus(session.status)
+      ) {
+        throw new RouteError(
+          getInactiveClerkSessionMessage(session.status),
+          401,
+        );
+      }
+    }
+  } catch (error) {
+    if (error instanceof RouteError) {
+      throw error;
+    }
+
+    console.warn(
+      "Clerk session verification fallback triggered for Stream route.",
+      error,
+    );
+  }
+
+  return payload.sub;
+}
+
+function getClerkSessionUserId(session: ClerkSessionResponse) {
+  return session.user_id ?? session.user?.id;
+}
+
+function isUsableClerkSessionStatus(status: string) {
+  return status === "active" || status === "pending";
+}
+
+function getInactiveClerkSessionMessage(status: string) {
+  if (status === "expired") {
+    return "Your session expired. Please sign in again.";
+  }
+
+  return "Your Clerk session is not active. Please sign in again.";
+}
+
+function decodeJwtPayload<T>(token: string) {
+  const [, encodedPayload] = token.split(".");
+
+  if (!encodedPayload) {
+    throw new RouteError("Invalid Clerk session.", 401);
+  }
+
+  try {
+    const normalizedPayload = encodedPayload
+      .replace(/-/g, "+")
+      .replace(/_/g, "/");
+    const paddedPayload = normalizedPayload.padEnd(
+      Math.ceil(normalizedPayload.length / 4) * 4,
+      "=",
+    );
+
+    return JSON.parse(atob(paddedPayload)) as T;
+  } catch {
+    throw new RouteError("Invalid Clerk session.", 401);
+  }
+}
+
+async function streamRequest({
+  body,
+  method,
+  path,
+  serverToken,
+}: StreamRequestOptions) {
+  const apiKey = process.env.STREAM_API_KEY;
+  const url = `${STREAM_API_BASE_URL}${path}?api_key=${apiKey}`;
+  const response = await fetch(url, {
+    method,
+    headers: {
+      Authorization: serverToken,
+      "Content-Type": "application/json",
+      "stream-auth-type": "jwt",
+    },
+    body: JSON.stringify(body),
+  });
+
+  if (!response.ok) {
+    const errorBody = await readStreamError(response);
+    const message = getStreamErrorMessage(errorBody);
+
+    throw new StreamApiError(
+      message
+        ? `Stream request failed with ${response.status}: ${message}`
+        : `Stream request failed with ${response.status}.`,
+    );
+  }
+
+  return response.json();
+}
+
+async function readStreamError(response: Response) {
+  const contentType = response.headers.get("Content-Type");
+
+  if (contentType?.includes("application/json")) {
+    return response.json().catch(() => undefined);
+  }
+
+  return response.text().catch(() => undefined);
+}
+
+function getStreamErrorMessage(errorBody: unknown) {
+  if (typeof errorBody === "string") {
+    return errorBody.trim() || undefined;
+  }
+
+  if (!errorBody || typeof errorBody !== "object") {
+    return undefined;
+  }
+
+  const message = "message" in errorBody ? errorBody.message : undefined;
+
+  if (typeof message === "string" && message.trim().length > 0) {
+    return message.trim();
+  }
+
+  return JSON.stringify(errorBody);
+}
+
+async function createStreamToken(
+  payload: Record<string, unknown>,
+  secret: string,
+) {
+  const issuedAt = Math.floor((Date.now() - 1000) / 1000);
+  const normalizedPayload = {
+    iat: issuedAt,
+    ...payload,
+  };
+  const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
+  const tokenPayload = base64UrlEncode(JSON.stringify(normalizedPayload));
+  const signatureInput = `${header}.${tokenPayload}`;
+  const signature = await signHmacSha256(signatureInput, secret);
+
+  return `${signatureInput}.${base64UrlEncode(signature)}`;
+}
+
+async function signHmacSha256(value: string, secret: string) {
+  const encoder = new TextEncoder();
+  const key = await crypto.subtle.importKey(
+    "raw",
+    encoder.encode(secret),
+    { hash: "SHA-256", name: "HMAC" },
+    false,
+    ["sign"],
+  );
+
+  return crypto.subtle.sign("HMAC", key, encoder.encode(value));
+}
+
+function base64UrlEncode(value: string | ArrayBuffer) {
+  const bytes =
+    typeof value === "string"
+      ? new TextEncoder().encode(value)
+      : new Uint8Array(value);
+  let binary = "";
+
+  bytes.forEach((byte) => {
+    binary += String.fromCharCode(byte);
+  });
+
+  return btoa(binary)
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/g, "");
+}

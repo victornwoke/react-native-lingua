@@ -1,8 +1,9 @@
 import { type Href, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
+  ActivityIndicator,
   Image,
   Pressable,
   ScrollView,
@@ -13,6 +14,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
+import { useStreamAudioCall } from "@/hooks/use-stream-audio-call";
 
 import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
@@ -23,15 +25,20 @@ export function AudioLessonScreen() {
   const router = useRouter();
   const { height, width } = useWindowDimensions();
   const params = useLocalSearchParams();
-  const [isMicOn, setIsMicOn] = useState(true);
   const [showSubtitles, setShowSubtitles] = useState(true);
-  const [, setEndedLessonId] = useState<string | undefined>();
+  const autoStartedLessonIdRef = useRef<string | null>(null);
 
   const lessonId =
     typeof params.lessonId === "string" ? params.lessonId : undefined;
   const lesson = lessons.find((item) => item.id === lessonId);
+  const streamAudioCall = useStreamAudioCall(lesson);
+  const startStreamCall = streamAudioCall.startCall;
   const sceneHeight = Math.max(Math.min(height - 330, 470), 392);
   const mascotSize = Math.min(width - 76, sceneHeight - 104);
+  const statusColor = getStatusColor(streamAudioCall.status);
+  const isConnecting =
+    streamAudioCall.status === "loading" ||
+    streamAudioCall.status === "connecting";
 
   function handleBackPress() {
     if (router.canGoBack()) {
@@ -41,6 +48,20 @@ export function AudioLessonScreen() {
 
     router.push(LEARN_ROUTE);
   }
+
+  async function handleEndCallPress() {
+    await streamAudioCall.endCall();
+    handleBackPress();
+  }
+
+  useEffect(() => {
+    if (!lesson || autoStartedLessonIdRef.current === lesson.id) {
+      return;
+    }
+
+    autoStartedLessonIdRef.current = lesson.id;
+    void startStreamCall();
+  }, [lesson, startStreamCall]);
 
   if (!lesson) {
     return (
@@ -91,13 +112,17 @@ export function AudioLessonScreen() {
             <View className="flex-row items-center gap-[7px]">
               <View className="h-[32px] flex-row items-center justify-center rounded-full bg-[#FAFAFE] px-[7px]">
                 <SymbolView
-                  name={{ ios: "video.fill", android: "videocam", web: "videocam" }}
+                  name={{
+                    ios: "headphones",
+                    android: "headphones",
+                    web: "headphones",
+                  }}
                   size={13}
                   tintColor="#050A28"
                   type="monochrome"
                 />
                 <Text className="ml-[3px] font-poppins-bold text-[13px] leading-[17px] text-[#050A28]">
-                  {lesson.estimatedMinutes}
+                  Audio
                 </Text>
               </View>
               <HeaderAction
@@ -111,10 +136,26 @@ export function AudioLessonScreen() {
             </View>
           </View>
 
-          <View className="mt-[2px] flex-row items-center pl-[16px]">
-            <View className="h-[8px] w-[8px] rounded-full bg-[#20D31C]" />
-            <Text className="ml-[6px] font-poppins-semibold text-[13px] leading-[18px] text-[#21C16B]">
-              Online
+          <View className="mt-[2px] flex-row items-center justify-between pl-[16px] pr-[10px]">
+            <View className="flex-row items-center">
+              <View
+                className={`h-[8px] w-[8px] rounded-full ${getStatusDotClass(
+                  streamAudioCall.status,
+                )}`}
+              />
+              <Text
+                numberOfLines={1}
+                className="ml-[6px] max-w-[190px] font-poppins-semibold text-[13px] leading-[18px]"
+                style={{ color: statusColor }}
+              >
+                {streamAudioCall.statusLabel}
+              </Text>
+            </View>
+            <Text
+              numberOfLines={1}
+              className="ml-[10px] max-w-[178px] text-right font-poppins-semibold text-[12px] leading-[17px] text-[#737B98]"
+            >
+              {streamAudioCall.displayName}
             </Text>
           </View>
 
@@ -129,6 +170,7 @@ export function AudioLessonScreen() {
               style={{
                 height: mascotSize,
                 marginTop: 18,
+                opacity: isConnecting ? 0.38 : 1,
                 width: mascotSize,
               }}
             />
@@ -139,16 +181,33 @@ export function AudioLessonScreen() {
                 boxShadow: "0 8px 18px rgba(13, 19, 43, 0.08)",
               }}
             >
-              <Text className="font-poppins-bold text-[17px] leading-[22px] text-[#050A28]">
-                {teacherReply}
-              </Text>
+              <View className="flex-row items-center">
+                {isConnecting ? (
+                  <ActivityIndicator color="#A693F5" size="small" />
+                ) : null}
+                <Text
+                  numberOfLines={1}
+                  className={`font-poppins-bold text-[17px] leading-[22px] text-[#050A28] ${
+                    isConnecting ? "ml-[11px]" : ""
+                  }`}
+                >
+                  {getTeacherCardTitle(
+                    lesson,
+                    streamAudioCall.status,
+                    teacherReply,
+                  )}
+                </Text>
+              </View>
               <Text
                 numberOfLines={1}
                 className="mt-[3px] pr-[42px] font-poppins-semibold text-[13px] leading-[18px] text-[#8B91A7]"
               >
-                {showSubtitles
-                  ? `Try: ${firstPhrase?.text ?? lesson.aiTeacherPrompt.conversationStarter}`
-                  : "Subtitles are hidden"}
+                {getTeacherCardSubtitle(
+                  lesson,
+                  streamAudioCall.status,
+                  showSubtitles,
+                  firstPhrase?.text,
+                )}
               </Text>
 
               <View className="absolute right-[16px] top-[19px] h-[42px] w-[42px] items-center justify-center rounded-full bg-[#F0E9FF]">
@@ -168,19 +227,26 @@ export function AudioLessonScreen() {
 
           <View className="mt-[20px] flex-row justify-between px-[8px]">
             <LessonControlButton
-              icon={{ ios: "video.fill", android: "videocam", web: "videocam" }}
+              disabled={!streamAudioCall.canToggleCamera}
+              icon={{
+                ios: "video.fill",
+                android: "videocam",
+                web: "videocam",
+              }}
+              isMuted={!streamAudioCall.isCameraOn}
               label="Camera"
-              onPress={() => undefined}
+              onPress={streamAudioCall.toggleCamera}
             />
             <LessonControlButton
+              disabled={!streamAudioCall.canToggleMic}
               icon={{
-                ios: isMicOn ? "mic.fill" : "mic.slash.fill",
-                android: isMicOn ? "mic" : "mic_off",
-                web: isMicOn ? "mic" : "mic_off",
+                ios: streamAudioCall.isMicOn ? "mic.fill" : "mic.slash.fill",
+                android: streamAudioCall.isMicOn ? "mic" : "mic_off",
+                web: streamAudioCall.isMicOn ? "mic" : "mic_off",
               }}
-              isMuted={!isMicOn}
-              label="Mic"
-              onPress={() => setIsMicOn((value) => !value)}
+              isMuted={!streamAudioCall.isMicOn}
+              label={streamAudioCall.isMicOn ? "Mic" : "Muted"}
+              onPress={streamAudioCall.toggleMicrophone}
             />
             <LessonControlButton
               icon={{
@@ -200,7 +266,7 @@ export function AudioLessonScreen() {
               }}
               isDanger
               label="End Call"
-              onPress={() => setEndedLessonId(lesson.id)}
+              onPress={handleEndCallPress}
             />
           </View>
 
@@ -259,17 +325,13 @@ function HeaderAction({ accessibilityLabel, icon }: HeaderActionProps) {
       accessibilityLabel={accessibilityLabel}
       className="h-[38px] w-[38px] items-center justify-center rounded-full border border-[#ECEEF7] bg-white active:opacity-80"
     >
-      <SymbolView
-        name={icon}
-        size={22}
-        tintColor="#050A28"
-        type="monochrome"
-      />
+      <SymbolView name={icon} size={22} tintColor="#050A28" type="monochrome" />
     </Pressable>
   );
 }
 
 type LessonControlButtonProps = {
+  disabled?: boolean;
   icon: SymbolViewProps["name"];
   isDanger?: boolean;
   isMuted?: boolean;
@@ -278,6 +340,7 @@ type LessonControlButtonProps = {
 };
 
 function LessonControlButton({
+  disabled = false,
   icon,
   isDanger = false,
   isMuted = false,
@@ -288,24 +351,32 @@ function LessonControlButton({
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
+      disabled={disabled}
       onPress={onPress}
       className="items-center"
-      style={({ pressed }) => ({ opacity: pressed ? 0.82 : 1 })}
+      style={({ pressed }) => ({
+        opacity: disabled ? 0.44 : pressed ? 0.82 : 1,
+      })}
     >
       <View
         className={`h-[56px] w-[56px] items-center justify-center rounded-full ${
-          isDanger ? "bg-[#FF4247]" : isMuted ? "bg-[#EEF0F6]" : "bg-white"
+          disabled
+            ? "bg-[#EEF0F6]"
+            : isDanger
+              ? "bg-[#FF4247]"
+              : isMuted
+                ? "bg-[#EEF0F6]"
+                : "bg-white"
         }`}
         style={{
-          boxShadow: isDanger
-            ? "none"
-            : "0 8px 18px rgba(13, 19, 43, 0.06)",
+          boxShadow:
+            disabled || isDanger ? "none" : "0 8px 18px rgba(13, 19, 43, 0.06)",
         }}
       >
         <SymbolView
           name={icon}
           size={isDanger ? 29 : 26}
-          tintColor={isDanger ? "#FFFFFF" : "#07113C"}
+          tintColor={disabled ? "#8B91A7" : isDanger ? "#FFFFFF" : "#07113C"}
           type="monochrome"
         />
       </View>
@@ -344,6 +415,77 @@ function FeedbackColumn({ label, value, valueColor }: FeedbackColumnProps) {
 
 function Divider() {
   return <View className="mx-[4px] h-[43px] w-[1px] bg-[#E7EAF3]" />;
+}
+
+function getStatusColor(
+  status: ReturnType<typeof useStreamAudioCall>["status"],
+) {
+  if (status === "error") {
+    return "#FF4247";
+  }
+
+  if (status === "ended") {
+    return "#8B91A7";
+  }
+
+  if (status === "loading" || status === "connecting") {
+    return "#F2C900";
+  }
+
+  return "#21C16B";
+}
+
+function getStatusDotClass(
+  status: ReturnType<typeof useStreamAudioCall>["status"],
+) {
+  if (status === "error") {
+    return "bg-[#FF4247]";
+  }
+
+  if (status === "ended") {
+    return "bg-[#A3A9BA]";
+  }
+
+  if (status === "loading" || status === "connecting") {
+    return "bg-[#F2C900]";
+  }
+
+  return "bg-[#2ECC71]";
+}
+
+function getTeacherCardTitle(
+  lesson: Lesson,
+  status: ReturnType<typeof useStreamAudioCall>["status"],
+  teacherReply: string,
+) {
+  if (status === "loading" || status === "connecting") {
+    return "Connecting...";
+  }
+
+  if (status === "joined") {
+    return lesson.aiTeacherPrompt.conversationStarter;
+  }
+
+  return teacherReply;
+}
+
+function getTeacherCardSubtitle(
+  lesson: Lesson,
+  status: ReturnType<typeof useStreamAudioCall>["status"],
+  showSubtitles: boolean,
+  firstPhraseText: string | undefined,
+) {
+  if (status === "loading" || status === "connecting") {
+    return "Setting up your lesson";
+  }
+
+  if (status === "joined") {
+    return "Audio lesson in progress";
+  }
+
+  return showSubtitles
+    ? `Try: ${firstPhraseText ?? lesson.aiTeacherPrompt.conversationStarter}`
+    : "Subtitles are hidden";
 }
 
 function getTeacherReply(lesson: Lesson) {

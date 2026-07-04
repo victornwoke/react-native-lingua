@@ -1,6 +1,7 @@
 import { useAuth } from "@clerk/expo";
 import { type Href, Redirect } from "expo-router";
 
+import { clerkAuthOptions } from "@/lib/clerk-auth";
 import { useLanguageStore, useSelectedLanguage } from "@/store/language-store";
 
 const ONBOARDING_ROUTE = "/onboarding" as Href;
@@ -8,7 +9,7 @@ const LANGUAGE_SELECTION_ROUTE = "/language-selection" as Href;
 const HOME_ROUTE = "/home" as Href;
 
 export default function Index() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth(clerkAuthOptions);
   const hasHydrated = useLanguageStore((state) => state.hasHydrated);
   const selectedLanguage = useSelectedLanguage();
 

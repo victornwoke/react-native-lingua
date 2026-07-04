@@ -5,11 +5,12 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { usePostHog } from "posthog-react-native";
 
 import { images } from "@/constants/images";
+import { clerkAuthOptions } from "@/lib/clerk-auth";
 
 const SIGN_UP_ROUTE = "/sign-up" as Href;
 
 export default function OnboardingScreen() {
-  const { isLoaded, isSignedIn } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth(clerkAuthOptions);
   const router = useRouter();
   const posthog = usePostHog();
 
