@@ -1,5 +1,6 @@
 import { languages } from "../../../data/languages";
 import { lessons } from "../../../data/lessons";
+import type { LessonActivity } from "../../../types/learning";
 import { RouteError, getVerifiedClerkUserId } from "./_server";
 
 const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
@@ -107,15 +108,19 @@ export async function POST(request: Request) {
       members: [{ user_id: streamUserId, role: "admin" }],
       custom: {
         audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+        activities: lesson.activities.map(formatLessonActivity).join("; "),
         clerkUserId: verifiedClerkUserId,
         conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
         correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
+        estimatedMinutes: `${lesson.estimatedMinutes} minutes`,
         goals: lesson.goals.map((g) => g.description).join("; "),
         languageCode: language.code,
         languageId: language.id,
         languageName: language.name,
+        languageNativeName: language.nativeName,
         lessonDescription: lesson.description,
         lessonId: lesson.id,
+        lessonLevel: lesson.level,
         lessonTitle: lesson.title,
         phrases: lesson.phrases
           .map((p) => `${p.text} (${p.translation})`)
@@ -222,6 +227,24 @@ function getOptionalString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : undefined;
+}
+
+function formatLessonActivity(activity: LessonActivity, index: number) {
+  const label = `Practice ${index + 1}`;
+
+  if (activity.type === "multiple-choice") {
+    return `${label}: ${activity.prompt} Answer: ${activity.correctOption}`;
+  }
+
+  if (activity.type === "translation" || activity.type === "phrase-builder") {
+    return `${label}: ${activity.prompt} Answer: ${activity.answer}`;
+  }
+
+  if (activity.type === "speaking-practice") {
+    return `${label}: ${activity.prompt} Expected response: ${activity.expectedResponse}`;
+  }
+
+  return `${label}: ${activity.prompt}`;
 }
 
 function toStreamId(value: string) {

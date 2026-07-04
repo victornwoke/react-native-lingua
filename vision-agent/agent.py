@@ -49,7 +49,10 @@ def require_env(keys: tuple[str, ...]) -> None:
 def build_teacher_instructions(metadata: LessonMetadata) -> str:
     language_name = metadata.get("languageName") or DEFAULT_LANGUAGE_NAME
     language_code = metadata.get("languageCode") or ""
+    language_native_name = metadata.get("languageNativeName") or ""
     lesson_title = metadata.get("lessonTitle") or DEFAULT_LESSON_TITLE
+    lesson_level = metadata.get("lessonLevel") or "beginner"
+    estimated_minutes = metadata.get("estimatedMinutes") or ""
     teacher_persona = metadata.get("teacherPersona") or (
         "You are a friendly, patient AI language teacher."
     )
@@ -64,17 +67,25 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
     lesson_context = metadata.get("lessonDescription") or ""
     vocabulary = metadata.get("vocabulary") or ""
     phrases = metadata.get("phrases") or ""
+    activities = metadata.get("activities") or ""
 
-    language_label = (
-        f"{language_name} ({language_code})" if language_code else language_name
+    language_label = build_language_label(
+        language_name,
+        language_code,
+        language_native_name,
     )
 
     lines = [
         teacher_persona,
         "",
+        "The learner already selected their language in the app and opened this lesson from the lesson/practice screen.",
+        "Do not ask which language they want to learn, what lesson they want, or what they clicked.",
         f"You are teaching {language_label} through English.",
-        f"The current lesson is: {lesson_title}.",
+        f"The current lesson is: {lesson_title}. Level: {lesson_level}.",
     ]
+
+    if estimated_minutes:
+        lines += ["", f"Expected lesson length: {estimated_minutes}"]
 
     if teaching_objective:
         lines += ["", f"Teaching objective: {teaching_objective}"]
@@ -91,19 +102,23 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
     if phrases:
         lines += ["", f"Key phrases for this lesson: {phrases}"]
 
+    if activities:
+        lines += ["", f"Practice activities from the lesson screen: {activities}"]
+
     lines += [
         "",
         "Hard rules:",
         "- Always speak English by default.",
         f"- The selected lesson language is {language_label}. This is the only target language you may teach.",
+        "- The lesson and practice context above is authoritative. Welcome the learner directly into it.",
+        "- Never ask what language the learner wants to study; that was already selected in the app.",
         "- Never teach or mention Thai, Hindi, Korean, Chinese, Japanese, Spanish, German, or any other language unless that is the selected lesson language.",
         f"- Use English for explanations and only use {language_name} for lesson words and phrases.",
         "- Stay strictly inside the current lesson goal, vocabulary, phrases, and context.",
         "- Do not introduce unrelated topics or extra vocabulary beyond tiny English support words.",
         f"- Teach {language_name} words and phrases slowly, then give the English meaning.",
-        "- If the lesson language is missing or unclear, say you need the lesson language instead of choosing another language.",
         "- Sound warm, human, energetic, and lesson-focused. Use natural contractions.",
-        "- Keep every response to one or two short conversational sentences.",
+        "- Keep every response under 24 words unless correcting the learner.",
         "- Ask for exactly one learner response at the end of each turn, then stop speaking and wait.",
         "- Do not continue the lesson until you hear the learner through the microphone.",
         "- After the learner speaks, react to what they actually said before teaching the next tiny step.",
@@ -119,42 +134,73 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
 def build_greeting(metadata: LessonMetadata) -> str:
     language_name = metadata.get("languageName") or DEFAULT_LANGUAGE_NAME
     language_code = metadata.get("languageCode") or ""
+    language_native_name = metadata.get("languageNativeName") or ""
     lesson_title = metadata.get("lessonTitle") or DEFAULT_LESSON_TITLE
+    lesson_context = metadata.get("lessonDescription") or ""
     conversation_starter = metadata.get("conversationStarter") or ""
     vocabulary = metadata.get("vocabulary") or ""
+    activities = metadata.get("activities") or ""
+    phrases = metadata.get("phrases") or ""
 
-    language_label = (
-        f"{language_name} ({language_code})" if language_code else language_name
+    language_label = build_language_label(
+        language_name,
+        language_code,
+        language_native_name,
     )
+    activity_note = (
+        f" Use these practice activities silently as your roadmap: {activities}"
+        if activities
+        else ""
+    )
+    context_note = f" Lesson focus: {lesson_context}" if lesson_context else ""
+    phrase_note = f" Lesson phrases: {phrases}" if phrases else ""
 
     if conversation_starter:
         return (
             "Speak aloud now. "
-            f"Warmly welcome the learner to their {lesson_title} lesson in {language_label}. "
-            "Mostly in English, teach only this lesson phrase slowly and naturally: "
-            f"'{conversation_starter}'. Give its English meaning, encourage them gently, "
-            "ask them to repeat it, then stop and wait for their voice. "
-            "Do not say words from any other target language."
+            "The learner already selected this lesson in the app. "
+            f"Welcome them to {lesson_title}, their {language_label} lesson. "
+            f"{context_note}{phrase_note}{activity_note} "
+            f"Start immediately with '{conversation_starter}', give its English meaning, "
+            "ask them to repeat it, then stop. Keep the spoken greeting under 22 words."
         )
 
     if vocabulary:
         first_vocab = vocabulary.split(";")[0].strip()
         return (
             "Speak aloud now. "
-            f"Warmly welcome the learner to their {lesson_title} lesson in {language_label}. "
-            "Mostly in English, teach only this lesson vocabulary item slowly and naturally: "
-            f"'{first_vocab}'. Give its English meaning, encourage them gently, "
-            "ask them to repeat it, then stop and wait for their voice. "
-            "Do not say words from any other target language."
+            "The learner already selected this lesson in the app. "
+            f"Welcome them to {lesson_title}, their {language_label} lesson. "
+            f"{context_note}{activity_note} "
+            f"Start immediately with '{first_vocab}', give its English meaning, "
+            "ask them to repeat it, then stop. Keep the spoken greeting under 22 words."
         )
 
     return (
         "Speak aloud now. "
-        f"Warmly welcome the learner to their {lesson_title} lesson in {language_label}. "
-        "Mostly in English, teach one short beginner phrase from this lesson, "
-        "give its meaning, ask them to repeat it, then stop and wait for their voice. "
-        "Do not say words from any other target language."
+        "The learner already selected this lesson in the app. "
+        f"Welcome them to {lesson_title}, their {language_label} lesson. "
+        f"{context_note}{activity_note} "
+        "Teach one short phrase from this lesson, ask them to repeat it, then stop. "
+        "Keep the spoken greeting under 22 words."
     )
+
+
+def build_language_label(
+    language_name: str,
+    language_code: str,
+    language_native_name: str,
+) -> str:
+    if language_code and language_native_name:
+        return f"{language_name} ({language_native_name}, {language_code})"
+
+    if language_native_name:
+        return f"{language_name} ({language_native_name})"
+
+    if language_code:
+        return f"{language_name} ({language_code})"
+
+    return language_name
 
 
 class LiveSpeechStreamConversation(StreamConversation):
@@ -300,15 +346,19 @@ async def load_lesson_metadata(call: Any) -> LessonMetadata:
     metadata: LessonMetadata = {}
 
     for key in (
+        "activities",
         "audioInstructions",
         "conversationStarter",
         "correctionStyle",
+        "estimatedMinutes",
         "goals",
         "languageCode",
         "languageId",
         "languageName",
+        "languageNativeName",
         "lessonDescription",
         "lessonId",
+        "lessonLevel",
         "lessonTitle",
         "phrases",
         "teacherPersona",

@@ -38,7 +38,7 @@ export function AudioLessonScreen() {
   const sceneHeight = isCompactHeight
     ? Math.max(Math.min(height - 520, 240), 178)
     : Math.max(Math.min(height - 570, 306), 230);
-  const captionMinHeight = isCompactHeight ? 124 : 148;
+  const captionMinHeight = isCompactHeight ? 138 : 172;
   const mascotSize = Math.min(
     width - (isCompactHeight ? 136 : 116),
     sceneHeight - (isCompactHeight ? 22 : 30),
@@ -229,6 +229,9 @@ function LiveCaptionBubble({
   minHeight,
 }: LiveCaptionBubbleProps) {
   const isTeacher = caption.speakerRole === "teacher";
+  const captionText = getCaptionBubbleText(caption.text, isCompact ? 170 : 230);
+  const captionFontSize = getCaptionFontSize(captionText.length, isCompact);
+  const captionLineHeight = captionFontSize + (isCompact ? 5 : 6);
 
   return (
     <View
@@ -239,7 +242,7 @@ function LiveCaptionBubble({
         boxShadow: isTeacher
           ? "0 10px 22px rgba(91, 59, 246, 0.22)"
           : "0 10px 22px rgba(13, 19, 43, 0.08)",
-        minHeight,
+        height: minHeight,
         paddingBottom: isCompact ? 16 : 18,
         paddingTop: isCompact ? 14 : 17,
       }}
@@ -252,14 +255,46 @@ function LiveCaptionBubble({
         {isTeacher ? "AI Teacher" : caption.speakerName}
       </Text>
       <Text
-        numberOfLines={isCompact ? 3 : 4}
-        className="mt-[6px] font-poppins-semibold text-[24px] leading-[31px]"
-        style={{ color: isTeacher ? "#FFFFFF" : "#20243A" }}
+        adjustsFontSizeToFit
+        minimumFontScale={0.82}
+        numberOfLines={isCompact ? 4 : 5}
+        className="mt-[6px] font-poppins-semibold"
+        style={{
+          color: isTeacher ? "#FFFFFF" : "#20243A",
+          fontSize: captionFontSize,
+          lineHeight: captionLineHeight,
+        }}
       >
-        {caption.text}
+        {captionText}
       </Text>
     </View>
   );
+}
+
+function getCaptionBubbleText(text: string, maxLength: number) {
+  const normalizedText = text.replace(/\s+/g, " ").trim();
+
+  if (normalizedText.length <= maxLength) {
+    return normalizedText;
+  }
+
+  return `...${normalizedText.slice(-maxLength).trimStart()}`;
+}
+
+function getCaptionFontSize(textLength: number, isCompact: boolean) {
+  if (textLength > 180) {
+    return isCompact ? 13 : 14;
+  }
+
+  if (textLength > 120) {
+    return isCompact ? 14 : 15;
+  }
+
+  if (textLength > 72) {
+    return isCompact ? 15 : 16;
+  }
+
+  return isCompact ? 17 : 18;
 }
 
 function getActiveCaption(
