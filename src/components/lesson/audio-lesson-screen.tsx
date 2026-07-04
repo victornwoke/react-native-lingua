@@ -3,18 +3,21 @@ import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
-  Image,
-  Pressable,
-  ScrollView,
-  Text,
-  useWindowDimensions,
-  View,
+    ActivityIndicator,
+    Image,
+    Pressable,
+    ScrollView,
+    Text,
+    useWindowDimensions,
+    View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
-import { useStreamAudioCall } from "@/hooks/use-stream-audio-call";
+import {
+    type AgentConnectionStatus,
+    useStreamAudioCall,
+} from "@/hooks/use-stream-audio-call";
 
 import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
@@ -151,12 +154,15 @@ export function AudioLessonScreen() {
                 {streamAudioCall.statusLabel}
               </Text>
             </View>
-            <Text
-              numberOfLines={1}
-              className="ml-[10px] max-w-[178px] text-right font-poppins-semibold text-[12px] leading-[17px] text-[#737B98]"
-            >
-              {streamAudioCall.displayName}
-            </Text>
+            <View className="flex-row items-center gap-[6px]">
+              <AgentStatusBadge status={streamAudioCall.agentStatus} />
+              <Text
+                numberOfLines={1}
+                className="ml-[2px] max-w-[120px] text-right font-poppins-semibold text-[12px] leading-[17px] text-[#737B98]"
+              >
+                {streamAudioCall.displayName}
+              </Text>
+            </View>
           </View>
 
           <View
@@ -415,6 +421,73 @@ function FeedbackColumn({ label, value, valueColor }: FeedbackColumnProps) {
 
 function Divider() {
   return <View className="mx-[4px] h-[43px] w-[1px] bg-[#E7EAF3]" />;
+}
+
+type AgentStatusBadgeProps = {
+  status: AgentConnectionStatus;
+};
+
+function AgentStatusBadge({ status }: AgentStatusBadgeProps) {
+  if (status === "idle") {
+    return null;
+  }
+
+  const label = getAgentStatusLabel(status);
+  const dotColorClass = getAgentDotColorClass(status);
+  const textColor = getAgentTextColor(status);
+
+  return (
+    <View className="flex-row items-center rounded-full bg-[#F4F5FA] px-[7px] py-[3px]">
+      <View className={`h-[6px] w-[6px] rounded-full ${dotColorClass}`} />
+      <Text
+        numberOfLines={1}
+        className="ml-[4px] font-poppins-semibold text-[11px] leading-[15px]"
+        style={{ color: textColor }}
+      >
+        {label}
+      </Text>
+    </View>
+  );
+}
+
+function getAgentStatusLabel(status: AgentConnectionStatus) {
+  if (status === "connecting") {
+    return "AI joining…";
+  }
+
+  if (status === "connected") {
+    return "AI ready";
+  }
+
+  if (status === "failed") {
+    return "AI offline";
+  }
+
+  return "";
+}
+
+function getAgentDotColorClass(status: AgentConnectionStatus) {
+  if (status === "connected") {
+    return "bg-[#21C16B]";
+  }
+
+  if (status === "failed") {
+    return "bg-[#FF4247]";
+  }
+
+  return "bg-[#F2C900]";
+}
+
+function getAgentTextColor(status: AgentConnectionStatus) {
+  if (status === "connected") {
+    return "#21C16B";
+  }
+
+  if (status === "failed") {
+    return "#FF4247";
+  }
+
+  return "#C4960A";
 }
 
 function getStatusColor(

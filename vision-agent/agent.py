@@ -42,30 +42,69 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
     audio_instructions = metadata.get("audioInstructions") or (
         "Speak clearly with short pauses. Keep each turn easy to repeat."
     )
-
-    return "\n".join(
-        [
-            teacher_persona,
-            "",
-            f"You are teaching {language_name} through English.",
-            f"The current lesson is: {lesson_title}.",
-            "",
-            "Hard rules:",
-            "- Always speak English by default.",
-            f"- Teach {language_name} words and phrases by explaining them in English.",
-            "- Keep every response short, warm, and beginner-friendly.",
-            "- Ask the learner to repeat or answer one small thing at a time.",
-            "- If the learner makes a mistake, correct gently and model the right phrase once.",
-            "- Do not switch into a full lesson in the target language unless the learner asks.",
-            "",
-            f"Audio style: {audio_instructions}",
-        ],
+    teaching_objective = metadata.get("teachingObjective") or ""
+    correction_style = metadata.get("correctionStyle") or (
+        "Correct gently, model one clear example, and invite the learner to try again."
     )
+    goals = metadata.get("goals") or ""
+    vocabulary = metadata.get("vocabulary") or ""
+    phrases = metadata.get("phrases") or ""
+
+    lines = [
+        teacher_persona,
+        "",
+        f"You are teaching {language_name} through English.",
+        f"The current lesson is: {lesson_title}.",
+    ]
+
+    if teaching_objective:
+        lines += ["", f"Teaching objective: {teaching_objective}"]
+
+    if goals:
+        lines += ["", f"Lesson goals: {goals}"]
+
+    if vocabulary:
+        lines += ["", f"Key vocabulary for this lesson: {vocabulary}"]
+
+    if phrases:
+        lines += ["", f"Key phrases for this lesson: {phrases}"]
+
+    lines += [
+        "",
+        "Hard rules:",
+        "- Always speak English by default.",
+        f"- Teach {language_name} words and phrases by explaining them in English.",
+        "- Keep every response short, warm, and beginner-friendly.",
+        "- Ask the learner to repeat or answer one small thing at a time.",
+        f"- Correction style: {correction_style}",
+        "- Do not switch into a full lesson in the target language unless the learner asks.",
+        "",
+        f"Audio style: {audio_instructions}",
+    ]
+
+    return "\n".join(lines)
 
 
 def build_greeting(metadata: LessonMetadata) -> str:
     language_name = metadata.get("languageName") or DEFAULT_LANGUAGE_NAME
     lesson_title = metadata.get("lessonTitle") or DEFAULT_LESSON_TITLE
+    conversation_starter = metadata.get("conversationStarter") or ""
+    vocabulary = metadata.get("vocabulary") or ""
+
+    if conversation_starter:
+        return (
+            f"Welcome the learner to their {language_name} lesson, {lesson_title}. "
+            "Say that you will teach through English, then introduce this phrase: "
+            f"'{conversation_starter}' — explain it briefly and ask the learner to repeat it."
+        )
+
+    if vocabulary:
+        first_vocab = vocabulary.split(";")[0].strip()
+        return (
+            f"Welcome the learner to their {language_name} lesson, {lesson_title}. "
+            "Say that you will teach through English, then introduce the first vocabulary item: "
+            f"'{first_vocab}' and ask them to repeat it."
+        )
 
     return (
         f"Welcome the learner to their {language_name} lesson, {lesson_title}. "
@@ -119,11 +158,18 @@ async def load_lesson_metadata(call: Any) -> LessonMetadata:
 
     for key in (
         "audioInstructions",
+        "conversationStarter",
+        "correctionStyle",
+        "goals",
         "languageId",
         "languageName",
+        "lessonDescription",
         "lessonId",
         "lessonTitle",
+        "phrases",
         "teacherPersona",
+        "teachingObjective",
+        "vocabulary",
     ):
         value = custom_data.get(key)
 

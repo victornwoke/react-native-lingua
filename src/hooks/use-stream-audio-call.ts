@@ -4,8 +4,11 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { clerkAuthOptions } from "@/lib/clerk-auth";
 import {
-  createStreamAudioSession,
-  type StreamAudioSession,
+    createStreamAudioSession,
+    startAgentSession,
+    stopAgentSession,
+    type AgentSession,
+    type StreamAudioSession,
 } from "@/lib/stream-audio";
 import { useSelectedLanguage } from "@/store/language-store";
 import { languages } from "../../data/languages";
@@ -19,7 +22,14 @@ export type StreamAudioCallStatus =
   | "ended"
   | "error";
 
+export type AgentConnectionStatus =
+  | "idle"
+  | "connecting"
+  | "connected"
+  | "failed";
+
 type UseStreamAudioCallResult = {
+  agentStatus: AgentConnectionStatus;
   canEndCall: boolean;
   canToggleCamera: boolean;
   canToggleMic: boolean;
@@ -66,8 +76,11 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(true);
+  const [agentStatus, setAgentStatus] = useState<AgentConnectionStatus>("idle");
   const callRef = useRef<StreamCall | null>(null);
   const clientRef = useRef<StreamVideoClientLike | null>(null);
+  const agentSessionRef = useRef<AgentSession | null>(null);
+  const agentTokenRef = useRef<string | null>(null);
 
   const language = useMemo(() => {
     return (
@@ -115,6 +128,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       setErrorMessage(null);
       setIsCameraOn(false);
       setIsMicOn(true);
+      setAgentStatus("idle");
       setStatus("loading");
 
       const clerkSessionToken = await getToken({ skipCache: true });
@@ -123,10 +137,12 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
         throw new Error("Your session expired. Please sign in again.");
       }
 
-      let session: StreamAudioSession;
+      agentTokenRef.current = clerkSessionToken;
+
+      let audioSession: StreamAudioSession;
 
       try {
-        session = await createStreamAudioSession({
+        audioSession = await createStreamAudioSession({
           clerkSessionToken,
           clerkUserId: userId,
           language,
@@ -145,7 +161,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
           throw error;
         }
 
-        session = await createStreamAudioSession({
+        agentTokenRef.current = refreshedSessionToken;
+        audioSession = await createStreamAudioSession({
           clerkSessionToken: refreshedSessionToken,
           clerkUserId: userId,
           language,
@@ -167,12 +184,12 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
         };
 
       const client = streamModule.StreamVideoClient.getOrCreateInstance({
-        apiKey: session.apiKey,
-        tokenProvider: async () => session.token,
-        user: session.user,
+        apiKey: audioSession.apiKey,
+        tokenProvider: async () => audioSession.token,
+        user: audioSession.user,
       });
       clientRef.current = client;
-      const call = client.call(session.callType, session.callId);
+      const call = client.call(audioSession.callType, audioSession.callId);
 
       callRef.current = call;
       setStatus("connecting");
@@ -190,6 +207,15 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       setIsCameraOn(false);
       setIsMicOn(microphoneStarted);
       setStatus("joined");
+
+      // Start agent asynchronously — do not block the call join
+      void startAgentForCall(
+        audioSession.callId,
+        audioSession.callType,
+        agentTokenRef.current,
+        agentSessionRef,
+        setAgentStatus,
+      );
     } catch (error) {
       console.warn("Failed to join Stream audio call.", error);
       await cleanupStreamCall(callRef.current, clientRef.current);
@@ -249,6 +275,20 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
   const endCall = useCallback(async () => {
     const call = callRef.current;
+    const agentSession = agentSessionRef.current;
+    const agentToken = agentTokenRef.current;
+
+    // Stop agent session first
+    if (agentSession && agentToken) {
+      agentSessionRef.current = null;
+      agentTokenRef.current = null;
+      setAgentStatus("idle");
+      await stopAgentSession({
+        callId: agentSession.callId,
+        sessionId: agentSession.sessionId,
+        clerkSessionToken: agentToken,
+      }).catch(() => undefined);
+    }
 
     if (!call) {
       setStatus("ended");
@@ -280,8 +320,20 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     return () => {
       const activeCall = callRef.current;
       const activeClient = clientRef.current;
+      const activeAgentSession = agentSessionRef.current;
+      const activeAgentToken = agentTokenRef.current;
       callRef.current = null;
       clientRef.current = null;
+      agentSessionRef.current = null;
+      agentTokenRef.current = null;
+
+      if (activeAgentSession && activeAgentToken) {
+        void stopAgentSession({
+          callId: activeAgentSession.callId,
+          sessionId: activeAgentSession.sessionId,
+          clerkSessionToken: activeAgentToken,
+        }).catch(() => undefined);
+      }
 
       if (activeCall) {
         void activeCall.leave().catch(() => undefined);
@@ -297,6 +349,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   const statusLabel = getStatusLabel(status, errorMessage);
 
   return {
+    agentStatus,
     canEndCall:
       status === "joined" ||
       status === "connecting" ||
@@ -384,4 +437,33 @@ function getStreamAudioErrorMessage(error: unknown) {
   }
 
   return error.message;
+}
+
+async function startAgentForCall(
+  callId: string,
+  callType: string,
+  clerkSessionToken: string,
+  agentSessionRef: React.MutableRefObject<AgentSession | null>,
+  setAgentStatus: (status: AgentConnectionStatus) => void,
+) {
+  setAgentStatus("connecting");
+
+  try {
+    const agentSession = await startAgentSession({
+      callId,
+      callType,
+      clerkSessionToken,
+    });
+
+    if (!agentSession) {
+      // Server not configured or unreachable — degrade silently.
+      setAgentStatus("idle");
+      return;
+    }
+
+    agentSessionRef.current = agentSession;
+    setAgentStatus("connected");
+  } catch {
+    setAgentStatus("failed");
+  }
 }

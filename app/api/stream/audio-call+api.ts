@@ -119,11 +119,22 @@ export async function POST(request: Request) {
           members: [{ user_id: streamUserId, role: "admin" }],
           custom: {
             audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+            conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
+            correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
+            goals: lesson.goals.map((g) => g.description).join("; "),
             languageId: language.id,
             languageName: language.name,
+            lessonDescription: lesson.description,
             lessonId: lesson.id,
             lessonTitle: lesson.title,
+            phrases: lesson.phrases
+              .map((p) => `${p.text} (${p.translation})`)
+              .join("; "),
             teacherPersona: lesson.aiTeacherPrompt.persona,
+            teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
+            vocabulary: lesson.vocabulary
+              .map((v) => `${v.term}: ${v.translation}`)
+              .join("; "),
           },
           settings_override: {
             audio: {
@@ -297,10 +308,7 @@ async function getVerifiedClerkUserId(
         throw new RouteError("Invalid Clerk session.", 401);
       }
 
-      if (
-        session.status &&
-        !isUsableClerkSessionStatus(session.status)
-      ) {
+      if (session.status && !isUsableClerkSessionStatus(session.status)) {
         throw new RouteError(
           getInactiveClerkSessionMessage(session.status),
           401,
