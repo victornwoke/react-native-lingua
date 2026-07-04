@@ -41,8 +41,10 @@ type UseStreamAudioCallResult = {
   isMicOn: boolean;
   isStarting: boolean;
   startCall: () => Promise<void>;
+  startTalking: () => Promise<void>;
   status: StreamAudioCallStatus;
   statusLabel: string;
+  stopTalking: () => Promise<void>;
   toggleCamera: () => Promise<void>;
   toggleMicrophone: () => Promise<void>;
   endCall: () => Promise<void>;
@@ -104,6 +106,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   const [agentStatus, setAgentStatus] = useState<AgentConnectionStatus>("idle");
   const callRef = useRef<StreamCall | null>(null);
   const clientRef = useRef<StreamVideoClientLike | null>(null);
+  const callManagerRef = useRef<StreamCallManagerLike | null>(null);
+  const wantsToTalkRef = useRef(false);
   const agentSessionRef = useRef<AgentSession | null>(null);
   const agentTokenRef = useRef<string | null>(null);
 
@@ -152,7 +156,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     try {
       setErrorMessage(null);
       setIsCameraOn(false);
-      setIsMicOn(!isIosSimulator);
+      setIsMicOn(false);
       setAgentStatus("idle");
       setStatus("loading");
 
@@ -209,6 +213,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
           callManager: StreamCallManagerLike;
         };
 
+      callManagerRef.current = streamModule.callManager;
       const client = streamModule.StreamVideoClient.getOrCreateInstance({
         apiKey: audioSession.apiKey,
         tokenProvider: async () => audioSession.token,
@@ -218,6 +223,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       const call = client.call(audioSession.callType, audioSession.callId);
 
       callRef.current = call;
+      wantsToTalkRef.current = false;
       setStatus("connecting");
 
       // Prime audio routing first. iOS Simulator can drop the first output cycle
@@ -228,11 +234,11 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
       await call.join({ create: true, data: audioSession.callData });
 
+      await call.microphone.disable().catch(() => undefined);
+
       startSpeakerAudio(streamModule.callManager, {
         playbackOnly: isIosSimulator,
       });
-
-      let microphoneStarted = false;
 
       if (isIosSimulator) {
         setTimeout(() => {
@@ -248,17 +254,10 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
         console.info(
           "Skipping Stream microphone auto-start on iOS Simulator to keep speaker playback stable.",
         );
-      } else {
-        try {
-          await call.microphone.enable();
-          microphoneStarted = true;
-        } catch (error) {
-          console.warn("Stream microphone did not start.", error);
-        }
       }
 
       setIsCameraOn(false);
-      setIsMicOn(microphoneStarted);
+      setIsMicOn(false);
       setStatus("joined");
 
       // Start agent asynchronously — do not block the call join
@@ -274,6 +273,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       await cleanupStreamCall(callRef.current, clientRef.current);
       callRef.current = null;
       clientRef.current = null;
+      callManagerRef.current = null;
+      wantsToTalkRef.current = false;
       setIsCameraOn(false);
       setIsMicOn(false);
       setErrorMessage(getStreamAudioErrorMessage(error));
@@ -329,6 +330,63 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     }
   }, [isMicOn, status]);
 
+  const startTalking = useCallback(async () => {
+    if (isIosSimulator) {
+      return;
+    }
+
+    const call = callRef.current;
+
+    if (!call || status !== "joined") {
+      return;
+    }
+
+    wantsToTalkRef.current = true;
+
+    try {
+      setErrorMessage(null);
+      muteSpeakerOutput(callManagerRef.current, true);
+      await call.microphone.enable();
+
+      if (!wantsToTalkRef.current) {
+        await call.microphone.disable().catch(() => undefined);
+        muteSpeakerOutput(callManagerRef.current, false);
+        setIsMicOn(false);
+        return;
+      }
+
+      setIsMicOn(true);
+    } catch (error) {
+      muteSpeakerOutput(callManagerRef.current, false);
+      console.error("Failed to start Stream microphone.", error);
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : "Could not start the microphone.",
+      );
+    }
+  }, [status]);
+
+  const stopTalking = useCallback(async () => {
+    wantsToTalkRef.current = false;
+    const call = callRef.current;
+
+    if (!call) {
+      muteSpeakerOutput(callManagerRef.current, false);
+      setIsMicOn(false);
+      return;
+    }
+
+    try {
+      await call.microphone.disable();
+    } catch (error) {
+      console.error("Failed to stop Stream microphone.", error);
+    } finally {
+      muteSpeakerOutput(callManagerRef.current, false);
+      setIsMicOn(false);
+    }
+  }, []);
+
   const endCall = useCallback(async () => {
     const call = callRef.current;
     const agentSession = agentSessionRef.current;
@@ -361,6 +419,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       callRef.current = null;
       const client = clientRef.current;
       clientRef.current = null;
+      callManagerRef.current = null;
+      wantsToTalkRef.current = false;
 
       if (client?.disconnectUser) {
         await client.disconnectUser().catch(() => undefined);
@@ -382,6 +442,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       const activeAgentToken = agentTokenRef.current;
       callRef.current = null;
       clientRef.current = null;
+      callManagerRef.current = null;
+      wantsToTalkRef.current = false;
       agentSessionRef.current = null;
       agentTokenRef.current = null;
 
@@ -406,7 +468,9 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   }, []);
 
   const canUseCall = status === "joined";
-  const statusLabel = getStatusLabel(status, errorMessage);
+  const statusLabel = isMicOn
+    ? "Listening..."
+    : getStatusLabel(status, errorMessage);
 
   return {
     agentStatus,
@@ -423,8 +487,10 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     isMicOn,
     isStarting: status === "loading" || status === "connecting",
     startCall,
+    startTalking,
     status,
     statusLabel,
+    stopTalking,
     toggleCamera,
     toggleMicrophone,
     endCall,
@@ -500,6 +566,17 @@ function startSpeakerAudio(
     callManager.speaker.setForceSpeakerphoneOn(true);
   } catch (error) {
     console.warn("Could not start Stream speaker audio.", error);
+  }
+}
+
+function muteSpeakerOutput(
+  callManager: StreamCallManagerLike | null,
+  muted: boolean,
+) {
+  try {
+    callManager?.speaker.setMute(muted);
+  } catch (error) {
+    console.warn("Could not update Stream speaker mute state.", error);
   }
 }
 

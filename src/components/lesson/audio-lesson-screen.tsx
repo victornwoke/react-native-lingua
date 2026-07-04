@@ -1,7 +1,7 @@
 import { type Href, useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -28,7 +28,6 @@ export function AudioLessonScreen() {
   const router = useRouter();
   const { height, width } = useWindowDimensions();
   const params = useLocalSearchParams();
-  const [showSubtitles, setShowSubtitles] = useState(true);
   const autoStartedLessonIdRef = useRef<string | null>(null);
 
   const lessonId =
@@ -105,41 +104,20 @@ export function AudioLessonScreen() {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
       >
-        <View className="px-[14px] pt-[6px]">
-          <View className="relative h-[42px] flex-row items-center justify-between">
+        <View className="px-[14px] pt-[4px]">
+          <View className="relative h-[64px] flex-row items-center justify-between">
             <View className="w-[92px] items-start">
               <BackButton onPress={handleBackPress} />
             </View>
 
-            <Text className="absolute left-[92px] right-[92px] text-center font-poppins-bold text-[19px] leading-[24px] text-[#050A28]">
+            <Text className="absolute left-[92px] right-[92px] text-center font-poppins-bold text-[20px] leading-[26px] text-[#050A28]">
               AI Teacher
             </Text>
 
-            <View className="flex-row items-center gap-[7px]">
-              <View className="h-[32px] flex-row items-center justify-center rounded-full bg-[#FAFAFE] px-[7px]">
-                <SymbolView
-                  name={{
-                    ios: "headphones",
-                    android: "headphones",
-                    web: "headphones",
-                  }}
-                  size={13}
-                  tintColor="#050A28"
-                  type="monochrome"
-                />
-                <Text className="ml-[3px] font-poppins-bold text-[13px] leading-[17px] text-[#050A28]">
-                  Audio
-                </Text>
-              </View>
-              <HeaderAction
-                accessibilityLabel="Lesson reminders"
-                icon={{
-                  ios: "bell",
-                  android: "notifications",
-                  web: "notifications",
-                }}
-              />
-            </View>
+            <HeaderEndCallButton
+              disabled={!streamAudioCall.canEndCall}
+              onPress={handleEndCallPress}
+            />
           </View>
 
           <View className="mt-[2px] flex-row items-center justify-between pl-[16px] pr-[10px]">
@@ -216,7 +194,6 @@ export function AudioLessonScreen() {
                 {getTeacherCardSubtitle(
                   lesson,
                   streamAudioCall.status,
-                  showSubtitles,
                   firstPhrase?.text,
                 )}
               </Text>
@@ -236,48 +213,17 @@ export function AudioLessonScreen() {
             </View>
           </View>
 
-          <View className="mt-[20px] flex-row justify-between px-[8px]">
-            <LessonControlButton
-              disabled={!streamAudioCall.canToggleCamera}
-              icon={{
-                ios: "video.fill",
-                android: "videocam",
-                web: "videocam",
-              }}
-              isMuted={!streamAudioCall.isCameraOn}
-              label="Camera"
-              onPress={streamAudioCall.toggleCamera}
-            />
-            <LessonControlButton
+          <View className="mt-[22px] items-center px-[8px]">
+            <PushToTalkButton
               disabled={!streamAudioCall.canToggleMic}
               icon={{
                 ios: streamAudioCall.isMicOn ? "mic.fill" : "mic.slash.fill",
                 android: streamAudioCall.isMicOn ? "mic" : "mic_off",
                 web: streamAudioCall.isMicOn ? "mic" : "mic_off",
               }}
-              isMuted={!streamAudioCall.isMicOn}
-              label={streamAudioCall.isMicOn ? "Mute" : "Muted"}
-              onPress={streamAudioCall.toggleMicrophone}
-            />
-            <LessonControlButton
-              icon={{
-                ios: "textformat",
-                android: "text_fields",
-                web: "text_fields",
-              }}
-              isMuted={!showSubtitles}
-              label="Subtitles"
-              onPress={() => setShowSubtitles((value) => !value)}
-            />
-            <LessonControlButton
-              icon={{
-                ios: "phone.down.fill",
-                android: "call_end",
-                web: "call_end",
-              }}
-              isDanger
-              label="End Call"
-              onPress={handleEndCallPress}
+              isListening={streamAudioCall.isMicOn}
+              onPressIn={streamAudioCall.startTalking}
+              onPressOut={streamAudioCall.stopTalking}
             />
           </View>
 
@@ -324,83 +270,79 @@ function BackButton({ onPress }: BackButtonProps) {
   );
 }
 
-type HeaderActionProps = {
-  accessibilityLabel: string;
-  icon: SymbolViewProps["name"];
+type HeaderEndCallButtonProps = {
+  disabled?: boolean;
+  onPress: () => void;
 };
 
-function HeaderAction({ accessibilityLabel, icon }: HeaderActionProps) {
+function HeaderEndCallButton({
+  disabled = false,
+  onPress,
+}: HeaderEndCallButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={accessibilityLabel}
-      className="h-[38px] w-[38px] items-center justify-center rounded-full border border-[#ECEEF7] bg-white active:opacity-80"
+      accessibilityLabel="End call"
+      disabled={disabled}
+      onPress={onPress}
+      className="h-[58px] w-[58px] items-center justify-center rounded-full bg-[#E5364B]"
+      style={({ pressed }) => ({
+        opacity: disabled ? 0.42 : pressed ? 0.82 : 1,
+      })}
     >
-      <SymbolView name={icon} size={22} tintColor="#050A28" type="monochrome" />
+      <SymbolView
+        name={{ ios: "phone.down.fill", android: "call_end", web: "call_end" }}
+        size={31}
+        tintColor="#FFFFFF"
+        type="monochrome"
+      />
     </Pressable>
   );
 }
 
-type LessonControlButtonProps = {
+type PushToTalkButtonProps = {
   disabled?: boolean;
   icon: SymbolViewProps["name"];
-  isDanger?: boolean;
-  isMuted?: boolean;
-  label: string;
-  onPress: () => void;
+  isListening: boolean;
+  onPressIn: () => Promise<void>;
+  onPressOut: () => Promise<void>;
 };
 
-function LessonControlButton({
+function PushToTalkButton({
   disabled = false,
   icon,
-  isDanger = false,
-  isMuted = false,
-  label,
-  onPress,
-}: LessonControlButtonProps) {
+  isListening,
+  onPressIn,
+  onPressOut,
+}: PushToTalkButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel={label}
+      accessibilityLabel="Hold to talk"
       disabled={disabled}
-      onPress={onPress}
+      onPressIn={() => {
+        void onPressIn();
+      }}
+      onPressOut={() => {
+        void onPressOut();
+      }}
       className="items-center"
       style={({ pressed }) => ({
-        opacity: disabled ? 0.44 : pressed ? 0.82 : 1,
+        opacity: disabled ? 0.44 : pressed ? 0.9 : 1,
       })}
     >
       <View
-        className={`h-[56px] w-[56px] items-center justify-center rounded-full ${
-          disabled
-            ? "bg-[#EEF0F6]"
-            : isDanger
-              ? "bg-[#FF4247]"
-              : isMuted
-                ? "bg-[#F0E9FF]"
-                : "bg-white"
+        className={`h-[92px] w-[92px] items-center justify-center rounded-full ${
+          isListening ? "bg-[#21C16B]" : "bg-[#5B3BF6]"
         }`}
         style={{
-          boxShadow:
-            disabled || isDanger ? "none" : "0 8px 18px rgba(13, 19, 43, 0.06)",
+          boxShadow: disabled ? "none" : "0 12px 28px rgba(91, 59, 246, 0.22)",
         }}
       >
-        <SymbolView
-          name={icon}
-          size={isDanger ? 29 : 26}
-          tintColor={
-            disabled
-              ? "#8B91A7"
-              : isDanger
-                ? "#FFFFFF"
-                : isMuted
-                  ? "#5B3BF6"
-                  : "#07113C"
-          }
-          type="monochrome"
-        />
+        <SymbolView name={icon} size={39} tintColor="#FFFFFF" type="monochrome" />
       </View>
-      <Text className="mt-[6px] text-center font-poppins-bold text-[11px] leading-[15px] text-[#8B91A7]">
-        {label}
+      <Text className="mt-[10px] text-center font-poppins-bold text-[13px] leading-[18px] text-[#737B98]">
+        {isListening ? "Listening" : "Hold to talk"}
       </Text>
     </Pressable>
   );
@@ -558,7 +500,6 @@ function getTeacherCardTitle(
 function getTeacherCardSubtitle(
   lesson: Lesson,
   status: ReturnType<typeof useStreamAudioCall>["status"],
-  showSubtitles: boolean,
   firstPhraseText: string | undefined,
 ) {
   if (status === "loading" || status === "connecting") {
@@ -569,9 +510,7 @@ function getTeacherCardSubtitle(
     return "Audio lesson in progress";
   }
 
-  return showSubtitles
-    ? `Try: ${firstPhraseText ?? lesson.aiTeacherPrompt.conversationStarter}`
-    : "Subtitles are hidden";
+  return `Try: ${firstPhraseText ?? lesson.aiTeacherPrompt.conversationStarter}`;
 }
 
 function getTeacherReply(lesson: Lesson) {
