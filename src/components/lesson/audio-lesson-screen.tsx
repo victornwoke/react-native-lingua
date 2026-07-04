@@ -3,10 +3,8 @@ import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useEffect, useRef } from "react";
 import {
-  ActivityIndicator,
   Image,
   Pressable,
-  ScrollView,
   Text,
   useWindowDimensions,
   View,
@@ -16,6 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "@/constants/images";
 import {
   type AgentConnectionStatus,
+  type LiveCaption,
   useStreamAudioCall,
 } from "@/hooks/use-stream-audio-call";
 
@@ -35,8 +34,16 @@ export function AudioLessonScreen() {
   const lesson = lessons.find((item) => item.id === lessonId);
   const streamAudioCall = useStreamAudioCall(lesson);
   const startStreamCall = streamAudioCall.startCall;
-  const sceneHeight = Math.max(Math.min(height - 330, 470), 392);
-  const mascotSize = Math.min(width - 76, sceneHeight - 104);
+  const isCompactHeight = height < 760;
+  const sceneHeight = isCompactHeight
+    ? Math.max(Math.min(height - 520, 240), 178)
+    : Math.max(Math.min(height - 570, 306), 230);
+  const captionMinHeight = isCompactHeight ? 124 : 148;
+  const mascotSize = Math.min(
+    width - (isCompactHeight ? 136 : 116),
+    sceneHeight - (isCompactHeight ? 22 : 30),
+  );
+  const micButtonSize = isCompactHeight ? 74 : 88;
   const hasStatusError = Boolean(streamAudioCall.errorMessage);
   const statusColor = hasStatusError
     ? "#FF4247"
@@ -95,157 +102,199 @@ export function AudioLessonScreen() {
 
   const firstPhrase = lesson.phrases[0];
   const teacherReply = getTeacherReply(lesson);
+  const activeCaption = getActiveCaption(
+    streamAudioCall.liveCaptions,
+    streamAudioCall.isMicOn,
+    streamAudioCall.displayName,
+    getTeacherCardTitle(lesson, streamAudioCall.status, teacherReply),
+    getTeacherCardSubtitle(lesson, streamAudioCall.status, firstPhrase?.text),
+  );
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
       <StatusBar style="dark" />
 
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ flexGrow: 1, paddingBottom: 24 }}
-      >
-        <View className="px-[14px] pt-[4px]">
-          <View className="relative h-[64px] flex-row items-center justify-between">
-            <View className="w-[92px] items-start">
-              <BackButton onPress={handleBackPress} />
-            </View>
-
-            <Text className="absolute left-[92px] right-[92px] text-center font-poppins-bold text-[20px] leading-[26px] text-[#050A28]">
-              AI Teacher
-            </Text>
-
-            <HeaderEndCallButton
-              disabled={!streamAudioCall.canEndCall}
-              onPress={handleEndCallPress}
-            />
+      <View className="flex-1 px-[14px] pb-[10px] pt-[4px]">
+        <View className="relative h-[64px] flex-row items-center justify-between">
+          <View className="w-[92px] items-start">
+            <BackButton onPress={handleBackPress} />
           </View>
 
-          <View className="mt-[2px] flex-row items-center justify-between pl-[16px] pr-[10px]">
-            <View className="flex-row items-center">
-              <View
-                className={`h-[8px] w-[8px] rounded-full ${
-                  hasStatusError
-                    ? "bg-[#FF4247]"
-                    : getStatusDotClass(streamAudioCall.status)
-                }`}
-              />
-              <Text
-                numberOfLines={1}
-                className="ml-[6px] max-w-[190px] font-poppins-semibold text-[13px] leading-[18px]"
-                style={{ color: statusColor }}
-              >
-                {streamAudioCall.statusLabel}
-              </Text>
-            </View>
-            <View className="flex-row items-center gap-[6px]">
-              <AgentStatusBadge status={streamAudioCall.agentStatus} />
-              <Text
-                numberOfLines={1}
-                className="ml-[2px] max-w-[120px] text-right font-poppins-semibold text-[12px] leading-[17px] text-[#737B98]"
-              >
-                {streamAudioCall.displayName}
-              </Text>
-            </View>
-          </View>
+          <Text className="absolute left-[92px] right-[92px] text-center font-poppins-bold text-[20px] leading-[26px] text-[#050A28]">
+            AI Teacher
+          </Text>
 
-          <View
-            className="mt-[12px] overflow-hidden rounded-[23px] bg-[#F7F4FF]"
-            style={{ height: sceneHeight }}
-          >
-            <Image
-              source={images.mascotWelcome}
-              resizeMode="contain"
-              className="self-center"
-              style={{
-                height: mascotSize,
-                marginTop: 18,
-                opacity: isConnecting ? 0.38 : 1,
-                width: mascotSize,
-              }}
-            />
+          <HeaderEndCallButton
+            disabled={!streamAudioCall.canEndCall}
+            onPress={handleEndCallPress}
+          />
+        </View>
 
+        <View className="mt-[2px] flex-row items-center justify-between pl-[16px] pr-[10px]">
+          <View className="flex-row items-center">
             <View
-              className="absolute bottom-[17px] left-[16px] right-[16px] min-h-[66px] rounded-[17px] bg-white px-[15px] py-[11px]"
-              style={{
-                boxShadow: "0 8px 18px rgba(13, 19, 43, 0.08)",
-              }}
+              className={`h-[8px] w-[8px] rounded-full ${
+                hasStatusError
+                  ? "bg-[#FF4247]"
+                  : getStatusDotClass(streamAudioCall.status)
+              }`}
+            />
+            <Text
+              numberOfLines={1}
+              className="ml-[6px] max-w-[190px] font-poppins-semibold text-[13px] leading-[18px]"
+              style={{ color: statusColor }}
             >
-              <View className="flex-row items-center">
-                {isConnecting ? (
-                  <ActivityIndicator color="#A693F5" size="small" />
-                ) : null}
-                <Text
-                  numberOfLines={1}
-                  className={`font-poppins-bold text-[17px] leading-[22px] text-[#050A28] ${
-                    isConnecting ? "ml-[11px]" : ""
-                  }`}
-                >
-                  {getTeacherCardTitle(
-                    lesson,
-                    streamAudioCall.status,
-                    teacherReply,
-                  )}
-                </Text>
-              </View>
-              <Text
-                numberOfLines={1}
-                className="mt-[3px] pr-[42px] font-poppins-semibold text-[13px] leading-[18px] text-[#8B91A7]"
-              >
-                {getTeacherCardSubtitle(
-                  lesson,
-                  streamAudioCall.status,
-                  firstPhrase?.text,
-                )}
-              </Text>
-
-              <View className="absolute right-[16px] top-[19px] h-[42px] w-[42px] items-center justify-center rounded-full bg-[#F0E9FF]">
-                <SymbolView
-                  name={{
-                    ios: "speaker.wave.2.fill",
-                    android: "volume_up",
-                    web: "volume_up",
-                  }}
-                  size={27}
-                  tintColor="#5B3BF6"
-                  type="monochrome"
-                />
-              </View>
-            </View>
+              {streamAudioCall.statusLabel}
+            </Text>
           </View>
-
-          <View className="mt-[22px] items-center px-[8px]">
-            <PushToTalkButton
-              disabled={!streamAudioCall.canToggleMic}
-              icon={{
-                ios: streamAudioCall.isMicOn ? "mic.fill" : "mic.slash.fill",
-                android: streamAudioCall.isMicOn ? "mic" : "mic_off",
-                web: streamAudioCall.isMicOn ? "mic" : "mic_off",
-              }}
-              isListening={streamAudioCall.isMicOn}
-              onPressIn={streamAudioCall.startTalking}
-              onPressOut={streamAudioCall.stopTalking}
-            />
-          </View>
-
-          <View className="mt-[24px] flex-row rounded-[18px] border border-[#EEF0F6] bg-white px-[5px] py-[13px]">
-            <FeedbackColumn
-              label="Speaking"
-              value="Excellent"
-              valueColor="#13C91B"
-            />
-            <Divider />
-            <FeedbackColumn
-              label="Pronunciation"
-              value="Great"
-              valueColor="#168BFF"
-            />
-            <Divider />
-            <FeedbackColumn label="Grammar" value="Good" valueColor="#5B3BF6" />
+          <View className="flex-row items-center gap-[6px]">
+            <AgentStatusBadge status={streamAudioCall.agentStatus} />
+            <Text
+              numberOfLines={1}
+              className="ml-[2px] max-w-[120px] text-right font-poppins-semibold text-[12px] leading-[17px] text-[#737B98]"
+            >
+              {streamAudioCall.displayName}
+            </Text>
           </View>
         </View>
-      </ScrollView>
+
+        <View
+          className="mt-[10px] items-center justify-center overflow-hidden rounded-[23px] bg-[#F7F4FF]"
+          style={{ height: sceneHeight }}
+        >
+          <Image
+            source={images.mascotWelcome}
+            resizeMode="contain"
+            style={{
+              height: mascotSize,
+              opacity: isConnecting ? 0.38 : 1,
+              width: mascotSize,
+            }}
+          />
+        </View>
+
+        <View className="mt-[12px] px-[12px]">
+          <LiveCaptionBubble
+            caption={activeCaption}
+            isCompact={isCompactHeight}
+            minHeight={captionMinHeight}
+          />
+        </View>
+
+        <View className="flex-1" />
+
+        <View className="items-center px-[8px]">
+          <TalkToggleButton
+            disabled={!streamAudioCall.canToggleMic}
+            icon={{
+              ios: "mic.fill",
+              android: "mic",
+              web: "mic",
+            }}
+            isListening={streamAudioCall.isMicOn}
+            size={micButtonSize}
+            onPress={streamAudioCall.toggleTalking}
+          />
+        </View>
+
+        <View className="mt-[10px] flex-row rounded-[18px] border border-[#EEF0F6] bg-white px-[5px] py-[10px]">
+          <FeedbackColumn
+            label="Speaking"
+            value="Excellent"
+            valueColor="#13C91B"
+          />
+          <Divider />
+          <FeedbackColumn
+            label="Pronunciation"
+            value="Great"
+            valueColor="#168BFF"
+          />
+          <Divider />
+          <FeedbackColumn label="Grammar" value="Good" valueColor="#5B3BF6" />
+        </View>
+      </View>
     </SafeAreaView>
   );
+}
+
+type LiveCaptionBubbleProps = {
+  caption: LiveCaption;
+  isCompact: boolean;
+  minHeight: number;
+};
+
+function LiveCaptionBubble({
+  caption,
+  isCompact,
+  minHeight,
+}: LiveCaptionBubbleProps) {
+  const isTeacher = caption.speakerRole === "teacher";
+
+  return (
+    <View
+      className={`rounded-[22px] px-[22px] ${
+        isTeacher ? "bg-[#7B3FF2]" : "border border-[#ECEEFA] bg-white"
+      }`}
+      style={{
+        boxShadow: isTeacher
+          ? "0 10px 22px rgba(91, 59, 246, 0.22)"
+          : "0 10px 22px rgba(13, 19, 43, 0.08)",
+        minHeight,
+        paddingBottom: isCompact ? 16 : 18,
+        paddingTop: isCompact ? 14 : 17,
+      }}
+    >
+      <Text
+        numberOfLines={1}
+        className="font-poppins-bold text-[15px] leading-[20px]"
+        style={{ color: isTeacher ? "#D9C3FF" : "#8B91A7" }}
+      >
+        {isTeacher ? "AI Teacher" : caption.speakerName}
+      </Text>
+      <Text
+        numberOfLines={isCompact ? 3 : 4}
+        className="mt-[6px] font-poppins-semibold text-[24px] leading-[31px]"
+        style={{ color: isTeacher ? "#FFFFFF" : "#20243A" }}
+      >
+        {caption.text}
+      </Text>
+    </View>
+  );
+}
+
+function getActiveCaption(
+  captions: LiveCaption[],
+  isMicOn: boolean,
+  displayName: string,
+  teacherFallbackTitle: string,
+  teacherFallbackSubtitle: string,
+): LiveCaption {
+  const latestCaption = captions[captions.length - 1];
+
+  if (latestCaption) {
+    return latestCaption;
+  }
+
+  if (isMicOn) {
+    return {
+      id: "learner-listening",
+      speakerName: displayName,
+      speakerRole: "learner",
+      startTime: "",
+      text: "Listening...",
+    };
+  }
+
+  return {
+    id: "teacher-fallback",
+    speakerName: "AI Teacher",
+    speakerRole: "teacher",
+    startTime: "",
+    text:
+      teacherFallbackSubtitle === "Audio lesson in progress"
+        ? teacherFallbackTitle
+        : teacherFallbackSubtitle,
+  };
 }
 
 type BackButtonProps = {
@@ -300,31 +349,28 @@ function HeaderEndCallButton({
   );
 }
 
-type PushToTalkButtonProps = {
+type TalkToggleButtonProps = {
   disabled?: boolean;
   icon: SymbolViewProps["name"];
   isListening: boolean;
-  onPressIn: () => Promise<void>;
-  onPressOut: () => Promise<void>;
+  size: number;
+  onPress: () => Promise<void>;
 };
 
-function PushToTalkButton({
+function TalkToggleButton({
   disabled = false,
   icon,
   isListening,
-  onPressIn,
-  onPressOut,
-}: PushToTalkButtonProps) {
+  size,
+  onPress,
+}: TalkToggleButtonProps) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Hold to talk"
+      accessibilityLabel={isListening ? "Stop talking" : "Tap to talk"}
       disabled={disabled}
-      onPressIn={() => {
-        void onPressIn();
-      }}
-      onPressOut={() => {
-        void onPressOut();
+      onPress={() => {
+        void onPress();
       }}
       className="items-center"
       style={({ pressed }) => ({
@@ -332,17 +378,24 @@ function PushToTalkButton({
       })}
     >
       <View
-        className={`h-[92px] w-[92px] items-center justify-center rounded-full ${
+        className={`items-center justify-center rounded-full ${
           isListening ? "bg-[#21C16B]" : "bg-[#5B3BF6]"
         }`}
         style={{
           boxShadow: disabled ? "none" : "0 12px 28px rgba(91, 59, 246, 0.22)",
+          height: size,
+          width: size,
         }}
       >
-        <SymbolView name={icon} size={39} tintColor="#FFFFFF" type="monochrome" />
+        <SymbolView
+          name={icon}
+          size={Math.round(size * 0.42)}
+          tintColor="#FFFFFF"
+          type="monochrome"
+        />
       </View>
-      <Text className="mt-[10px] text-center font-poppins-bold text-[13px] leading-[18px] text-[#737B98]">
-        {isListening ? "Listening" : "Hold to talk"}
+      <Text className="mt-[7px] text-center font-poppins-bold text-[13px] leading-[18px] text-[#737B98]">
+        {isListening ? "Tap when done" : "Tap to talk"}
       </Text>
     </Pressable>
   );

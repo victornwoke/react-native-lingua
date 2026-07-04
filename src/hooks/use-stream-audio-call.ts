@@ -1,18 +1,25 @@
 import { useAuth, useSession, useUser } from "@clerk/expo";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  type MutableRefObject,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Platform } from "react-native";
 
 import { clerkAuthOptions } from "@/lib/clerk-auth";
 import {
-    createStreamAudioSession,
-    endAgentActivity,
-    interruptAgentSession,
-    startAgentSession,
-    stopAgentSession,
-    type AgentSession,
-    type StreamAudioSession,
+  createStreamAudioSession,
+  endAgentActivity,
+  interruptAgentSession,
+  startAgentSession,
+  stopAgentSession,
+  type AgentSession,
+  type StreamAudioSession,
 } from "@/lib/stream-audio";
 import { useSelectedLanguage } from "@/store/language-store";
 import { languages } from "../../data/languages";
@@ -32,23 +39,32 @@ export type AgentConnectionStatus =
   | "connected"
   | "failed";
 
+export type LiveCaption = {
+  id: string;
+  speakerName: string;
+  speakerRole: "teacher" | "learner";
+  startTime: string;
+  text: string;
+};
+
 type UseStreamAudioCallResult = {
   agentStatus: AgentConnectionStatus;
   canEndCall: boolean;
   canToggleCamera: boolean;
   canToggleMic: boolean;
+  captionStatus: "idle" | "starting" | "live" | "unavailable";
   displayName: string;
   errorMessage: string | null;
   isCameraOn: boolean;
   isMicOn: boolean;
   isStarting: boolean;
+  liveCaptions: LiveCaption[];
   startCall: () => Promise<void>;
-  startTalking: () => Promise<void>;
   status: StreamAudioCallStatus;
   statusLabel: string;
-  stopTalking: () => Promise<void>;
   toggleCamera: () => Promise<void>;
   toggleMicrophone: () => Promise<void>;
+  toggleTalking: () => Promise<void>;
   endCall: () => Promise<void>;
 };
 
@@ -56,6 +72,10 @@ type StreamCall = {
   camera: {
     disable: () => Promise<unknown>;
     enable: () => Promise<unknown>;
+  };
+  state: {
+    captioning?: boolean;
+    closedCaptions$: StreamObservable<StreamClosedCaption[]>;
   };
   microphone: {
     disable: () => Promise<unknown>;
@@ -67,11 +87,70 @@ type StreamCall = {
     data?: Record<string, unknown>;
   }) => Promise<unknown>;
   leave: () => Promise<unknown>;
+  on: (
+    eventName: "custom",
+    callback: (event: StreamCustomEvent) => void,
+  ) => () => void;
+  startClosedCaptions: (options?: StreamClosedCaptionsOptions) => Promise<unknown>;
+  stopClosedCaptions: (options?: { stop_transcription?: boolean }) => Promise<unknown>;
+  updateClosedCaptionSettings: (config: {
+    maxVisibleCaptions?: number;
+    visibilityDurationMs?: number;
+  }) => void;
 };
 
 type StreamVideoClientLike = {
   call: (callType: string, callId: string) => StreamCall;
   disconnectUser?: () => Promise<unknown>;
+};
+
+type StreamObservable<T> = {
+  subscribe: (next: (value: T) => void) => StreamSubscription;
+};
+
+type StreamSubscription = {
+  unsubscribe: () => void;
+};
+
+type StreamClosedCaption = {
+  id: string;
+  speaker_id: string;
+  start_time: string;
+  text: string;
+  user?: {
+    id: string;
+    name?: string;
+  };
+};
+
+type StreamCustomEvent = {
+  created_at?: string;
+  custom?: unknown;
+};
+
+type LiveSpeechCustomPayload = {
+  completed?: boolean;
+  kind?: string;
+  messageId?: string;
+  speakerName?: string;
+  speakerRole?: "teacher" | "learner";
+  text?: string;
+};
+
+type NormalizedLiveSpeechPayload = {
+  messageId: string;
+  speakerName?: string;
+  speakerRole: "teacher" | "learner";
+  text: string;
+};
+
+type StreamClosedCaptionsOptions = {
+  enable_transcription?: boolean;
+  language?: "auto";
+  speech_segment_config?: {
+    max_speech_caption_ms?: number;
+    silence_duration_ms?: number;
+  };
 };
 
 type StreamCallManagerLike = {
@@ -95,6 +174,9 @@ type StreamCallManagerLike = {
 
 const isExpoGo = Constants.appOwnership === "expo";
 const isIosSimulator = Platform.OS === "ios" && !Device.isDevice;
+const AGENT_USER_ID = "lingua-ai-teacher";
+const LIVE_SPEECH_EVENT_KIND = "lingua.live_speech";
+const MAX_LIVE_CAPTIONS = 8;
 
 export function useStreamAudioCall(lesson: Lesson | undefined) {
   const { getToken, isLoaded, isSignedIn, userId } = useAuth(clerkAuthOptions);
@@ -106,19 +188,24 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   const [isCameraOn, setIsCameraOn] = useState(false);
   const [isMicOn, setIsMicOn] = useState(!isIosSimulator);
   const [agentStatus, setAgentStatus] = useState<AgentConnectionStatus>("idle");
+  const [captionStatus, setCaptionStatus] =
+    useState<UseStreamAudioCallResult["captionStatus"]>("idle");
+  const [liveCaptions, setLiveCaptions] = useState<LiveCaption[]>([]);
   const callRef = useRef<StreamCall | null>(null);
   const clientRef = useRef<StreamVideoClientLike | null>(null);
   const callManagerRef = useRef<StreamCallManagerLike | null>(null);
   const wantsToTalkRef = useRef(false);
   const agentSessionRef = useRef<AgentSession | null>(null);
   const agentTokenRef = useRef<string | null>(null);
+  const captionsSubscriptionRef = useRef<StreamSubscription | null>(null);
+  const liveSpeechSubscriptionRef = useRef<(() => void) | null>(null);
 
   const language = useMemo(() => {
-    return (
-      selectedLanguage ??
-      languages.find((item) => item.id === lesson?.languageId) ??
-      languages[0]
+    const lessonLanguage = languages.find(
+      (item) => item.id === lesson?.languageId,
     );
+
+    return lessonLanguage ?? selectedLanguage ?? languages[0];
   }, [lesson?.languageId, selectedLanguage]);
 
   const displayName =
@@ -160,6 +247,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       setIsCameraOn(false);
       setIsMicOn(false);
       setAgentStatus("idle");
+      setCaptionStatus("idle");
+      setLiveCaptions([]);
       setStatus("loading");
 
       const clerkSessionToken = await getToken({ skipCache: true });
@@ -237,6 +326,17 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       await call.join({ create: true, data: audioSession.callData });
 
       await call.microphone.disable().catch(() => undefined);
+      setCaptionStatus(call.state.captioning ? "live" : "starting");
+      captionsSubscriptionRef.current = subscribeToLiveCaptions(
+        call,
+        audioSession.user.id,
+        setLiveCaptions,
+      );
+      liveSpeechSubscriptionRef.current = subscribeToLiveSpeechEvents(
+        call,
+        setLiveCaptions,
+      );
+      void startLiveCaptions(call, setCaptionStatus);
 
       startSpeakerAudio(streamModule.callManager, {
         playbackOnly: isIosSimulator,
@@ -277,8 +377,14 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       clientRef.current = null;
       callManagerRef.current = null;
       wantsToTalkRef.current = false;
+      captionsSubscriptionRef.current?.unsubscribe();
+      captionsSubscriptionRef.current = null;
+      liveSpeechSubscriptionRef.current?.();
+      liveSpeechSubscriptionRef.current = null;
       setIsCameraOn(false);
       setIsMicOn(false);
+      setCaptionStatus("unavailable");
+      setLiveCaptions([]);
       setErrorMessage(getStreamAudioErrorMessage(error));
       setStatus("error");
     }
@@ -393,10 +499,25 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     }
   }, []);
 
+  const toggleTalking = useCallback(async () => {
+    if (isMicOn) {
+      await stopTalking();
+      return;
+    }
+
+    await startTalking();
+  }, [isMicOn, startTalking, stopTalking]);
+
   const endCall = useCallback(async () => {
     const call = callRef.current;
     const agentSession = agentSessionRef.current;
     const agentToken = agentTokenRef.current;
+    const captionsSubscription = captionsSubscriptionRef.current;
+    const liveSpeechSubscription = liveSpeechSubscriptionRef.current;
+    captionsSubscriptionRef.current = null;
+    captionsSubscription?.unsubscribe();
+    liveSpeechSubscriptionRef.current = null;
+    liveSpeechSubscription?.();
 
     // Stop agent session first
     if (agentSession && agentToken) {
@@ -417,6 +538,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
     try {
       setErrorMessage(null);
+      await call.stopClosedCaptions({ stop_transcription: false }).catch(() => undefined);
       await call.leave();
     } catch (error) {
       console.error("Failed to leave Stream call.", error);
@@ -436,6 +558,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
       setIsCameraOn(false);
       setIsMicOn(false);
+      setCaptionStatus("idle");
+      setLiveCaptions([]);
       setStatus("ended");
     }
   }, []);
@@ -446,12 +570,18 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       const activeClient = clientRef.current;
       const activeAgentSession = agentSessionRef.current;
       const activeAgentToken = agentTokenRef.current;
+      const activeCaptionsSubscription = captionsSubscriptionRef.current;
+      const activeLiveSpeechSubscription = liveSpeechSubscriptionRef.current;
       callRef.current = null;
       clientRef.current = null;
       callManagerRef.current = null;
       wantsToTalkRef.current = false;
       agentSessionRef.current = null;
       agentTokenRef.current = null;
+      captionsSubscriptionRef.current = null;
+      liveSpeechSubscriptionRef.current = null;
+      activeCaptionsSubscription?.unsubscribe();
+      activeLiveSpeechSubscription?.();
 
       if (activeAgentSession && activeAgentToken) {
         void stopAgentSession({
@@ -462,6 +592,9 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       }
 
       if (activeCall) {
+        void activeCall
+          .stopClosedCaptions({ stop_transcription: false })
+          .catch(() => undefined);
         void activeCall.leave().catch(() => undefined);
       }
 
@@ -487,18 +620,19 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       status === "error",
     canToggleCamera: false,
     canToggleMic: canUseCall && !isIosSimulator,
+    captionStatus,
     displayName,
     errorMessage,
     isCameraOn,
     isMicOn,
     isStarting: status === "loading" || status === "connecting",
+    liveCaptions,
     startCall,
-    startTalking,
     status,
     statusLabel,
-    stopTalking,
     toggleCamera,
     toggleMicrophone,
+    toggleTalking,
     endCall,
   } satisfies UseStreamAudioCallResult;
 }
@@ -547,6 +681,148 @@ async function cleanupStreamCall(
   }
 
   await stopSpeakerAudio();
+}
+
+async function startLiveCaptions(
+  call: StreamCall,
+  setCaptionStatus: (status: UseStreamAudioCallResult["captionStatus"]) => void,
+) {
+  try {
+    setCaptionStatus("starting");
+    call.updateClosedCaptionSettings({
+      maxVisibleCaptions: 4,
+      visibilityDurationMs: 7_000,
+    });
+    await call.startClosedCaptions({
+      language: "auto",
+      speech_segment_config: {
+        max_speech_caption_ms: 1_500,
+        silence_duration_ms: 450,
+      },
+    });
+    setCaptionStatus("live");
+  } catch (error) {
+    console.info(
+      "Stream live captions were not started from the client; waiting for auto-on captions.",
+      error instanceof Error ? error.message : error,
+    );
+    setCaptionStatus("live");
+  }
+}
+
+function subscribeToLiveCaptions(
+  call: StreamCall,
+  learnerUserId: string,
+  setLiveCaptions: (updater: (captions: LiveCaption[]) => LiveCaption[]) => void,
+) {
+  return call.state.closedCaptions$.subscribe((captions) => {
+    if (captions.length === 0) {
+      return;
+    }
+
+    const normalizedCaptions = captions
+      .filter((caption) => caption.text.trim().length > 0)
+      .map((caption) => toLiveCaption(caption, learnerUserId));
+
+    if (normalizedCaptions.length === 0) {
+      return;
+    }
+
+    setLiveCaptions((currentCaptions) =>
+      mergeLiveCaptions(currentCaptions, normalizedCaptions),
+    );
+  });
+}
+
+function subscribeToLiveSpeechEvents(
+  call: StreamCall,
+  setLiveCaptions: (updater: (captions: LiveCaption[]) => LiveCaption[]) => void,
+) {
+  return call.on("custom", (event) => {
+    const payload = getLiveSpeechPayload(event.custom ?? event);
+
+    if (!payload) {
+      return;
+    }
+
+    setLiveCaptions((currentCaptions) =>
+      mergeLiveCaptions(currentCaptions, [
+        {
+          id: `agent-live-${payload.messageId}`,
+          speakerName:
+            payload.speakerName ??
+            (payload.speakerRole === "learner" ? "You" : "AI Teacher"),
+          speakerRole: payload.speakerRole,
+          startTime: event.created_at ?? "",
+          text: payload.text,
+        },
+      ]),
+    );
+  });
+}
+
+function getLiveSpeechPayload(value: unknown): NormalizedLiveSpeechPayload | null {
+  if (!value || typeof value !== "object") {
+    return null;
+  }
+
+  const payload = value as LiveSpeechCustomPayload;
+
+  if (
+    payload.kind !== LIVE_SPEECH_EVENT_KIND ||
+    !payload.messageId ||
+    !payload.speakerRole ||
+    typeof payload.text !== "string"
+  ) {
+    return null;
+  }
+
+  const text = payload.text.trim();
+
+  if (!text) {
+    return null;
+  }
+
+  return {
+    messageId: payload.messageId,
+    speakerName: payload.speakerName,
+    speakerRole: payload.speakerRole,
+    text,
+  };
+}
+
+function toLiveCaption(
+  caption: StreamClosedCaption,
+  learnerUserId: string,
+): LiveCaption {
+  const isLearner =
+    caption.speaker_id === learnerUserId || caption.user?.id === learnerUserId;
+  const speakerRole =
+    isLearner && caption.speaker_id !== AGENT_USER_ID ? "learner" : "teacher";
+
+  return {
+    id: caption.id || `${caption.speaker_id}-${caption.start_time}`,
+    speakerName:
+      speakerRole === "learner"
+        ? "You"
+        : caption.user?.name?.trim() || "AI Teacher",
+    speakerRole,
+    startTime: caption.start_time,
+    text: caption.text.trim(),
+  };
+}
+
+function mergeLiveCaptions(
+  currentCaptions: LiveCaption[],
+  nextCaptions: LiveCaption[],
+) {
+  const captionMap = new Map<string, LiveCaption>();
+
+  [...currentCaptions, ...nextCaptions].forEach((caption) => {
+    captionMap.set(caption.id, caption);
+  });
+
+  return Array.from(captionMap.values()).slice(-MAX_LIVE_CAPTIONS);
 }
 
 function startSpeakerAudio(
@@ -662,7 +938,7 @@ async function startAgentForCall(
   callId: string,
   callType: string,
   clerkSessionToken: string,
-  agentSessionRef: React.MutableRefObject<AgentSession | null>,
+  agentSessionRef: MutableRefObject<AgentSession | null>,
   setAgentStatus: (status: AgentConnectionStatus) => void,
 ) {
   setAgentStatus("connecting");

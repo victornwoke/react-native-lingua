@@ -111,6 +111,7 @@ export async function POST(request: Request) {
         conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
         correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
         goals: lesson.goals.map((g) => g.description).join("; "),
+        languageCode: language.code,
         languageId: language.id,
         languageName: language.name,
         lessonDescription: lesson.description,
@@ -131,6 +132,15 @@ export async function POST(request: Request) {
           default_device: "speaker",
           mic_default_on: false,
           speaker_default_on: true,
+        },
+        transcription: {
+          closed_caption_mode: "auto-on",
+          language: "auto",
+          mode: "auto-on",
+          speech_segment_config: {
+            max_speech_caption_ms: 1_500,
+            silence_duration_ms: 450,
+          },
         },
         video: {
           camera_default_on: false,
