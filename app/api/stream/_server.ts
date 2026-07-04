@@ -175,7 +175,14 @@ function decodeBase64UrlBytes(value: string) {
     const padded = normalized.padEnd(Math.ceil(normalized.length / 4) * 4, "=");
     const binary = atob(padded);
 
-    return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    const bytes = Uint8Array.from(binary, (character) =>
+      character.charCodeAt(0),
+    );
+
+    return bytes.buffer.slice(
+      bytes.byteOffset,
+      bytes.byteOffset + bytes.byteLength,
+    );
   } catch {
     throw new RouteError("Invalid Clerk session.", 401);
   }
@@ -187,26 +194,32 @@ async function verifyJwtSignature({
   signingInput,
 }: {
   jwtKeyPem: string;
-  signature: Uint8Array;
+  signature: ArrayBuffer;
   signingInput: string;
 }) {
-  const publicKey = await crypto.subtle.importKey(
-    "spki",
-    pemToUint8Array(jwtKeyPem),
-    {
-      hash: "SHA-256",
-      name: "RSASSA-PKCS1-v1_5",
-    },
-    false,
-    ["verify"],
-  );
+  let isValid = false;
 
-  const isValid = await crypto.subtle.verify(
-    "RSASSA-PKCS1-v1_5",
-    publicKey,
-    signature,
-    new TextEncoder().encode(signingInput),
-  );
+  try {
+    const publicKey = await crypto.subtle.importKey(
+      "spki",
+      pemToUint8Array(jwtKeyPem),
+      {
+        hash: "SHA-256",
+        name: "RSASSA-PKCS1-v1_5",
+      },
+      false,
+      ["verify"],
+    );
+
+    isValid = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      publicKey,
+      signature,
+      new TextEncoder().encode(signingInput),
+    );
+  } catch {
+    throw new RouteError("CLERK_JWT_KEY is invalid in your .env.", 500);
+  }
 
   if (!isValid) {
     throw new RouteError("Invalid Clerk session.", 401);
@@ -214,14 +227,18 @@ async function verifyJwtSignature({
 }
 
 function pemToUint8Array(value: string) {
-  const normalized = value.replace(/\\n/g, "\n").trim();
-  const base64 = normalized
-    .replace(/-----BEGIN PUBLIC KEY-----/g, "")
-    .replace(/-----END PUBLIC KEY-----/g, "")
-    .replace(/\s+/g, "");
-  const binary = atob(base64);
+  try {
+    const normalized = value.replace(/\\n/g, "\n").trim();
+    const base64 = normalized
+      .replace(/-----BEGIN PUBLIC KEY-----/g, "")
+      .replace(/-----END PUBLIC KEY-----/g, "")
+      .replace(/\s+/g, "");
+    const binary = atob(base64);
 
-  return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+    return Uint8Array.from(binary, (character) => character.charCodeAt(0));
+  } catch {
+    throw new RouteError("CLERK_JWT_KEY is invalid in your .env.", 500);
+  }
 }
 
 async function fetchClerkSession(sessionId: string, clerkSecretKey: string) {
@@ -250,7 +267,9 @@ async function fetchClerkSession(sessionId: string, clerkSecretKey: string) {
 }
 
 function isUsableClerkSessionStatus(status: string) {
-  return status === "active";
+  // Clerk can briefly return "pending" right after sign-in / token refresh.
+  // We still require a valid signed token and matching user/session.
+  return status === "active" || status === "pending";
 }
 
 function getInactiveClerkSessionMessage(status: string | undefined) {
