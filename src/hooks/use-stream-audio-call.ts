@@ -1,6 +1,8 @@
 import { useAuth, useSession, useUser } from "@clerk/expo";
 import Constants from "expo-constants";
+import * as Device from "expo-device";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Platform } from "react-native";
 
 import { clerkAuthOptions } from "@/lib/clerk-auth";
 import {
@@ -56,7 +58,10 @@ type StreamCall = {
     enable: () => Promise<unknown>;
   };
   endCall: () => Promise<unknown>;
-  join: () => Promise<unknown>;
+  join: (data?: {
+    create?: boolean;
+    data?: Record<string, unknown>;
+  }) => Promise<unknown>;
   leave: () => Promise<unknown>;
 };
 
@@ -65,7 +70,27 @@ type StreamVideoClientLike = {
   disconnectUser?: () => Promise<unknown>;
 };
 
+type StreamCallManagerLike = {
+  speaker: {
+    setForceSpeakerphoneOn: (force: boolean) => void;
+    setMute: (mute: boolean) => void;
+  };
+  start: (
+    config?:
+      | {
+          audioRole: "communicator";
+          deviceEndpointType?: "speaker" | "earpiece";
+        }
+      | {
+          audioRole: "listener";
+          enableStereoAudioOutput?: boolean;
+        },
+  ) => void;
+  stop: () => void;
+};
+
 const isExpoGo = Constants.appOwnership === "expo";
+const isIosSimulator = Platform.OS === "ios" && !Device.isDevice;
 
 export function useStreamAudioCall(lesson: Lesson | undefined) {
   const { getToken, isLoaded, isSignedIn, userId } = useAuth(clerkAuthOptions);
@@ -75,7 +100,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   const [status, setStatus] = useState<StreamAudioCallStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
-  const [isMicOn, setIsMicOn] = useState(true);
+  const [isMicOn, setIsMicOn] = useState(!isIosSimulator);
   const [agentStatus, setAgentStatus] = useState<AgentConnectionStatus>("idle");
   const callRef = useRef<StreamCall | null>(null);
   const clientRef = useRef<StreamVideoClientLike | null>(null);
@@ -127,7 +152,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     try {
       setErrorMessage(null);
       setIsCameraOn(false);
-      setIsMicOn(true);
+      setIsMicOn(!isIosSimulator);
       setAgentStatus("idle");
       setStatus("loading");
 
@@ -181,6 +206,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
               user: StreamAudioSession["user"];
             }) => StreamVideoClientLike;
           };
+          callManager: StreamCallManagerLike;
         };
 
       const client = streamModule.StreamVideoClient.getOrCreateInstance({
@@ -194,14 +220,41 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       callRef.current = call;
       setStatus("connecting");
 
-      await call.join();
+      // Prime audio routing first. iOS Simulator can drop the first output cycle
+      // if routing is configured too late.
+      startSpeakerAudio(streamModule.callManager, {
+        playbackOnly: isIosSimulator,
+      });
+
+      await call.join({ create: true, data: audioSession.callData });
+
+      startSpeakerAudio(streamModule.callManager, {
+        playbackOnly: isIosSimulator,
+      });
+
       let microphoneStarted = false;
 
-      try {
-        await call.microphone.enable();
-        microphoneStarted = true;
-      } catch (error) {
-        console.warn("Stream microphone did not start.", error);
+      if (isIosSimulator) {
+        setTimeout(() => {
+          startSpeakerAudio(streamModule.callManager, { playbackOnly: true });
+        }, 350);
+
+        setTimeout(() => {
+          startSpeakerAudio(streamModule.callManager, { playbackOnly: true });
+        }, 1200);
+      }
+
+      if (isIosSimulator) {
+        console.info(
+          "Skipping Stream microphone auto-start on iOS Simulator to keep speaker playback stable.",
+        );
+      } else {
+        try {
+          await call.microphone.enable();
+          microphoneStarted = true;
+        } catch (error) {
+          console.warn("Stream microphone did not start.", error);
+        }
       }
 
       setIsCameraOn(false);
@@ -245,6 +298,10 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   }, []);
 
   const toggleMicrophone = useCallback(async () => {
+    if (isIosSimulator) {
+      return;
+    }
+
     const call = callRef.current;
 
     if (!call || status !== "joined") {
@@ -269,7 +326,6 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
           ? error.message
           : "Could not update the microphone.",
       );
-      setStatus("error");
     }
   }, [isMicOn, status]);
 
@@ -297,9 +353,9 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
     try {
       setErrorMessage(null);
-      await call.endCall();
+      await call.leave();
     } catch (error) {
-      console.error("Failed to end Stream call, leaving instead.", error);
+      console.error("Failed to leave Stream call.", error);
       await call.leave().catch(() => undefined);
     } finally {
       callRef.current = null;
@@ -309,6 +365,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       if (client?.disconnectUser) {
         await client.disconnectUser().catch(() => undefined);
       }
+
+      await stopSpeakerAudio();
 
       setIsCameraOn(false);
       setIsMicOn(false);
@@ -342,6 +400,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       if (activeClient?.disconnectUser) {
         void activeClient.disconnectUser().catch(() => undefined);
       }
+
+      void stopSpeakerAudio();
     };
   }, []);
 
@@ -356,7 +416,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       status === "loading" ||
       status === "error",
     canToggleCamera: false,
-    canToggleMic: canUseCall,
+    canToggleMic: canUseCall && !isIosSimulator,
     displayName,
     errorMessage,
     isCameraOn,
@@ -377,6 +437,10 @@ function getStatusLabel(
 ) {
   if (status === "error") {
     return errorMessage ?? "Connection failed";
+  }
+
+  if (errorMessage) {
+    return errorMessage;
   }
 
   if (status === "loading") {
@@ -408,6 +472,48 @@ async function cleanupStreamCall(
 
   if (client?.disconnectUser) {
     await client.disconnectUser().catch(() => undefined);
+  }
+
+  await stopSpeakerAudio();
+}
+
+function startSpeakerAudio(
+  callManager: StreamCallManagerLike,
+  options?: { playbackOnly?: boolean },
+) {
+  try {
+    if (options?.playbackOnly) {
+      callManager.start({
+        audioRole: "listener",
+        enableStereoAudioOutput: true,
+      });
+      callManager.speaker.setMute(false);
+      callManager.speaker.setForceSpeakerphoneOn(true);
+      return;
+    }
+
+    callManager.start({
+      audioRole: "communicator",
+      deviceEndpointType: "speaker",
+    });
+    callManager.speaker.setMute(false);
+    callManager.speaker.setForceSpeakerphoneOn(true);
+  } catch (error) {
+    console.warn("Could not start Stream speaker audio.", error);
+  }
+}
+
+async function stopSpeakerAudio() {
+  try {
+    const streamModule =
+      (await import("@stream-io/video-react-native-sdk")) as {
+        callManager: StreamCallManagerLike;
+      };
+
+    streamModule.callManager.speaker.setForceSpeakerphoneOn(false);
+    streamModule.callManager.stop();
+  } catch {
+    // The native module may not be loaded during a failed setup path.
   }
 }
 
@@ -456,7 +562,7 @@ async function startAgentForCall(
     });
 
     if (!agentSession) {
-      // Server not configured or unreachable — degrade silently.
+      // Vision Agent server is optional, so keep the audio lesson usable if it is not running.
       setAgentStatus("idle");
       return;
     }

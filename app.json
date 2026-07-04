@@ -9,7 +9,8 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.anonymous.Duolingo-clone"
+      "bundleIdentifier": "com.victornwoke.lingua",
+      "developmentTeam": "UTRZ4RD6M6"
     },
     "android": {
       "adaptiveIcon": {
@@ -19,7 +20,7 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.anonymous.Duolingoclone"
+      "package": "com.victornwoke.lingua"
     },
     "web": {
       "output": "static",

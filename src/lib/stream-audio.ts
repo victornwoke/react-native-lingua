@@ -4,6 +4,7 @@ import type { Language, Lesson } from "../../types/learning";
 
 export type StreamAudioSession = {
   apiKey: string;
+  callData: Record<string, unknown>;
   callId: string;
   callType: string;
   languageName: string;

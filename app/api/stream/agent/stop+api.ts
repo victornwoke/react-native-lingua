@@ -21,7 +21,11 @@ export async function POST(request: Request) {
       );
     }
 
-    const visionAgentServerUrl = process.env.VISION_AGENT_SERVER_URL;
+    const visionAgentServerUrl =
+      process.env.VISION_AGENT_SERVER_URL ??
+      (process.env.NODE_ENV !== "production"
+        ? "http://127.0.0.1:8080"
+        : undefined);
 
     if (!visionAgentServerUrl) {
       return Response.json({ skipped: true });

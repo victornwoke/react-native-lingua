@@ -102,51 +102,51 @@ export async function POST(request: Request) {
     });
 
     const callId = createStreamAudioCallId();
+    const callData = {
+      created_by_id: streamUserId,
+      members: [{ user_id: streamUserId, role: "admin" }],
+      custom: {
+        audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+        clerkUserId: verifiedClerkUserId,
+        conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
+        correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
+        goals: lesson.goals.map((g) => g.description).join("; "),
+        languageId: language.id,
+        languageName: language.name,
+        lessonDescription: lesson.description,
+        lessonId: lesson.id,
+        lessonTitle: lesson.title,
+        phrases: lesson.phrases
+          .map((p) => `${p.text} (${p.translation})`)
+          .join("; "),
+        streamUserId,
+        teacherPersona: lesson.aiTeacherPrompt.persona,
+        teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
+        vocabulary: lesson.vocabulary
+          .map((v) => `${v.term}: ${v.translation}`)
+          .join("; "),
+      },
+      settings_override: {
+        audio: {
+          default_device: "speaker",
+          mic_default_on: false,
+          speaker_default_on: true,
+        },
+        video: {
+          camera_default_on: false,
+          enabled: false,
+          target_resolution: { height: 240, width: 240 },
+        },
+      },
+      video: false,
+    };
 
     await streamRequest({
       method: "POST",
       path: `/api/v2/video/call/${STREAM_CALL_TYPE}/${callId}`,
       serverToken,
       body: {
-        video: true,
-        data: {
-          created_by_id: streamUserId,
-          members: [{ user_id: streamUserId, role: "admin" }],
-          custom: {
-            audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
-            clerkUserId: verifiedClerkUserId,
-            conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
-            correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
-            goals: lesson.goals.map((g) => g.description).join("; "),
-            languageId: language.id,
-            languageName: language.name,
-            lessonDescription: lesson.description,
-            lessonId: lesson.id,
-            lessonTitle: lesson.title,
-            phrases: lesson.phrases
-              .map((p) => `${p.text} (${p.translation})`)
-              .join("; "),
-            streamUserId,
-            teacherPersona: lesson.aiTeacherPrompt.persona,
-            teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
-            vocabulary: lesson.vocabulary
-              .map((v) => `${v.term}: ${v.translation}`)
-              .join("; "),
-          },
-          settings_override: {
-            audio: {
-              default_device: "speaker",
-              mic_default_on: true,
-              speaker_default_on: true,
-            },
-            video: {
-              camera_default_on: false,
-              enabled: true,
-              target_resolution: { height: 480, width: 640 },
-            },
-          },
-          video: true,
-        },
+        data: callData,
       },
     });
 
@@ -160,6 +160,7 @@ export async function POST(request: Request) {
 
     return Response.json({
       apiKey,
+      callData,
       callId,
       callType: STREAM_CALL_TYPE,
       languageName: language.name,

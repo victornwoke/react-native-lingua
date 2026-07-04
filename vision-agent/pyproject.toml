@@ -6,7 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
   "python-dotenv>=1.0.1",
-  "vision-agents[getstream,openai]>=0.6.6",
+  "vision-agents[getstream,gemini]>=0.6.6",
 ]
 
 [dependency-groups]

@@ -11,7 +11,7 @@ Use API routes when you need:
 
 - **Server-side secrets** — API keys, database credentials, or tokens that must never reach the client
 - **Database operations** — Direct database queries that shouldn't be exposed
-- **Third-party API proxies** — Hide API keys when calling external services (OpenAI, Stripe, etc.)
+- **Third-party API proxies** — Hide API keys when calling external services (Gemini, Stripe, etc.)
 - **Server-side validation** — Validate data before database writes
 - **Webhook endpoints** — Receive callbacks from services like Stripe or GitHub
 - **Rate limiting** — Control access at the server level
@@ -136,17 +136,19 @@ Use `process.env` for server-side secrets:
 export async function POST(request: Request) {
   const { prompt } = await request.json();
 
-  const response = await fetch("https://api.openai.com/v1/chat/completions", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+  const response = await fetch(
+    "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": process.env.GEMINI_API_KEY ?? "",
+      },
+      body: JSON.stringify({
+        contents: [{ parts: [{ text: prompt }] }],
+      }),
     },
-    body: JSON.stringify({
-      model: "gpt-4",
-      messages: [{ role: "user", content: prompt }],
-    }),
-  });
+  );
 
   const data = await response.json();
   return Response.json(data);
@@ -231,7 +233,7 @@ This builds and deploys your API routes to EAS Hosting (Cloudflare Workers).
 
 ```bash
 # Create a secret
-eas env:create --name OPENAI_API_KEY --value sk-xxx --environment production
+eas env:create --name GEMINI_API_KEY --value your-key --environment production
 
 # Or use the Expo dashboard
 ```
@@ -258,7 +260,7 @@ API routes run on Cloudflare Workers. Key limitations:
 // Use Web Crypto instead of Node crypto
 const hash = await crypto.subtle.digest(
   "SHA-256",
-  new TextEncoder().encode("data")
+  new TextEncoder().encode("data"),
 );
 
 // Use fetch instead of node-fetch
@@ -350,7 +352,7 @@ export async function GET(request: Request) {
   const city = url.searchParams.get("city");
 
   const response = await fetch(
-    `https://api.weather.com/v1/current?city=${city}&key=${process.env.WEATHER_API_KEY}`
+    `https://api.weather.com/v1/current?city=${city}&key=${process.env.WEATHER_API_KEY}`,
   );
 
   return Response.json(await response.json());

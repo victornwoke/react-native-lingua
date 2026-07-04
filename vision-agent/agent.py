@@ -6,7 +6,7 @@ from typing import Any
 from dotenv import load_dotenv
 from vision_agents.core import Agent, AgentLauncher, Runner, User
 from vision_agents.core.instructions import Instructions
-from vision_agents.plugins import getstream, openai
+from vision_agents.plugins import gemini, getstream
 
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
@@ -25,6 +25,10 @@ load_dotenv(Path(__file__).resolve().parent / ".env")
 LessonMetadata = dict[str, str]
 
 
+def get_gemini_api_key() -> str | None:
+    return os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+
+
 def require_env(keys: tuple[str, ...]) -> None:
     missing_keys = [key for key in keys if not os.getenv(key)]
 
@@ -40,13 +44,14 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
         "You are a friendly, patient AI language teacher."
     )
     audio_instructions = metadata.get("audioInstructions") or (
-        "Speak clearly with short pauses. Keep each turn easy to repeat."
+        "Speak clearly with short pauses. Keep each reply to one or two conversational sentences."
     )
     teaching_objective = metadata.get("teachingObjective") or ""
     correction_style = metadata.get("correctionStyle") or (
         "Correct gently, model one clear example, and invite the learner to try again."
     )
     goals = metadata.get("goals") or ""
+    lesson_context = metadata.get("lessonDescription") or ""
     vocabulary = metadata.get("vocabulary") or ""
     phrases = metadata.get("phrases") or ""
 
@@ -59,6 +64,9 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
 
     if teaching_objective:
         lines += ["", f"Teaching objective: {teaching_objective}"]
+
+    if lesson_context:
+        lines += ["", f"Lesson context: {lesson_context}"]
 
     if goals:
         lines += ["", f"Lesson goals: {goals}"]
@@ -73,11 +81,17 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
         "",
         "Hard rules:",
         "- Always speak English by default.",
-        f"- Teach {language_name} words and phrases by explaining them in English.",
-        "- Keep every response short, warm, and beginner-friendly.",
-        "- Ask the learner to repeat or answer one small thing at a time.",
+        f"- Only teach {language_name} for this lesson. Do not switch to another language.",
+        "- Stay strictly inside the current lesson goal, vocabulary, phrases, and context.",
+        "- Do not introduce unrelated topics or extra vocabulary beyond tiny English support words.",
+        f"- Teach {language_name} words and phrases slowly, then give the English meaning.",
+        "- Sound warm, human, energetic, and lesson-focused. Use natural contractions.",
+        "- Keep every response to one or two short conversational sentences.",
+        "- Ask for exactly one learner response at the end of each turn, then stop speaking and wait.",
+        "- Do not continue the lesson until you hear the learner through the microphone.",
+        "- After the learner speaks, react to what they actually said before teaching the next tiny step.",
         f"- Correction style: {correction_style}",
-        "- Do not switch into a full lesson in the target language unless the learner asks.",
+        "- If the learner asks for something outside this lesson, gently bring them back to this lesson.",
         "",
         f"Audio style: {audio_instructions}",
     ]
@@ -93,28 +107,38 @@ def build_greeting(metadata: LessonMetadata) -> str:
 
     if conversation_starter:
         return (
-            f"Welcome the learner to their {language_name} lesson, {lesson_title}. "
-            "Say that you will teach through English, then introduce this phrase: "
-            f"'{conversation_starter}' — explain it briefly and ask the learner to repeat it."
+            "Speak aloud now. "
+            f"Warmly welcome the learner to their {lesson_title} lesson in {language_name}. "
+            "Mostly in English, teach only this lesson phrase slowly and naturally: "
+            f"'{conversation_starter}'. Give its English meaning, encourage them gently, "
+            "ask them to repeat it, then stop and wait for their voice."
         )
 
     if vocabulary:
         first_vocab = vocabulary.split(";")[0].strip()
         return (
-            f"Welcome the learner to their {language_name} lesson, {lesson_title}. "
-            "Say that you will teach through English, then introduce the first vocabulary item: "
-            f"'{first_vocab}' and ask them to repeat it."
+            "Speak aloud now. "
+            f"Warmly welcome the learner to their {lesson_title} lesson in {language_name}. "
+            "Mostly in English, teach only this lesson vocabulary item slowly and naturally: "
+            f"'{first_vocab}'. Give its English meaning, encourage them gently, "
+            "ask them to repeat it, then stop and wait for their voice."
         )
 
     return (
-        f"Welcome the learner to their {language_name} lesson, {lesson_title}. "
-        "Say that you will teach through English, then ask them to repeat one "
-        "short beginner phrase from the lesson."
+        "Speak aloud now. "
+        f"Warmly welcome the learner to their {lesson_title} lesson in {language_name}. "
+        "Mostly in English, teach one short beginner phrase from this lesson, "
+        "give its meaning, ask them to repeat it, then stop and wait for their voice."
     )
 
 
 async def create_agent(**kwargs: Any) -> Agent:
-    require_env(("STREAM_API_KEY", "STREAM_API_SECRET", "OPENAI_API_KEY"))
+    require_env(("STREAM_API_KEY", "STREAM_API_SECRET"))
+
+    if not get_gemini_api_key():
+        raise RuntimeError(
+            "Missing required environment variable(s): GEMINI_API_KEY or GOOGLE_API_KEY"
+        )
 
     instructions = build_teacher_instructions({})
 
@@ -122,10 +146,13 @@ async def create_agent(**kwargs: Any) -> Agent:
         edge=getstream.Edge(),
         agent_user=User(name=AGENT_NAME, id=AGENT_USER_ID),
         instructions=instructions,
-        llm=openai.Realtime(
-            model=os.getenv("OPENAI_REALTIME_MODEL", "gpt-realtime-2"),
-            voice=os.getenv("OPENAI_REALTIME_VOICE", "marin"),
-            send_video=False,
+        llm=gemini.Realtime(
+            model=os.getenv(
+                "GEMINI_REALTIME_MODEL",
+                "gemini-3.1-flash-live-preview",
+            ),
+            api_key=get_gemini_api_key(),
+            fps=1,
         ),
     )
 

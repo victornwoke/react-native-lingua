@@ -4,6 +4,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 import { languages } from "../../data/languages";
 import type { Language } from "../../types/learning";
+import { getPersistStorage } from "./persist-storage";
 
 const LANGUAGE_STORAGE_KEY = "language-selection-storage";
 
@@ -33,7 +34,7 @@ export const useLanguageStore = create<LanguageState>()(
     }),
     {
       name: LANGUAGE_STORAGE_KEY,
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getPersistStorage()),
       partialize: (state) => ({
         selectedLanguageId: state.selectedLanguageId,
       }),

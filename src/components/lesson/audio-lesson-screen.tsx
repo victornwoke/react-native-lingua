@@ -3,20 +3,20 @@ import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { useEffect, useRef, useState } from "react";
 import {
-    ActivityIndicator,
-    Image,
-    Pressable,
-    ScrollView,
-    Text,
-    useWindowDimensions,
-    View,
+  ActivityIndicator,
+  Image,
+  Pressable,
+  ScrollView,
+  Text,
+  useWindowDimensions,
+  View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
 import {
-    type AgentConnectionStatus,
-    useStreamAudioCall,
+  type AgentConnectionStatus,
+  useStreamAudioCall,
 } from "@/hooks/use-stream-audio-call";
 
 import { lessons } from "../../../data/lessons";
@@ -38,7 +38,10 @@ export function AudioLessonScreen() {
   const startStreamCall = streamAudioCall.startCall;
   const sceneHeight = Math.max(Math.min(height - 330, 470), 392);
   const mascotSize = Math.min(width - 76, sceneHeight - 104);
-  const statusColor = getStatusColor(streamAudioCall.status);
+  const hasStatusError = Boolean(streamAudioCall.errorMessage);
+  const statusColor = hasStatusError
+    ? "#FF4247"
+    : getStatusColor(streamAudioCall.status);
   const isConnecting =
     streamAudioCall.status === "loading" ||
     streamAudioCall.status === "connecting";
@@ -142,9 +145,11 @@ export function AudioLessonScreen() {
           <View className="mt-[2px] flex-row items-center justify-between pl-[16px] pr-[10px]">
             <View className="flex-row items-center">
               <View
-                className={`h-[8px] w-[8px] rounded-full ${getStatusDotClass(
-                  streamAudioCall.status,
-                )}`}
+                className={`h-[8px] w-[8px] rounded-full ${
+                  hasStatusError
+                    ? "bg-[#FF4247]"
+                    : getStatusDotClass(streamAudioCall.status)
+                }`}
               />
               <Text
                 numberOfLines={1}
@@ -251,7 +256,7 @@ export function AudioLessonScreen() {
                 web: streamAudioCall.isMicOn ? "mic" : "mic_off",
               }}
               isMuted={!streamAudioCall.isMicOn}
-              label={streamAudioCall.isMicOn ? "Mic" : "Muted"}
+              label={streamAudioCall.isMicOn ? "Mute" : "Muted"}
               onPress={streamAudioCall.toggleMicrophone}
             />
             <LessonControlButton
@@ -371,7 +376,7 @@ function LessonControlButton({
             : isDanger
               ? "bg-[#FF4247]"
               : isMuted
-                ? "bg-[#EEF0F6]"
+                ? "bg-[#F0E9FF]"
                 : "bg-white"
         }`}
         style={{
@@ -382,7 +387,15 @@ function LessonControlButton({
         <SymbolView
           name={icon}
           size={isDanger ? 29 : 26}
-          tintColor={disabled ? "#8B91A7" : isDanger ? "#FFFFFF" : "#07113C"}
+          tintColor={
+            disabled
+              ? "#8B91A7"
+              : isDanger
+                ? "#FFFFFF"
+                : isMuted
+                  ? "#5B3BF6"
+                  : "#07113C"
+          }
           type="monochrome"
         />
       </View>
