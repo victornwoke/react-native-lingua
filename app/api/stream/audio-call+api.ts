@@ -14,7 +14,7 @@ import {
   getVerifiedClerkUserId,
   streamRequest,
   toStreamId,
-} from "./_server";
+} from "@/lib/stream-server";
 
 const STREAM_AUDIO_CALL_ID_PREFIX = "audio";
 const TOKEN_VALIDITY_SECONDS = 60 * 60;

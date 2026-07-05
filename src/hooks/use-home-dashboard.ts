@@ -73,7 +73,7 @@ export function useHomeDashboard() {
       {
         id: "lesson",
         icon: { ios: "book.fill", android: "menu_book", web: "menu_book" },
-        iconColor: "#6545F6",
+        iconColor: "#6C4EF5",
         isComplete: planLessonComplete,
         subtitle: currentLesson?.title ?? "Start with the basics",
         title: "Lesson",
@@ -81,7 +81,7 @@ export function useHomeDashboard() {
       {
         id: "conversation",
         icon: { ios: "headphones", android: "headphones", web: "headphones" },
-        iconColor: "#6545F6",
+        iconColor: "#6C4EF5",
         isComplete: planConversationComplete,
         subtitle: currentLesson?.aiTeacherPrompt.teachingObjective
           ? "Talk about your day"
@@ -125,15 +125,15 @@ export function useHomeDashboard() {
   ]);
 }
 
-type UseStartVideoCallOptions = {
+type UseStartVoiceCallOptions = {
   currentLesson: Lesson | undefined;
   selectedLanguage: Language;
 };
 
-export function useStartVideoCall({
+export function useStartVoiceCall({
   currentLesson,
   selectedLanguage,
-}: UseStartVideoCallOptions) {
+}: UseStartVoiceCallOptions) {
   const router = useRouter();
   const posthog = usePostHog();
   const setActiveLessonId = useLessonProgressStore(

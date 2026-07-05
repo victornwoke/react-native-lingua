@@ -16,7 +16,7 @@ import {
 } from "@/components/home/today-plan-section";
 import {
   useHomeDashboard,
-  useStartVideoCall,
+  useStartVoiceCall,
 } from "@/hooks/use-home-dashboard";
 
 const greetingsByLanguageId: Record<string, string> = {
@@ -58,7 +58,7 @@ export default function HomeScreen() {
   } = useHomeDashboard();
   const horizontalPadding = width < 380 ? 18 : 24;
   const topPadding = height < 720 ? 8 : 16;
-  const handleStartVideoCall = useStartVideoCall({
+  const handleStartVoiceCall = useStartVoiceCall({
     currentLesson,
     selectedLanguage,
   });
@@ -182,7 +182,7 @@ export default function HomeScreen() {
 
           <NextUpCard
             subtitle={currentLesson?.title ?? `Practice ${selectedLanguage.name}`}
-            onPress={handleStartVideoCall}
+            onPress={handleStartVoiceCall}
           />
         </View>
       </ScrollView>

@@ -4,7 +4,7 @@ import {
   getRequiredString,
   getVerifiedClerkUserId,
   resolveVisionAgentServerUrl,
-} from "../_server";
+} from "@/lib/stream-server";
 
 type StartAgentRequestBody = {
   callId?: unknown;
