@@ -4,10 +4,11 @@ import { SymbolView } from "expo-symbols";
 import { images } from "@/constants/images";
 
 type NextUpCardProps = {
+  subtitle: string;
   onPress: () => void;
 };
 
-export function NextUpCard({ onPress }: NextUpCardProps) {
+export function NextUpCard({ onPress, subtitle }: NextUpCardProps) {
   return (
     <Pressable
       onPress={onPress}
@@ -20,8 +21,11 @@ export function NextUpCard({ onPress }: NextUpCardProps) {
         <Text className="mt-[4px] font-poppins-bold text-[18px] leading-[24px] text-[#111832]">
           AI Video Call
         </Text>
-        <Text className="mt-[3px] font-poppins-semibold text-[13px] leading-[18px] text-[#69728F]">
-          Practice speaking
+        <Text
+          numberOfLines={1}
+          className="mt-[3px] font-poppins-semibold text-[13px] leading-[18px] text-[#69728F]"
+        >
+          {subtitle}
         </Text>
       </View>
 

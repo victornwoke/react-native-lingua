@@ -6,10 +6,14 @@ import type { TodayPlanItem } from "@/components/home/today-plan-section";
 import {
   getActiveLessonForLanguage,
   getSelectedLearningLanguage,
+  getSortedLessonsForLanguage,
   getSortedUnitsForLanguage,
 } from "@/lib/lesson-selection";
 import { useLanguageStore } from "@/store/language-store";
-import { useLessonProgressStore } from "@/store/lesson-progress-store";
+import {
+  getTodayDateKey,
+  useLessonProgressStore,
+} from "@/store/lesson-progress-store";
 import type { Language, Lesson } from "../../types/learning";
 
 export function useHomeDashboard() {
@@ -19,10 +23,18 @@ export function useHomeDashboard() {
   const activeLessonIdByLanguageId = useLessonProgressStore(
     (state) => state.activeLessonIdByLanguageId,
   );
+  const completedLessonIdsByLanguageId = useLessonProgressStore(
+    (state) => state.completedLessonIdsByLanguageId,
+  );
+  const todayXp = useLessonProgressStore(
+    (state) => state.dailyXpByDate[getTodayDateKey()] ?? 0,
+  );
+  const streakCount = useLessonProgressStore((state) => state.streakCount);
 
   return useMemo(() => {
     const selectedLanguage = getSelectedLearningLanguage(selectedLanguageId);
     const languageUnits = getSortedUnitsForLanguage(selectedLanguage.id);
+    const languageLessons = getSortedLessonsForLanguage(selectedLanguage.id);
     const currentLesson = getActiveLessonForLanguage(
       selectedLanguage.id,
       activeLessonIdByLanguageId,
@@ -31,14 +43,20 @@ export function useHomeDashboard() {
       (unit) => unit.id === currentLesson?.unitId,
     );
     const dailyGoalXp = Math.max(selectedLanguage.dailyGoalMinutes * 2, 20);
-    const earnedXp = Math.min(currentLesson?.xpReward ?? 0, dailyGoalXp);
+    const earnedXp = Math.min(todayXp, dailyGoalXp);
     const unitLabel = `A1 · Unit ${currentUnit?.order ?? 1}`;
+    const completedLessonIds =
+      completedLessonIdsByLanguageId[selectedLanguage.id] ?? [];
+    const completedLessonCount = completedLessonIds.length;
+    const planLessonComplete = earnedXp > 0;
+    const planConversationComplete = earnedXp >= Math.ceil(dailyGoalXp * 0.7);
+    const planNewWordsComplete = earnedXp >= dailyGoalXp;
     const planItems: TodayPlanItem[] = [
       {
         id: "lesson",
         icon: { ios: "book.fill", android: "menu_book", web: "menu_book" },
         iconColor: "#6545F6",
-        isComplete: true,
+        isComplete: planLessonComplete,
         subtitle: currentLesson?.title ?? "Start with the basics",
         title: "Lesson",
       },
@@ -46,7 +64,7 @@ export function useHomeDashboard() {
         id: "conversation",
         icon: { ios: "headphones", android: "headphones", web: "headphones" },
         iconColor: "#6545F6",
-        isComplete: false,
+        isComplete: planConversationComplete,
         subtitle: currentLesson?.aiTeacherPrompt.teachingObjective
           ? "Talk about your day"
           : "Practice conversation",
@@ -60,7 +78,7 @@ export function useHomeDashboard() {
           web: "mark_unread_chat_alt",
         },
         iconColor: "#FF5B63",
-        isComplete: false,
+        isComplete: planNewWordsComplete,
         subtitle: `${currentLesson?.vocabulary.length ?? 0} words`,
         title: "New words",
       },
@@ -68,13 +86,22 @@ export function useHomeDashboard() {
 
     return {
       currentLesson,
+      completedLessonCount,
       dailyGoalXp,
       earnedXp,
+      lessonCount: languageLessons.length,
       planItems,
       selectedLanguage,
+      streakCount,
       unitLabel,
     };
-  }, [activeLessonIdByLanguageId, selectedLanguageId]);
+  }, [
+    activeLessonIdByLanguageId,
+    completedLessonIdsByLanguageId,
+    selectedLanguageId,
+    streakCount,
+    todayXp,
+  ]);
 }
 
 type UseStartVideoCallOptions = {

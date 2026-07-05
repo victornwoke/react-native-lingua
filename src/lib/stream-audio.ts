@@ -26,7 +26,9 @@ export type AgentSession = {
 };
 
 export type AgentControlResult = {
+  message?: string;
   missingSession: boolean;
+  shouldRestart: boolean;
   success: boolean;
 };
 
@@ -161,7 +163,12 @@ export async function interruptAgentSession({
   return requestAgentControl({
     callId,
     clerkSessionToken,
-    fallbackResult: { missingSession: false, success: false },
+    fallbackResult: {
+      message: "Could not reach the AI teacher control route.",
+      missingSession: false,
+      shouldRestart: false,
+      success: false,
+    },
     path: "/api/stream/agent/interrupt",
     sessionId,
   });
@@ -175,7 +182,12 @@ export async function startAgentActivity({
   return requestAgentControl({
     callId,
     clerkSessionToken,
-    fallbackResult: { missingSession: false, success: false },
+    fallbackResult: {
+      message: "Could not reach the AI teacher control route.",
+      missingSession: false,
+      shouldRestart: false,
+      success: false,
+    },
     path: "/api/stream/agent/activity-start",
     sessionId,
   });
@@ -191,7 +203,12 @@ export async function endAgentActivity({
   return requestAgentControl({
     callId,
     clerkSessionToken,
-    fallbackResult: { missingSession: false, success: false },
+    fallbackResult: {
+      message: "Could not reach the AI teacher control route.",
+      missingSession: false,
+      shouldRestart: false,
+      success: false,
+    },
     path: "/api/stream/agent/activity-end",
     sessionId,
   });
@@ -214,8 +231,15 @@ async function requestAgentControl({
       body: JSON.stringify({ callId, sessionId }),
     });
 
-    return readAgentControlResult(response);
-  } catch {
+    const result = await readAgentControlResult(response);
+
+    if (!result.success) {
+      console.warn("AI teacher control request failed.", path, result.message);
+    }
+
+    return result;
+  } catch (error) {
+    console.warn("AI teacher control request failed.", path, error);
     return fallbackResult;
   }
 }
@@ -224,11 +248,13 @@ async function readAgentControlResult(
   response: Response,
 ): Promise<AgentControlResult> {
   const payload = (await response.json().catch(() => undefined)) as
-    | Partial<AgentControlResult>
+    | (Partial<AgentControlResult> & { message?: string })
     | undefined;
 
   return {
+    message: typeof payload?.message === "string" ? payload.message : undefined,
     missingSession: Boolean(payload?.missingSession),
+    shouldRestart: Boolean(payload?.shouldRestart),
     success: response.ok && payload?.success !== false,
   };
 }

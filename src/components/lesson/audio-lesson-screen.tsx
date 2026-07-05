@@ -19,6 +19,7 @@ import {
 } from "@/hooks/use-stream-audio-call";
 import { getSortedLessonsForLanguage } from "@/lib/lesson-selection";
 import { getPostHogLanguageCode, posthog } from "@/lib/posthog";
+import { useLessonProgressStore } from "@/store/lesson-progress-store";
 
 import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
@@ -33,6 +34,10 @@ export function AudioLessonScreen() {
   const lessonCompletedRef = useRef(false);
   const lessonStartedAtRef = useRef<number | null>(null);
   const lastQuestionIndexRef = useRef(0);
+  const completeLesson = useLessonProgressStore((state) => state.completeLesson);
+  const setActiveLessonId = useLessonProgressStore(
+    (state) => state.setActiveLessonId,
+  );
 
   const lessonId =
     typeof params.lessonId === "string" ? params.lessonId : undefined;
@@ -69,6 +74,28 @@ export function AudioLessonScreen() {
   async function handleEndCallPress() {
     await streamAudioCall.endCall();
     lessonCompletedRef.current = true;
+
+    if (lesson) {
+      const languageLessons = getSortedLessonsForLanguage(lesson.languageId);
+      const currentLessonIndex = languageLessons.findIndex(
+        (item) => item.id === lesson.id,
+      );
+      const nextLesson = languageLessons[currentLessonIndex + 1];
+
+      completeLesson(lesson.languageId, lesson.id, lesson.xpReward);
+
+      if (nextLesson) {
+        setActiveLessonId(lesson.languageId, nextLesson.id);
+      }
+
+      posthog.capture("lesson_completed", {
+        language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
+        lesson_id: lesson.id,
+        lesson_number: getLessonNumber(lesson),
+        xp_reward: lesson.xpReward,
+      });
+    }
+
     handleBackPress();
   }
 

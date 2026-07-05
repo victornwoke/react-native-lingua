@@ -1,5 +1,5 @@
 import { SymbolView } from "expo-symbols";
-import { Image, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 import { images } from "@/constants/images";
 
@@ -10,17 +10,26 @@ type HomeHeaderProps = {
   language: Language;
   userName: string;
   streakCount: number;
+  onLanguagePress: () => void;
+  onNotificationPress: () => void;
 };
 
 export function HomeHeader({
   greeting,
   language,
+  onLanguagePress,
+  onNotificationPress,
   streakCount,
   userName,
 }: HomeHeaderProps) {
   return (
     <View className="flex-row items-center justify-between">
-      <View className="min-w-0 flex-1 flex-row items-center">
+      <Pressable
+        accessibilityLabel={`Change language from ${language.name}`}
+        accessibilityRole="button"
+        onPress={onLanguagePress}
+        className="min-h-[44px] min-w-0 flex-1 flex-row items-center rounded-full active:opacity-80"
+      >
         <View className="h-[38px] w-[38px] items-center justify-center overflow-hidden rounded-full border border-[#F0F1F6] bg-white">
           <Image
             source={{ uri: language.flag }}
@@ -35,7 +44,7 @@ export function HomeHeader({
         >
           {greeting}, {userName}! 👋
         </Text>
-      </View>
+      </Pressable>
 
       <View className="ml-[14px] flex-row items-center">
         <Image
@@ -47,7 +56,12 @@ export function HomeHeader({
           {streakCount}
         </Text>
 
-        <View className="ml-[16px] h-[30px] w-[30px] items-center justify-center">
+        <Pressable
+          accessibilityLabel="Open profile"
+          accessibilityRole="button"
+          onPress={onNotificationPress}
+          className="ml-[16px] h-[36px] w-[36px] items-center justify-center rounded-full active:bg-[#F5F4FF]"
+        >
           <SymbolView
             name={{
               ios: "bell",
@@ -58,7 +72,7 @@ export function HomeHeader({
             tintColor="#111832"
             type="monochrome"
           />
-        </View>
+        </Pressable>
       </View>
     </View>
   );
