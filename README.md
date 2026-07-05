@@ -251,6 +251,14 @@ For local development, the API route defaults to:
 http://127.0.0.1:8080
 ```
 
+Use the loopback default when Expo API routes and the agent run on the same
+machine, such as simulator development. For physical device testing, set the
+agent URL to your machine's LAN address:
+
+```bash
+VISION_AGENT_SERVER_URL=http://<your-machine-ip>:8080
+```
+
 For production, deploy the agent service and set:
 
 ```bash
