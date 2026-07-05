@@ -5,6 +5,7 @@ import type { Language, Lesson } from "../../types/learning";
 import { getPersistStorage } from "./persist-storage";
 
 const LESSON_PROGRESS_STORAGE_KEY = "lesson-progress-storage";
+const LESSON_PROGRESS_DATE_RETENTION_DAYS = 90;
 
 export type DailyPlanItemId = "lesson" | "conversation" | "new-words";
 
@@ -75,6 +76,14 @@ export const useLessonProgressStore = create<LessonProgressState>()(
             : [...completedLessonIds, lessonId];
           const currentDailyXp = state.dailyXpByDate[todayKey] ?? 0;
           const lastCompletedDate = state.lastCompletedDate;
+          const completedPlanItemIdsByDate = pruneDateRecord(
+            state.completedPlanItemIdsByDate,
+            todayKey,
+          );
+          const dailyXpByDate = pruneDateRecord(
+            state.dailyXpByDate,
+            todayKey,
+          );
           const streakCount =
             lastCompletedDate === todayKey
               ? state.streakCount
@@ -88,13 +97,13 @@ export const useLessonProgressStore = create<LessonProgressState>()(
               [languageId]: nextCompletedLessonIds,
             },
             completedPlanItemIdsByDate: markPlanItemsComplete(
-              state.completedPlanItemIdsByDate,
+              completedPlanItemIdsByDate,
               todayKey,
               languageId,
               ["lesson", "conversation", "new-words"],
             ),
             dailyXpByDate: {
-              ...state.dailyXpByDate,
+              ...dailyXpByDate,
               [todayKey]: currentDailyXp + xpReward,
             },
             lastCompletedDate: todayKey,
@@ -107,11 +116,12 @@ export const useLessonProgressStore = create<LessonProgressState>()(
 
         set((state) => ({
           completedPlanItemIdsByDate: markPlanItemsComplete(
-            state.completedPlanItemIdsByDate,
+            pruneDateRecord(state.completedPlanItemIdsByDate, todayKey),
             todayKey,
             languageId,
             [itemId],
           ),
+          dailyXpByDate: pruneDateRecord(state.dailyXpByDate, todayKey),
         }));
       },
       setActiveLessonId: (languageId, lessonId) => {
@@ -149,4 +159,39 @@ function markPlanItemsComplete(
       [languageId]: nextCompletedItemIds,
     },
   };
+}
+
+function pruneDateRecord<TValue>(
+  record: Record<string, TValue>,
+  todayKey: string,
+) {
+  const cutoffTime = getRetentionCutoffTime(todayKey);
+
+  return Object.fromEntries(
+    Object.entries(record).filter(([dateKey]) => {
+      const dateTime = getDateKeyTime(dateKey);
+
+      return dateTime !== undefined && dateTime >= cutoffTime;
+    }),
+  );
+}
+
+function getRetentionCutoffTime(todayKey: string) {
+  const [year, month, day] = todayKey.split("-").map(Number);
+  const cutoffDate = new Date(year, month - 1, day, 12);
+  cutoffDate.setDate(
+    cutoffDate.getDate() - (LESSON_PROGRESS_DATE_RETENTION_DAYS - 1),
+  );
+
+  return cutoffDate.getTime();
+}
+
+function getDateKeyTime(dateKey: string) {
+  const [year, month, day] = dateKey.split("-").map(Number);
+
+  if (!year || !month || !day) {
+    return undefined;
+  }
+
+  return new Date(year, month - 1, day, 12).getTime();
 }

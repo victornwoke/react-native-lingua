@@ -25,13 +25,14 @@ import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
 
 const LEARN_ROUTE = "/learn" as Href;
-const MIN_LESSON_DURATION_SECONDS = 30;
+const MIN_AUDIO_LESSON_COMPLETION_SECONDS = 60;
 
 export function AudioLessonScreen() {
   const router = useRouter();
   const { height, width } = useWindowDimensions();
   const params = useLocalSearchParams();
   const autoStartedLessonIdRef = useRef<string | null>(null);
+  const callJoinedAtRef = useRef<number | null>(null);
   const lessonCompletedRef = useRef(false);
   const lessonStartedAtRef = useRef<number | null>(null);
   const lastQuestionIndexRef = useRef(0);
@@ -75,15 +76,32 @@ export function AudioLessonScreen() {
   async function handleEndCallPress() {
     await streamAudioCall.endCall();
 
-    const startedAt = lessonStartedAtRef.current;
-    const elapsedSeconds = startedAt
-      ? Math.round((Date.now() - startedAt) / 1000)
-      : 0;
-    const meetsMinimumDuration = elapsedSeconds >= MIN_LESSON_DURATION_SECONDS;
+    if (!hasEnoughAudioLessonEngagement({
+      joinedAt: callJoinedAtRef.current,
+      liveCaptions: streamAudioCall.liveCaptions,
+    })) {
+      if (lesson) {
+        const elapsedSeconds = getAudioLessonElapsedSeconds(
+          callJoinedAtRef.current,
+        );
 
-    if (lesson && meetsMinimumDuration) {
-      lessonCompletedRef.current = true;
+        posthog.capture("lesson_ended_early", {
+          elapsed_seconds: elapsedSeconds,
+          language:
+            getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
+          lesson_id: lesson.id,
+          lesson_number: getLessonNumber(lesson),
+          minimum_required_seconds: MIN_AUDIO_LESSON_COMPLETION_SECONDS,
+        });
+      }
 
+      handleBackPress();
+      return;
+    }
+
+    lessonCompletedRef.current = true;
+
+    if (lesson) {
       const languageLessons = getSortedLessonsForLanguage(lesson.languageId);
       const currentLessonIndex = languageLessons.findIndex(
         (item) => item.id === lesson.id,
@@ -101,14 +119,6 @@ export function AudioLessonScreen() {
         lesson_id: lesson.id,
         lesson_number: getLessonNumber(lesson),
         xp_reward: lesson.xpReward,
-      });
-    } else if (lesson && !meetsMinimumDuration) {
-      posthog.capture("lesson_ended_early", {
-        elapsed_seconds: elapsedSeconds,
-        language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
-        lesson_id: lesson.id,
-        lesson_number: getLessonNumber(lesson),
-        minimum_required_seconds: MIN_LESSON_DURATION_SECONDS,
       });
     }
 
@@ -130,6 +140,7 @@ export function AudioLessonScreen() {
     }
 
     lessonCompletedRef.current = false;
+    callJoinedAtRef.current = null;
     lessonStartedAtRef.current = Date.now();
     lastQuestionIndexRef.current = 0;
 
@@ -156,6 +167,14 @@ export function AudioLessonScreen() {
       });
     };
   }, [lesson]);
+
+  useEffect(() => {
+    if (streamAudioCall.status !== "joined") {
+      return;
+    }
+
+    callJoinedAtRef.current ??= Date.now();
+  }, [streamAudioCall.status]);
 
   useEffect(() => {
     if (!lesson) {
@@ -719,6 +738,29 @@ function getTeacherCardSubtitle(
   }
 
   return `Try: ${firstPhraseText ?? lesson.aiTeacherPrompt.conversationStarter}`;
+}
+
+function hasEnoughAudioLessonEngagement({
+  joinedAt,
+  liveCaptions,
+}: {
+  joinedAt: number | null;
+  liveCaptions: LiveCaption[];
+}) {
+  const hasLearnerParticipation = liveCaptions.some(
+    (caption) =>
+      caption.speakerRole === "learner" && caption.text.trim().length > 0,
+  );
+  const callDurationSeconds = getAudioLessonElapsedSeconds(joinedAt);
+
+  return (
+    hasLearnerParticipation ||
+    callDurationSeconds >= MIN_AUDIO_LESSON_COMPLETION_SECONDS
+  );
+}
+
+function getAudioLessonElapsedSeconds(joinedAt: number | null) {
+  return joinedAt ? Math.max(0, Math.round((Date.now() - joinedAt) / 1000)) : 0;
 }
 
 function getTeacherReply(lesson: Lesson) {

@@ -11,6 +11,8 @@ type NextUpCardProps = {
 export function NextUpCard({ onPress, subtitle }: NextUpCardProps) {
   return (
     <Pressable
+      accessibilityLabel={`Start AI voice call for ${subtitle}`}
+      accessibilityRole="button"
       onPress={onPress}
       className="mt-[18px] min-h-[102px] flex-row items-center overflow-hidden rounded-[16px] bg-[#ECFAF2] px-[18px] py-[14px]"
       style={({ pressed }) => ({

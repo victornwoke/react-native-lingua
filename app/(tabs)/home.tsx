@@ -1,5 +1,4 @@
 import { useUser } from "@clerk/expo";
-import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useEffect } from "react";
 import { ScrollView, useWindowDimensions, View } from "react-native";
@@ -10,18 +9,13 @@ import { ContinueLearningCard } from "@/components/home/continue-learning-card";
 import { DailyGoalCard } from "@/components/home/daily-goal-card";
 import { HomeHeader } from "@/components/home/home-header";
 import { NextUpCard } from "@/components/home/next-up-card";
-import {
-  TodayPlanSection,
-  type TodayPlanItem,
-} from "@/components/home/today-plan-section";
+import { TodayPlanSection } from "@/components/home/today-plan-section";
+import { useHomeActions } from "@/hooks/use-home-actions";
 import {
   useHomeDashboard,
   useStartVoiceCall,
 } from "@/hooks/use-home-dashboard";
-import {
-  useChangeLanguage,
-  useContinueLearning,
-} from "@/hooks/use-navigation-handlers";
+import { useLearningNavigation } from "@/hooks/use-learning-navigation";
 
 const greetingsByLanguageId: Record<string, string> = {
   french: "Bonjour",
@@ -44,7 +38,6 @@ function getDisplayName(user: ReturnType<typeof useUser>["user"]) {
 }
 
 export default function HomeScreen() {
-  const router = useRouter();
   const posthog = usePostHog();
   const { user } = useUser();
   const { height, width } = useWindowDimensions();
@@ -66,15 +59,18 @@ export default function HomeScreen() {
     currentLesson,
     selectedLanguage,
   });
-  const handleContinueLearning = useContinueLearning({
-    currentLesson,
-    eventName: "continue_learning_tapped",
-    selectedLanguage,
-  });
-  const handleChangeLanguage = useChangeLanguage({
-    eventName: "change_language_tapped",
-    selectedLanguage,
-  });
+  const { handleChangeLanguage, handleContinueLearning } =
+    useLearningNavigation({
+      changeLanguageEventName: "change_language_tapped",
+      continueLearningEventName: "continue_learning_tapped",
+      currentLesson,
+      selectedLanguage,
+    });
+  const { handleOpenProfile, handlePlanItemPress, handleViewPlan } =
+    useHomeActions({
+      currentLesson,
+      selectedLanguage,
+    });
 
   useEffect(() => {
     posthog.capture("home_dashboard_viewed", {
@@ -92,38 +88,6 @@ export default function HomeScreen() {
     selectedLanguage.name,
     streakCount,
   ]);
-
-  function handleOpenProfile() {
-    router.push("/profile" as Href);
-  }
-
-  function handleViewPlan() {
-    posthog.capture("today_plan_view_all_tapped", {
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-    });
-    router.push("/learn" as Href);
-  }
-
-  function handlePlanItemPress(item: TodayPlanItem) {
-    posthog.capture("today_plan_item_tapped", {
-      item_id: item.id,
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-    });
-
-    if (item.id === "conversation") {
-      router.push("/chat" as Href);
-      return;
-    }
-
-    if (item.id === "new-words" || !currentLesson) {
-      router.push("/learn" as Href);
-      return;
-    }
-
-    router.push(`/lesson/${currentLesson.id}` as Href);
-  }
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>

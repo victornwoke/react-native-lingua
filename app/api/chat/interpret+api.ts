@@ -43,16 +43,7 @@ export async function POST(request: Request) {
 
     await getVerifiedClerkUserId(authorization);
 
-    let body: InterpretRequestBody;
-    try {
-      body = (await request.json()) as InterpretRequestBody;
-    } catch {
-      return Response.json(
-        { message: "Invalid request body. Please send valid JSON." },
-        { status: 400 },
-      );
-    }
-
+    const body = await readInterpretRequestBody(request);
     const languageId = getRequiredString(body.languageId);
     const text = getRequiredString(body.text);
 
@@ -115,7 +106,7 @@ async function interpretWithGemini({
 
   const model = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
   const response = await fetch(
-    `${GEMINI_API_BASE_URL}/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`,
+    `${GEMINI_API_BASE_URL}/models/${encodeURIComponent(model)}:generateContent`,
     {
       body: JSON.stringify({
         contents: [
@@ -160,6 +151,7 @@ async function interpretWithGemini({
       }),
       headers: {
         "Content-Type": "application/json",
+        "x-goog-api-key": apiKey,
       },
       method: "POST",
       signal: AbortSignal.timeout(GEMINI_REQUEST_TIMEOUT_MS),
@@ -170,8 +162,9 @@ async function interpretWithGemini({
     const errorPayload = (await response.json().catch(() => undefined)) as
       | { error?: { message?: string } }
       | undefined;
-    throw new Error(
+    throw new RouteError(
       errorPayload?.error?.message ?? "Gemini interpretation request failed.",
+      response.status,
     );
   }
 
@@ -183,6 +176,20 @@ async function interpretWithGemini({
   }
 
   return parseInterpretation(rawText);
+}
+
+async function readInterpretRequestBody(
+  request: Request,
+): Promise<InterpretRequestBody> {
+  try {
+    return (await request.json()) as InterpretRequestBody;
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      throw new RouteError("Invalid JSON payload.", 400);
+    }
+
+    throw error;
+  }
 }
 
 function parseInterpretation(rawText: string): ChatInterpretation {

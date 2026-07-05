@@ -3598,3 +3598,120 @@
 2026-07-05 13:32:45,145 WARNING [getstream.video.rtc.coordinator.ws] Triggering reconnection reason: 'ws connection closed by server'
 2026-07-05 13:32:45,145 INFO [getstream.video.rtc.coordinator.ws] Starting reconnection process
 2026-07-05 13:32:45,145 INFO [getstream.video.rtc.coordinator.ws] Reconnection attempt
+2026-07-05 13:32:46,450 INFO [getstream.video.rtc.coordinator.ws] Successfully connected and authenticated
+2026-07-05 13:32:46,456 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 13:32:46,847 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/video/call/default/audio-mr7q8x7g-1d6c729f1817?api_key=yemm87zdfwgj&connection_id=6a16b986-0a1d-196c-0300-000000299fbf "HTTP/1.1 201 Created"
+2026-07-05 13:32:46,851 INFO [getstream.video.rtc.coordinator.ws] Reconnection successful
+2026-07-05 13:33:10,353 INFO [aioice.ice] Connection(37) Consent to send expired
+2026-07-05 13:33:10,356 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to closed
+2026-07-05 13:33:10,357 INFO [getstream.video.rtc.pc] Publisher connection state changed to closed
+2026-07-05 13:33:10,369 INFO [aioice.turn] TURN allocation deleted ('152.67.154.102', 46172)
+2026-07-05 13:33:25,859 WARNING [asyncio] socket.send() raised exception.
+2026-07-05 13:33:41,860 WARNING [asyncio] socket.send() raised exception.
+2026-07-05 13:34:13,861 INFO [aioice.turn] TURN allocation deleted ('152.67.154.102', 46172)
+2026-07-05 13:53:16,351 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 13:53:16,352 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter stopped
+2026-07-05 13:53:16,352 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 13:53:16,352 INFO [getstream.video.rtc.network_monitor] Stopping network connectivity monitoring
+2026-07-05 13:53:18,374 INFO [getstream.video.rtc.coordinator.ws] Disconnecting from coordinator
+2026-07-05 13:53:19,378 INFO [getstream.video.rtc.coordinator.ws] Disconnected from coordinator
+2026-07-05 13:53:19,378 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 13:53:19,382 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 13:53:19,382 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 13:53:19,382 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 13:53:19,383 INFO [__main__] Vision Agent finished call audio-mr7q8x7g-1d6c729f1817.
+2026-07-05 15:06:59,307 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 15:06:59,316 WARNING [google_genai._api_client] Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-07-05 15:06:59,337 INFO [__main__] Vision Agent joining Stream call default/audio-mr7v7jrs-81d55ec3ab14.
+2026-07-05 15:06:59,504 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/users?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:06:59,692 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:06:59,818 INFO [httpx] HTTP Request: GET https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:06:59,829 INFO [__main__] Loaded lesson metadata for call audio-mr7v7jrs-81d55ec3ab14: language=French lesson=Daily Life.
+2026-07-05 15:07:00,106 INFO [getstream.video.rtc.connection_manager] Connecting to SFU
+2026-07-05 15:07:00,113 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 15:07:00,114 INFO [getstream.video.rtc.coordinator.ws] Connecting to coordinator
+2026-07-05 15:07:00,463 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/join?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:00,470 INFO [getstream.video.rtc.coordinator.ws] Successfully connected and authenticated
+2026-07-05 15:07:00,475 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 15:07:00,476 INFO [getstream.video.rtc.pc] creating subscriber peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478'], username='1659766/default:audio-mr7v7jrs-81d55ec3ab14/lingua-ai-teacher/wRlQYgnly4YodyWrGwHpqA', credential='fYGyln4cCRNNAKtIF+IN7ryPBtGEkCTQ', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7v7jrs-81d55ec3ab14/lingua-ai-teacher/wRlQYgnly4YodyWrGwHpqA', credential='fYGyln4cCRNNAKtIF+IN7ryPBtGEkCTQ', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783303620:', credential='JjnavbNEg1KB51YD21eLRaQRQT0=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783303620:', credential='JjnavbNEg1KB51YD21eLRaQRQT0=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 15:07:00,477 INFO [getstream.video.rtc.connection_utils] Connecting to WebSocket at wss://sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com/ws
+2026-07-05 15:07:00,530 INFO [websocket] Websocket connected
+2026-07-05 15:07:00,544 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter started (interval=8000ms)
+2026-07-05 15:07:00,545 INFO [getstream.video.rtc.connection_manager] Successfully connected to SFU
+2026-07-05 15:07:00,545 INFO [getstream.video.rtc.network_monitor] Starting network connectivity monitoring
+2026-07-05 15:07:00,545 INFO [getstream.video.rtc.peer_connection] Adding tracks: 0 tracks
+2026-07-05 15:07:00,545 INFO [getstream.video.rtc.pc] Creating publisher peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478'], username='1659766/default:audio-mr7v7jrs-81d55ec3ab14/lingua-ai-teacher/wRlQYgnly4YodyWrGwHpqA', credential='fYGyln4cCRNNAKtIF+IN7ryPBtGEkCTQ', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7v7jrs-81d55ec3ab14/lingua-ai-teacher/wRlQYgnly4YodyWrGwHpqA', credential='fYGyln4cCRNNAKtIF+IN7ryPBtGEkCTQ', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783303620:', credential='JjnavbNEg1KB51YD21eLRaQRQT0=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783303620:', credential='JjnavbNEg1KB51YD21eLRaQRQT0=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 15:07:00,546 INFO [getstream.video.rtc.peer_connection] Added relayed audio track c923c3a3-7278-4abd-9a94-71c78861ece1
+2026-07-05 15:07:00,546 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to gathering
+2026-07-05 15:07:00,574 INFO [aioice.turn] TURN allocation created ('140.238.103.56', 45070) (expires in 600 seconds)
+2026-07-05 15:07:00,574 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to complete
+2026-07-05 15:07:00,575 INFO [getstream.video.rtc.pc] Publisher: All ICE candidates have been gathered.
+2026-07-05 15:07:00,620 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 15:07:00,620 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 15:07:00,620 INFO [getstream.video.rtc.pc] Waiting for publisher connection with 15.0s timeout
+2026-07-05 15:07:00,620 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to checking
+2026-07-05 15:07:00,621 INFO [getstream.video.rtc.pc] Publisher connection state changed to connecting
+2026-07-05 15:07:00,621 INFO [aioice.ice] Connection(51) Check CandidatePair(('192.168.1.231', 63152) -> ('140.238.103.56', 52103)) State.FROZEN -> State.WAITING
+2026-07-05 15:07:00,621 INFO [aioice.ice] Connection(51) Check CandidatePair(('192.168.1.231', 63152) -> ('140.238.103.56', 58426)) State.FROZEN -> State.WAITING
+2026-07-05 15:07:00,621 INFO [aioice.ice] Connection(51) Check CandidatePair(('140.238.103.56', 45070) -> ('140.238.103.56', 52103)) State.FROZEN -> State.WAITING
+2026-07-05 15:07:00,621 INFO [aioice.ice] Connection(51) Check CandidatePair(('192.168.1.231', 63152) -> ('140.238.103.56', 52103)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 15:07:00,632 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14?api_key=yemm87zdfwgj&connection_id=6a16b986-0a1d-196c-0300-00000029b3e8 "HTTP/1.1 201 Created"
+2026-07-05 15:07:00,640 INFO [aioice.ice] Connection(51) Check CandidatePair(('192.168.1.231', 63152) -> ('140.238.103.56', 52103)) nominating pair
+2026-07-05 15:07:00,642 INFO [aioice.ice] Connection(51) Check CandidatePair(('192.168.1.231', 63152) -> ('140.238.103.56', 58426)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 15:07:00,663 INFO [aioice.ice] Connection(51) Check CandidatePair(('140.238.103.56', 45070) -> ('140.238.103.56', 52103)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 15:07:00,684 INFO [aioice.ice] Connection(51) Check CandidatePair(('140.238.103.56', 45070) -> ('140.238.103.56', 58426)) State.FROZEN -> State.IN_PROGRESS
+2026-07-05 15:07:00,741 INFO [aioice.ice] Connection(51) Check CandidatePair(('192.168.1.231', 63152) -> ('140.238.103.56', 52103)) State.IN_PROGRESS -> State.SUCCEEDED
+2026-07-05 15:07:00,741 INFO [aioice.ice] Connection(51) ICE completed
+2026-07-05 15:07:00,747 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to completed
+2026-07-05 15:07:00,749 INFO [aioice.turn] TURN channel bound 16384 ('140.238.103.56', 52103)
+2026-07-05 15:07:00,750 INFO [aioice.turn] TURN channel bound 16385 ('140.238.103.56', 58426)
+2026-07-05 15:07:00,762 INFO [getstream.video.rtc.pc] Publisher connection state changed to connected
+2026-07-05 15:07:00,762 INFO [getstream.video.rtc.pc] Publisher successfully connected
+2026-07-05 15:07:00,789 INFO [getstream.video.rtc.tracks] Handling track published: lingua-ai-teacher - fbe0aa91-0e85-4ef0-b12e-c0380e618ff1 - 1
+2026-07-05 15:07:00,883 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7v7jrs-81d55ec3ab14/query?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:00,888 INFO [__main__] Vision Agent joined call audio-mr7v7jrs-81d55ec3ab14. Sending greeting.
+2026-07-05 15:07:00,889 INFO [__main__] Vision Agent greeting completed for call audio-mr7v7jrs-81d55ec3ab14.
+2026-07-05 15:07:01,789 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7v7jrs-81d55ec3ab14/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:01,796 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,028 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:02,029 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,143 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,146 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:02,317 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:02,321 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,435 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:02,465 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,650 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,653 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:02,709 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,836 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:02,956 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,960 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:02,963 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,076 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,118 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:03,188 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,251 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:03,253 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:03,362 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,480 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,484 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:03,601 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,616 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:03,624 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7v7jrs-81d55ec3ab14/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 15:07:03,714 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:03,883 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b1b604bf-c576-47cf-9b12-a484c5d8b8cc/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 15:07:27,674 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 15:07:27,674 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter stopped
+2026-07-05 15:07:27,675 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 15:07:27,675 INFO [getstream.video.rtc.network_monitor] Stopping network connectivity monitoring
+2026-07-05 15:07:27,678 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to closed
+2026-07-05 15:07:27,678 INFO [getstream.video.rtc.pc] Publisher connection state changed to closed
+2026-07-05 15:07:27,693 INFO [aioice.turn] TURN allocation deleted ('140.238.103.56', 45070)
+2026-07-05 15:07:29,714 INFO [getstream.video.rtc.coordinator.ws] Disconnecting from coordinator
+2026-07-05 15:07:30,720 INFO [getstream.video.rtc.coordinator.ws] Disconnected from coordinator
+2026-07-05 15:07:30,720 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 15:07:30,721 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 15:07:30,721 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 15:07:30,721 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 15:07:30,722 INFO [__main__] Vision Agent finished call audio-mr7v7jrs-81d55ec3ab14.

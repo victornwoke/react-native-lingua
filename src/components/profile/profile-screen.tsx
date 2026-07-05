@@ -6,10 +6,7 @@ import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
-import {
-  useChangeLanguage,
-  useContinueLearning,
-} from "@/hooks/use-navigation-handlers";
+import { useLearningNavigation } from "@/hooks/use-learning-navigation";
 import { useProfileDashboard } from "@/hooks/use-profile-dashboard";
 
 type ProfileMetric = {
@@ -84,19 +81,17 @@ export function ProfileScreen() {
     unitLabel,
     wordsLearned,
   } = useProfileDashboard();
-  const handleContinueLearning = useContinueLearning({
-    currentLesson,
-    eventName: "profile_continue_learning_tapped",
-    selectedLanguage,
-  });
-  const handleChangeLanguage = useChangeLanguage({
-    eventName: "profile_change_language_tapped",
-    selectedLanguage,
-  });
   const displayName = getDisplayName(user);
   const email = user?.primaryEmailAddress?.emailAddress ?? "Signed in";
   const initials = getInitials(displayName);
   const lastActiveLabel = formatDateLabel(lastCompletedDate, todayDateKey);
+  const { handleChangeLanguage, handleContinueLearning } =
+    useLearningNavigation({
+      changeLanguageEventName: "profile_change_language_tapped",
+      continueLearningEventName: "profile_continue_learning_tapped",
+      currentLesson,
+      selectedLanguage,
+    });
   const metrics: ProfileMetric[] = [
     {
       icon: { ios: "flame.fill", android: "local_fire_department", web: "local_fire_department" },

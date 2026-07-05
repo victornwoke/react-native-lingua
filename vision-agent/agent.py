@@ -3,7 +3,7 @@ import logging
 import os
 import secrets
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 from dotenv import load_dotenv
 from fastapi import HTTPException, Request, status
@@ -44,6 +44,7 @@ logging.basicConfig(
 
 
 LessonMetadata = dict[str, str]
+ActivitySignal = Literal["activity_start", "activity_end"]
 activity_timeout_tasks: dict[str, asyncio.Task[None]] = {}
 
 
@@ -388,6 +389,9 @@ async def create_agent(**kwargs: Any) -> Agent:
             api_key=get_gemini_api_key(),
             config=gemini_types.LiveConnectConfigDict(
                 realtime_input_config=gemini_types.RealtimeInputConfigDict(
+                    automatic_activity_detection=gemini_types.AutomaticActivityDetectionDict(
+                        disabled=True,
+                    ),
                     activity_handling=gemini_types.ActivityHandling.START_OF_ACTIVITY_INTERRUPTS,
                     turn_coverage=gemini_types.TurnCoverage.TURN_INCLUDES_ONLY_ACTIVITY,
                 ),
@@ -558,7 +562,11 @@ async def start_activity(
             detail=f"Session with id '{session_id}' not found",
         )
 
-    ensure_realtime_session_or_raise(session.agent, session_id)
+    await send_realtime_activity_signal_or_raise(
+        session.agent,
+        "activity_start",
+        session_id,
+    )
     schedule_activity_timeout(session.agent, session_id)
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
@@ -580,8 +588,14 @@ async def end_activity(call_id: str, session_id: str, request: Request) -> Respo
             detail=f"Session with id '{session_id}' not found",
         )
 
-    ensure_realtime_session_or_raise(session.agent, session_id)
-    cancel_activity_timeout(session_id)
+    try:
+        await send_realtime_activity_signal_or_raise(
+            session.agent,
+            "activity_end",
+            session_id,
+        )
+    finally:
+        cancel_activity_timeout(session_id)
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
@@ -639,15 +653,17 @@ def ensure_realtime_session_or_raise(agent: Agent, session_id: str) -> None:
 
 async def send_realtime_activity_signal_or_raise(
     agent: Agent,
-    signal: str,
+    signal: ActivitySignal,
     session_id: str,
 ) -> None:
     ensure_realtime_session_or_raise(agent, session_id)
-    realtime_session = getattr(agent.llm, "_real_session")
+    realtime_session = cast(Any, agent.llm)._real_session
 
     try:
-        await realtime_session.send_realtime_input(**{signal: {}})
-    except Exception:
+        await realtime_session.send_realtime_input(
+            **get_activity_signal_payload(signal)
+        )
+    except Exception as err:
         logger.exception(
             "Could not send %s signal for Vision Agent session %s.",
             signal,
@@ -656,7 +672,16 @@ async def send_realtime_activity_signal_or_raise(
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Realtime session could not accept activity",
-        )
+        ) from err
+
+
+def get_activity_signal_payload(
+    signal: ActivitySignal,
+) -> dict[str, gemini_types.ActivityStart | gemini_types.ActivityEnd]:
+    if signal == "activity_start":
+        return {"activity_start": gemini_types.ActivityStart()}
+
+    return {"activity_end": gemini_types.ActivityEnd()}
 
 
 if __name__ == "__main__":
