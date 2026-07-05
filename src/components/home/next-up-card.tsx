@@ -1,5 +1,5 @@
-import { Image, Pressable, Text, View } from "react-native";
 import { SymbolView } from "expo-symbols";
+import { Image, Pressable, Text, View } from "react-native";
 
 import { images } from "@/constants/images";
 
@@ -19,7 +19,7 @@ export function NextUpCard({ onPress, subtitle }: NextUpCardProps) {
           Next up
         </Text>
         <Text className="mt-[4px] font-poppins-bold text-[18px] leading-[24px] text-[#111832]">
-          AI Video Call
+          AI Voice Call
         </Text>
         <Text
           numberOfLines={1}

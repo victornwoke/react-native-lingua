@@ -45,10 +45,13 @@ export default function HomeScreen() {
   const { user } = useUser();
   const { height, width } = useWindowDimensions();
   const {
+    completedLessonCount,
     currentLesson,
     dailyGoalXp,
+    dailyGoalMessage,
     earnedXp,
     planItems,
+    progressLabel,
     selectedLanguage,
     streakCount,
     unitLabel,
@@ -81,8 +84,16 @@ export default function HomeScreen() {
     posthog.capture("continue_learning_tapped", {
       language_id: selectedLanguage.id,
       language_name: selectedLanguage.name,
+      lesson_id: currentLesson?.id ?? null,
+      lesson_title: currentLesson?.title ?? null,
     });
-    router.push("/learn" as Href);
+
+    if (!currentLesson) {
+      router.push("/learn" as Href);
+      return;
+    }
+
+    router.push(`/lesson/${currentLesson.id}` as Href);
   }
 
   function handleChangeLanguage() {
@@ -143,15 +154,22 @@ export default function HomeScreen() {
             greeting={greetingsByLanguageId[selectedLanguage.id] ?? "Hello"}
             language={selectedLanguage}
             onLanguagePress={handleChangeLanguage}
-            onNotificationPress={handleOpenProfile}
+            onProfilePress={handleOpenProfile}
             streakCount={streakCount}
             userName={getDisplayName(user)}
           />
 
-          <DailyGoalCard currentXp={earnedXp} goalXp={dailyGoalXp} />
+          <DailyGoalCard
+            currentXp={earnedXp}
+            goalXp={dailyGoalXp}
+            statusText={dailyGoalMessage}
+          />
 
           <ContinueLearningCard
+            actionLabel={completedLessonCount === 0 ? "Start" : "Continue"}
             languageName={selectedLanguage.name}
+            lessonTitle={currentLesson?.title ?? "Choose your next lesson"}
+            progressLabel={progressLabel}
             unitLabel={unitLabel}
             onPress={handleContinueLearning}
           />

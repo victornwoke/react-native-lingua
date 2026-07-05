@@ -1,10 +1,10 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Pressable, Text, View } from "react-native";
 
-type TodayPlanItemId = "lesson" | "conversation" | "new-words";
+import type { DailyPlanItemId } from "@/store/lesson-progress-store";
 
 type TodayPlanItem = {
-  id: TodayPlanItemId;
+  id: DailyPlanItemId;
   icon: SymbolViewProps["name"];
   iconColor: string;
   title: string;
@@ -96,4 +96,4 @@ export function TodayPlanSection({
   );
 }
 
-export type { TodayPlanItem, TodayPlanItemId };
+export type { TodayPlanItem };

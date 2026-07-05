@@ -2230,3 +2230,873 @@
 2026-07-05 11:24:54,452 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
 2026-07-05 11:24:54,452 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
 2026-07-05 11:24:54,453 INFO [__main__] Vision Agent finished call audio-mr7n9umk-f0c89c4909a8.
+2026-07-05 11:28:19,908 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 38895) (expires in 600 seconds)
+2026-07-05 11:28:34,891 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 46546) (expires in 600 seconds)
+2026-07-05 11:36:39,918 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 38895) (expires in 600 seconds)
+2026-07-05 11:36:54,901 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 46546) (expires in 600 seconds)
+2026-07-05 11:44:59,928 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 38895) (expires in 600 seconds)
+2026-07-05 11:45:14,914 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 46546) (expires in 600 seconds)
+2026-07-05 11:53:19,939 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 38895) (expires in 600 seconds)
+2026-07-05 11:53:34,925 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 46546) (expires in 600 seconds)
+2026-07-05 11:55:18,953 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 11:55:18,961 WARNING [google_genai._api_client] Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-07-05 11:55:18,977 INFO [__main__] Vision Agent joining Stream call default/audio-mr7od28r-a60e9808fbbf.
+2026-07-05 11:55:19,225 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/users?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:19,345 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:19,464 INFO [httpx] HTTP Request: GET https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:19,475 INFO [__main__] Loaded lesson metadata for call audio-mr7od28r-a60e9808fbbf: language=Spanish lesson=Greetings & Introductions.
+2026-07-05 11:55:19,847 INFO [getstream.video.rtc.connection_manager] Connecting to SFU
+2026-07-05 11:55:19,855 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 11:55:19,856 INFO [getstream.video.rtc.coordinator.ws] Connecting to coordinator
+2026-07-05 11:55:20,128 INFO [getstream.video.rtc.coordinator.ws] Successfully connected and authenticated
+2026-07-05 11:55:20,134 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 11:55:20,154 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/join?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:20,164 INFO [getstream.video.rtc.pc] creating subscriber peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478'], username='1659766/default:audio-mr7od28r-a60e9808fbbf/lingua-ai-teacher/YxYx8Rc2sUgQgC66ythtPQ', credential='yFeTQYIuxXZgRVDdIT5JTtFgG/NAOydX', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7od28r-a60e9808fbbf/lingua-ai-teacher/YxYx8Rc2sUgQgC66ythtPQ', credential='yFeTQYIuxXZgRVDdIT5JTtFgG/NAOydX', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783292120:', credential='d6G4KLTAUhX2uYmCHLOQUVbDsX0=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783292120:', credential='d6G4KLTAUhX2uYmCHLOQUVbDsX0=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 11:55:20,165 INFO [getstream.video.rtc.connection_utils] Connecting to WebSocket at wss://sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com/ws
+2026-07-05 11:55:20,236 INFO [websocket] Websocket connected
+2026-07-05 11:55:20,252 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter started (interval=8000ms)
+2026-07-05 11:55:20,252 INFO [getstream.video.rtc.connection_manager] Successfully connected to SFU
+2026-07-05 11:55:20,252 INFO [getstream.video.rtc.network_monitor] Starting network connectivity monitoring
+2026-07-05 11:55:20,252 INFO [getstream.video.rtc.peer_connection] Adding tracks: 0 tracks
+2026-07-05 11:55:20,252 INFO [getstream.video.rtc.pc] Creating publisher peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478'], username='1659766/default:audio-mr7od28r-a60e9808fbbf/lingua-ai-teacher/YxYx8Rc2sUgQgC66ythtPQ', credential='yFeTQYIuxXZgRVDdIT5JTtFgG/NAOydX', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7od28r-a60e9808fbbf/lingua-ai-teacher/YxYx8Rc2sUgQgC66ythtPQ', credential='yFeTQYIuxXZgRVDdIT5JTtFgG/NAOydX', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783292120:', credential='d6G4KLTAUhX2uYmCHLOQUVbDsX0=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783292120:', credential='d6G4KLTAUhX2uYmCHLOQUVbDsX0=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 11:55:20,253 INFO [getstream.video.rtc.peer_connection] Added relayed audio track f51575f4-e812-4690-a8e5-352821715234
+2026-07-05 11:55:20,253 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to gathering
+2026-07-05 11:55:20,279 INFO [aioice.turn] TURN allocation created ('140.238.103.56', 36317) (expires in 600 seconds)
+2026-07-05 11:55:20,279 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to complete
+2026-07-05 11:55:20,279 INFO [getstream.video.rtc.pc] Publisher: All ICE candidates have been gathered.
+2026-07-05 11:55:20,299 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf?api_key=yemm87zdfwgj&connection_id=6a16b986-0a1d-2458-0300-00000029965d "HTTP/1.1 201 Created"
+2026-07-05 11:55:20,321 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 11:55:20,322 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 11:55:20,322 INFO [getstream.video.rtc.pc] Waiting for publisher connection with 15.0s timeout
+2026-07-05 11:55:20,322 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to checking
+2026-07-05 11:55:20,322 INFO [getstream.video.rtc.pc] Publisher connection state changed to connecting
+2026-07-05 11:55:20,322 INFO [aioice.ice] Connection(15) Check CandidatePair(('192.168.1.231', 51960) -> ('140.238.103.56', 60668)) State.FROZEN -> State.WAITING
+2026-07-05 11:55:20,323 INFO [aioice.ice] Connection(15) Check CandidatePair(('169.254.104.229', 58222) -> ('140.238.103.56', 60668)) State.FROZEN -> State.WAITING
+2026-07-05 11:55:20,323 INFO [aioice.ice] Connection(15) Check CandidatePair(('192.168.1.231', 51960) -> ('140.238.103.56', 59582)) State.FROZEN -> State.WAITING
+2026-07-05 11:55:20,323 INFO [aioice.ice] Connection(15) Check CandidatePair(('140.238.103.56', 36317) -> ('140.238.103.56', 60668)) State.FROZEN -> State.WAITING
+2026-07-05 11:55:20,323 INFO [aioice.ice] Connection(15) Check CandidatePair(('192.168.1.231', 51960) -> ('140.238.103.56', 60668)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 11:55:20,333 INFO [aioice.ice] Connection(15) Check CandidatePair(('192.168.1.231', 51960) -> ('140.238.103.56', 60668)) nominating pair
+2026-07-05 11:55:20,343 INFO [aioice.ice] Connection(15) Check CandidatePair(('169.254.104.229', 58222) -> ('140.238.103.56', 60668)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 11:55:20,345 INFO [aioice.ice] Connection(15) Check CandidatePair(('192.168.1.231', 51960) -> ('140.238.103.56', 60668)) State.IN_PROGRESS -> State.SUCCEEDED
+2026-07-05 11:55:20,345 INFO [aioice.ice] Connection(15) Check CandidatePair(('192.168.1.231', 51960) -> ('140.238.103.56', 59582)) State.WAITING -> State.FAILED
+2026-07-05 11:55:20,345 INFO [aioice.ice] Connection(15) Check CandidatePair(('169.254.104.229', 58222) -> ('140.238.103.56', 59582)) State.FROZEN -> State.FAILED
+2026-07-05 11:55:20,346 INFO [aioice.ice] Connection(15) Check CandidatePair(('140.238.103.56', 36317) -> ('140.238.103.56', 60668)) State.WAITING -> State.FAILED
+2026-07-05 11:55:20,346 INFO [aioice.ice] Connection(15) Check CandidatePair(('140.238.103.56', 36317) -> ('140.238.103.56', 59582)) State.FROZEN -> State.FAILED
+2026-07-05 11:55:20,346 INFO [aioice.ice] Connection(15) ICE completed
+2026-07-05 11:55:20,363 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to completed
+2026-07-05 11:55:20,376 INFO [getstream.video.rtc.pc] Publisher connection state changed to connected
+2026-07-05 11:55:20,377 INFO [getstream.video.rtc.pc] Publisher successfully connected
+2026-07-05 11:55:20,405 INFO [getstream.video.rtc.tracks] Handling track published: lingua-ai-teacher - b5c1ecff-25d7-4c23-b067-018d545ece76 - 1
+2026-07-05 11:55:20,499 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7od28r-a60e9808fbbf/query?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:20,505 INFO [__main__] Vision Agent joined call audio-mr7od28r-a60e9808fbbf. Sending greeting.
+2026-07-05 11:55:20,505 INFO [__main__] Vision Agent greeting completed for call audio-mr7od28r-a60e9808fbbf.
+2026-07-05 11:55:21,305 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7od28r-a60e9808fbbf/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:21,337 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:21,583 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:21,585 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:21,705 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:21,706 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:21,887 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:21,896 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,084 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,089 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,227 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,227 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,338 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,339 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,362 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,454 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,541 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,567 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,628 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,752 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,754 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,766 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,867 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:22,894 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:22,977 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:23,039 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:23,092 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:23,276 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7od28r-a60e9808fbbf/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 11:55:23,278 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:23,395 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b9de4dbc-0eaf-46d9-a89a-b1744f73a4d2/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 11:55:26,967 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 11:55:26,968 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter stopped
+2026-07-05 11:55:26,968 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 11:55:26,968 INFO [getstream.video.rtc.network_monitor] Stopping network connectivity monitoring
+2026-07-05 11:55:26,972 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to closed
+2026-07-05 11:55:26,972 INFO [getstream.video.rtc.pc] Publisher connection state changed to closed
+2026-07-05 11:55:26,987 INFO [aioice.turn] TURN allocation deleted ('140.238.103.56', 36317)
+2026-07-05 11:55:29,010 INFO [getstream.video.rtc.coordinator.ws] Disconnecting from coordinator
+2026-07-05 11:55:30,020 INFO [getstream.video.rtc.coordinator.ws] Disconnected from coordinator
+2026-07-05 11:55:30,020 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 11:55:30,021 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 11:55:30,022 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 11:55:30,022 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 11:55:30,022 INFO [__main__] Vision Agent finished call audio-mr7od28r-a60e9808fbbf.
+2026-07-05 12:01:39,964 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 38895) (expires in 600 seconds)
+2026-07-05 12:01:54,948 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 46546) (expires in 600 seconds)
+2026-07-05 12:09:37,369 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 12:09:37,374 WARNING [google_genai._api_client] Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-07-05 12:09:37,390 INFO [__main__] Vision Agent joining Stream call default/audio-mr7ovh0x-ddc29ba10d0e.
+2026-07-05 12:09:37,551 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/users?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:37,675 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:37,866 INFO [httpx] HTTP Request: GET https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:37,877 INFO [__main__] Loaded lesson metadata for call audio-mr7ovh0x-ddc29ba10d0e: language=Spanish lesson=Daily Life.
+2026-07-05 12:09:38,154 INFO [getstream.video.rtc.connection_manager] Connecting to SFU
+2026-07-05 12:09:38,162 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 12:09:38,162 INFO [getstream.video.rtc.coordinator.ws] Connecting to coordinator
+2026-07-05 12:09:38,426 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/join?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:38,431 INFO [getstream.video.rtc.pc] creating subscriber peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-af50934264de.stream-io-video.com:3478'], username='1659766/default:audio-mr7ovh0x-ddc29ba10d0e/lingua-ai-teacher/dNRg5FeEJghAmcxOL45hIg', credential='Gu37/YqJb9qZGkJXMwKK8ub0v+JefVUZ', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-af50934264de.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7ovh0x-ddc29ba10d0e/lingua-ai-teacher/dNRg5FeEJghAmcxOL45hIg', credential='Gu37/YqJb9qZGkJXMwKK8ub0v+JefVUZ', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783292978:', credential='O2hYpA804ugW5R2gs1TTxvqokd4=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783292978:', credential='O2hYpA804ugW5R2gs1TTxvqokd4=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 12:09:38,432 INFO [getstream.video.rtc.connection_utils] Connecting to WebSocket at wss://sfu-oci-london-vp1-af50934264de.stream-io-video.com/ws
+2026-07-05 12:09:38,478 INFO [websocket] Websocket connected
+2026-07-05 12:09:38,492 INFO [getstream.video.rtc.coordinator.ws] Successfully connected and authenticated
+2026-07-05 12:09:38,496 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 12:09:38,496 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter started (interval=8000ms)
+2026-07-05 12:09:38,496 INFO [getstream.video.rtc.connection_manager] Successfully connected to SFU
+2026-07-05 12:09:38,496 INFO [getstream.video.rtc.network_monitor] Starting network connectivity monitoring
+2026-07-05 12:09:38,497 INFO [getstream.video.rtc.peer_connection] Adding tracks: 0 tracks
+2026-07-05 12:09:38,497 INFO [getstream.video.rtc.pc] Creating publisher peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-af50934264de.stream-io-video.com:3478'], username='1659766/default:audio-mr7ovh0x-ddc29ba10d0e/lingua-ai-teacher/dNRg5FeEJghAmcxOL45hIg', credential='Gu37/YqJb9qZGkJXMwKK8ub0v+JefVUZ', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-af50934264de.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7ovh0x-ddc29ba10d0e/lingua-ai-teacher/dNRg5FeEJghAmcxOL45hIg', credential='Gu37/YqJb9qZGkJXMwKK8ub0v+JefVUZ', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783292978:', credential='O2hYpA804ugW5R2gs1TTxvqokd4=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783292978:', credential='O2hYpA804ugW5R2gs1TTxvqokd4=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 12:09:38,497 INFO [getstream.video.rtc.peer_connection] Added relayed audio track 52deffcd-d9ab-4790-a509-e569f02746f5
+2026-07-05 12:09:38,498 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to gathering
+2026-07-05 12:09:38,527 INFO [aioice.turn] TURN allocation created ('152.67.154.102', 36400) (expires in 600 seconds)
+2026-07-05 12:09:38,527 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to complete
+2026-07-05 12:09:38,527 INFO [getstream.video.rtc.pc] Publisher: All ICE candidates have been gathered.
+2026-07-05 12:09:38,570 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 12:09:38,570 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 12:09:38,572 INFO [getstream.video.rtc.pc] Waiting for publisher connection with 15.0s timeout
+2026-07-05 12:09:38,572 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to checking
+2026-07-05 12:09:38,572 INFO [getstream.video.rtc.pc] Publisher connection state changed to connecting
+2026-07-05 12:09:38,572 INFO [aioice.ice] Connection(20) Check CandidatePair(('192.168.1.231', 58815) -> ('152.67.154.102', 50669)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:38,572 INFO [aioice.ice] Connection(20) Check CandidatePair(('169.254.104.229', 53193) -> ('152.67.154.102', 50669)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:38,572 INFO [aioice.ice] Connection(20) Check CandidatePair(('192.168.1.231', 58815) -> ('152.67.154.102', 60446)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:38,572 INFO [aioice.ice] Connection(20) Check CandidatePair(('152.67.154.102', 36400) -> ('152.67.154.102', 50669)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:38,572 INFO [aioice.ice] Connection(20) Check CandidatePair(('192.168.1.231', 58815) -> ('152.67.154.102', 50669)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:09:38,586 INFO [aioice.ice] Connection(20) Check CandidatePair(('192.168.1.231', 58815) -> ('152.67.154.102', 50669)) nominating pair
+2026-07-05 12:09:38,593 INFO [aioice.ice] Connection(20) Check CandidatePair(('169.254.104.229', 53193) -> ('152.67.154.102', 50669)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:09:38,598 INFO [aioice.ice] Connection(20) Check CandidatePair(('192.168.1.231', 58815) -> ('152.67.154.102', 50669)) State.IN_PROGRESS -> State.SUCCEEDED
+2026-07-05 12:09:38,598 INFO [aioice.ice] Connection(20) Check CandidatePair(('192.168.1.231', 58815) -> ('152.67.154.102', 60446)) State.WAITING -> State.FAILED
+2026-07-05 12:09:38,598 INFO [aioice.ice] Connection(20) Check CandidatePair(('169.254.104.229', 53193) -> ('152.67.154.102', 60446)) State.FROZEN -> State.FAILED
+2026-07-05 12:09:38,598 INFO [aioice.ice] Connection(20) Check CandidatePair(('152.67.154.102', 36400) -> ('152.67.154.102', 50669)) State.WAITING -> State.FAILED
+2026-07-05 12:09:38,599 INFO [aioice.ice] Connection(20) Check CandidatePair(('152.67.154.102', 36400) -> ('152.67.154.102', 60446)) State.FROZEN -> State.FAILED
+2026-07-05 12:09:38,599 INFO [aioice.ice] Connection(20) ICE completed
+2026-07-05 12:09:38,614 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to completed
+2026-07-05 12:09:38,630 INFO [getstream.video.rtc.pc] Publisher connection state changed to connected
+2026-07-05 12:09:38,630 INFO [getstream.video.rtc.pc] Publisher successfully connected
+2026-07-05 12:09:38,642 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e?api_key=yemm87zdfwgj&connection_id=6a16b986-0a1d-196c-0300-000000298d9b "HTTP/1.1 201 Created"
+2026-07-05 12:09:38,657 INFO [getstream.video.rtc.tracks] Handling track published: lingua-ai-teacher - 16989013-9806-428e-9322-da2d117bcfea - 1
+2026-07-05 12:09:38,750 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/query?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:38,756 INFO [__main__] Vision Agent joined call audio-mr7ovh0x-ddc29ba10d0e. Sending greeting.
+2026-07-05 12:09:38,757 INFO [__main__] Vision Agent greeting completed for call audio-mr7ovh0x-ddc29ba10d0e.
+2026-07-05 12:09:39,453 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:39,560 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:39,813 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:39,815 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,076 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,078 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,160 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,188 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,239 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,299 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,336 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,489 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,607 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,612 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,622 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,722 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,893 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:40,894 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:40,911 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,014 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,125 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,129 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,133 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,241 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,307 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,326 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,357 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,429 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,536 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,641 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,650 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,697 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:41,763 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:41,876 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:49,559 INFO [__main__] Activity start requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:09:50,497 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:09:50,646 INFO [getstream.video.rtc.connection_manager] Subscriber offer received
+2026-07-05 12:09:50,647 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 12:09:50,647 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 12:09:50,647 INFO [getstream.video.rtc.pc] Track received: 5E42A415-6446-420B-8236-F0F7DE594CDD : audio
+2026-07-05 12:09:50,647 INFO [getstream.video.rtc.pc] ICE gathering state changed to gathering
+2026-07-05 12:09:50,648 INFO [getstream.video.rtc.recording] Processing audio track for user user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8
+2026-07-05 12:09:50,676 INFO [aioice.turn] TURN allocation created ('152.67.154.102', 44486) (expires in 600 seconds)
+2026-07-05 12:09:50,676 INFO [getstream.video.rtc.pc] ICE gathering state changed to complete
+2026-07-05 12:09:50,676 INFO [getstream.video.rtc.pc] All ICE candidates have been gathered.
+2026-07-05 12:09:50,676 INFO [aioice.ice] Connection(21) Check CandidatePair(('192.168.1.231', 56101) -> ('152.67.154.102', 49171)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:50,676 INFO [aioice.ice] Connection(21) Check CandidatePair(('169.254.104.229', 64708) -> ('152.67.154.102', 49171)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:50,677 INFO [aioice.ice] Connection(21) Check CandidatePair(('192.168.1.231', 56101) -> ('152.67.154.102', 55061)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:50,677 INFO [aioice.ice] Connection(21) Check CandidatePair(('152.67.154.102', 44486) -> ('152.67.154.102', 49171)) State.FROZEN -> State.WAITING
+2026-07-05 12:09:50,677 INFO [aioice.ice] Connection(21) Check CandidatePair(('192.168.1.231', 56101) -> ('152.67.154.102', 49171)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:09:50,697 INFO [aioice.ice] Connection(21) Check CandidatePair(('169.254.104.229', 64708) -> ('152.67.154.102', 49171)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:09:50,718 INFO [aioice.ice] Connection(21) Check CandidatePair(('192.168.1.231', 56101) -> ('152.67.154.102', 55061)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:09:50,722 INFO [aioice.ice] Connection(21) Check CandidatePair(('192.168.1.231', 56101) -> ('152.67.154.102', 49171)) nominating pair
+2026-07-05 12:09:50,736 INFO [aioice.ice] Connection(21) Check CandidatePair(('192.168.1.231', 56101) -> ('152.67.154.102', 49171)) State.IN_PROGRESS -> State.SUCCEEDED
+2026-07-05 12:09:50,736 INFO [aioice.ice] Connection(21) Check CandidatePair(('169.254.104.229', 64708) -> ('152.67.154.102', 55061)) State.FROZEN -> State.FAILED
+2026-07-05 12:09:50,736 INFO [aioice.ice] Connection(21) Check CandidatePair(('152.67.154.102', 44486) -> ('152.67.154.102', 49171)) State.WAITING -> State.FAILED
+2026-07-05 12:09:50,736 INFO [aioice.ice] Connection(21) Check CandidatePair(('152.67.154.102', 44486) -> ('152.67.154.102', 55061)) State.FROZEN -> State.FAILED
+2026-07-05 12:09:50,736 INFO [aioice.ice] Connection(21) ICE completed
+2026-07-05 12:09:52,682 INFO [__main__] Activity end requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:09:53,295 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,298 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,299 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,302 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/f436c536-3299-46ca-8466-db8dda23c976?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,340 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,420 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,435 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,597 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/9e055a5b-8d22-4f21-bd10-161e79edde30?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,598 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,721 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,833 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:53,921 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:53,947 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:54,117 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:54,351 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:54,353 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:54,428 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:54,464 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:54,763 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:54,764 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:54,866 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:54,903 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:55,134 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:55,138 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:55,308 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:55,312 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:55,513 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:09:55,517 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:09:59,992 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 38895) (expires in 600 seconds)
+2026-07-05 12:10:02,242 INFO [__main__] Activity start requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:10:02,284 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:10:04,151 INFO [__main__] Activity end requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:10:10,569 INFO [__main__] Activity start requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:10:10,609 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:10:10,934 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:10,938 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:10,940 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:10,944 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:10,950 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/eb8a77b2-6862-4126-86b4-18512eb1e5e3?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,044 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,046 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,050 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,054 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,060 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,156 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,159 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,160 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,161 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,172 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,274 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,396 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/3ae9ddfe-d29d-4e3d-8919-6c5bc779ecf4?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,518 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:11,634 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:11,744 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:11,854 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:11,968 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:12,082 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:12,131 INFO [__main__] Activity end requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:10:12,196 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:12,312 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:12,426 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:12,540 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:12,651 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:14,973 INFO [aioice.turn] TURN allocation refreshed ('152.67.154.102', 46546) (expires in 600 seconds)
+2026-07-05 12:10:18,950 INFO [__main__] Activity start requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:10:18,990 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:10:21,541 INFO [__main__] Activity end requested for Vision Agent session f5c11d30-8b6a-4fc9-b802-1bb82c1fe660.
+2026-07-05 12:10:22,406 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,408 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,409 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,414 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,418 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/ac34800e-34e4-4b18-b824-02521cb281f3?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,539 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,546 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,659 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/d318edda-bcc9-4a93-87e2-d89530a05928?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,786 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:22,898 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:22,910 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,010 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,048 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,125 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,243 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,254 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,278 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,354 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,398 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,466 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,481 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,578 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,598 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,690 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,733 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,802 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:23,971 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:23,973 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,004 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,074 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,086 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,198 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,239 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,306 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,454 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,456 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,474 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,518 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,587 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,592 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,700 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,740 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,812 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:24,824 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,906 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:24,920 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:25,034 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:25,146 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:32,692 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:10:37,187 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 12:10:37,188 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter stopped
+2026-07-05 12:10:37,188 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 12:10:37,188 INFO [getstream.video.rtc.network_monitor] Stopping network connectivity monitoring
+2026-07-05 12:10:37,192 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to closed
+2026-07-05 12:10:37,192 INFO [getstream.video.rtc.pc] Publisher connection state changed to closed
+2026-07-05 12:10:37,206 INFO [aioice.turn] TURN allocation deleted ('152.67.154.102', 38895)
+2026-07-05 12:10:37,207 INFO [aioice.turn] TURN allocation deleted ('152.67.154.102', 46546)
+2026-07-05 12:10:39,223 INFO [getstream.video.rtc.coordinator.ws] Disconnecting from coordinator
+2026-07-05 12:10:40,235 INFO [getstream.video.rtc.coordinator.ws] Disconnected from coordinator
+2026-07-05 12:10:40,235 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 12:10:40,237 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 12:10:40,237 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 12:10:40,237 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 12:10:40,238 INFO [__main__] Vision Agent finished call audio-mr7mi5ww-837bf713ee37.
+2026-07-05 12:10:41,944 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:10:42,333 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,335 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,336 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,338 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,341 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,444 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,448 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,452 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,453 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,455 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/6ebe0cd9-002f-4787-af65-8aef8351c389?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,557 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,563 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,568 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,570 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,574 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,668 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,670 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,680 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,804 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/6176f16a-5f3e-4627-a77a-e6f596473deb?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:42,920 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:43,034 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,147 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,260 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,379 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,496 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,607 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,718 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,830 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:43,942 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:44,053 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:44,168 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:44,279 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:53,572 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,574 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,574 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,580 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/b4f293e0-a036-4e45-86d4-89fd3fa21a92?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,583 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,687 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,705 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,737 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,821 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/8a78047e-5338-4398-8925-960a341d567c?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,946 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:53,948 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,062 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,121 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,175 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,231 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,286 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,400 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,478 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,496 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,516 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,568 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,614 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,624 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,642 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,736 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,841 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,844 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,870 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:54,956 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:54,991 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:55,032 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:55,069 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,178 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:55,180 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,288 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,314 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:55,348 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:55,399 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,437 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:10:55,510 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,623 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,734 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,848 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:10:55,965 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:02,760 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:11:05,894 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:05,896 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:05,897 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:05,897 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:05,904 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/38539714-a6a9-4b1f-b46f-142bca963778?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,021 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,139 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/f57a211a-dbb9-4d30-bd95-669671e6ea4a?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,146 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,266 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,285 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,376 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:06,394 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,446 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,490 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:06,602 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:06,638 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,713 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:06,826 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:06,842 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,882 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:06,939 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:07,007 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:07,053 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:07,134 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:07,167 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:07,193 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:07,282 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:07,397 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:07,409 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:07,511 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:07,519 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:07,622 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:12,999 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:11:17,209 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,212 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,213 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,222 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/11b523e4-4c35-4339-909a-7fd1752ac9c5?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,223 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,318 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,319 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,324 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,333 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,341 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,426 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,460 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/2fb56150-9e71-4afb-b4c0-d9dd0bddc5ea?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,519 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,583 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,690 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,692 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:17,790 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,804 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:17,897 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:17,917 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:17,951 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:18,029 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,073 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:18,141 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,243 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:18,254 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,369 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,386 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:18,454 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:18,479 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,498 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:18,588 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,700 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,813 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:18,928 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:19,040 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:19,154 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:19,269 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:29,768 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:11:33,962 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:33,965 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:33,966 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:33,967 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:33,969 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,081 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,083 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/345825c8-d861-47f6-a7c9-b798a8dc317a?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,135 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,201 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,220 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,294 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,317 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/ca59ad5b-211f-4977-9659-ad05c0e9e9d7?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,444 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,557 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:34,564 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,606 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,667 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:34,722 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,778 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:34,867 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:34,894 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,006 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,011 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,020 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,121 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,128 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,234 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,271 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,348 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,405 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,459 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,564 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,571 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,682 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,686 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,792 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:35,808 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,850 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:35,906 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:36,017 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:36,130 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:36,242 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:36,353 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:36,464 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:45,419 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:11:51,122 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,125 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,125 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,128 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,133 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/9e55b292-7350-4e52-8edd-95196360780a?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,236 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,239 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,246 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,368 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/16637b60-8470-4cbb-bed7-c663434151ea?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,418 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,487 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,543 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,599 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:51,659 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,711 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:51,824 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:51,861 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,900 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:51,934 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,048 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,066 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:52,098 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:52,151 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:52,157 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,271 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,302 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:52,382 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,493 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,563 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:52,604 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,625 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:11:52,714 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,857 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:52,967 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:11:58,646 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:12:01,643 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,646 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,650 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,652 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,656 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/c1f45a49-aa6e-4cf6-81fa-2b5e0dffd089?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,772 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,893 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/38379dc4-b8ff-48e3-9e61-831a3781b3c3?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,923 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:01,974 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,012 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,125 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,126 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,236 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,320 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,346 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,368 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,412 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,455 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,493 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,542 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,567 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,664 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,679 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,791 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,797 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,865 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:02,909 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:02,940 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:03,001 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:03,021 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:03,051 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:03,135 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:03,201 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:03,247 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:03,359 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:03,473 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:03,587 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:03,701 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:08,291 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:12:11,483 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:11,485 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:11,492 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/c6cd6a77-0d14-4b1d-8d8e-f5cc883103dd?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:11,614 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:11,872 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/ebb8c225-6182-4eb4-a997-4150bfee5344?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:11,875 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:11,877 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:12,000 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:12,246 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/3499b367-434c-4dba-88f3-8ebeac3792d3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:12,248 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:12,310 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:12,356 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/3499b367-434c-4dba-88f3-8ebeac3792d3/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:14,801 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:14,803 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:14,832 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:14,834 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:14,916 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/065e1d43-ac37-44da-a7eb-366e5f38beba?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,041 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,141 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,153 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:15,275 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:15,280 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,392 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,393 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:15,416 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,512 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:15,513 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,625 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:15,630 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,737 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:15,777 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:15,851 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/6e22af66-51ea-452d-987d-14a7cfa53281/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:17,260 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,262 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,268 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,274 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,374 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/7b3c17ea-1fc0-4c0d-8058-e0ed6f9b6344?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,491 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,681 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,683 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:17,841 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,844 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:17,944 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:17,954 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:18,397 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:18,400 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:18,424 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:18,513 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:18,626 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:18,666 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:18,919 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:18,924 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:19,077 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:19,078 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:19,383 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:19,397 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:19,439 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:19,509 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:19,532 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:19,619 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:19,703 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:19,728 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:19,955 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:19,960 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:24,993 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:12:31,195 INFO [getstream.video.rtc.tracks] Handling track published: user_3FxhxIuNRXXXu3uRJ5NINGgtwZ8 - d079d287-e717-4c9e-962a-a7a4c18e248a - 1
+2026-07-05 12:12:31,697 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,699 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,708 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/ddb603ec-9f4a-40a4-a51d-cf30c93b3a5e?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,715 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,726 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,809 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,811 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,825 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,827 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,832 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,927 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,929 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,936 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,939 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:31,942 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,039 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,040 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,043 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,054 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,055 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,147 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,151 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,156 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,274 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/0ecb06af-0b98-44a6-b950-eef2aedaec13?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,393 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:32,505 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:32,619 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:32,733 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:32,849 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:32,962 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,077 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,201 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,319 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,435 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,549 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,664 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,781 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:33,895 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:34,007 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:34,121 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:34,235 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:34,347 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:43,817 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,820 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,821 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/261c91fe-2b3c-4187-8151-01de759a39dd?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,822 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,826 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,933 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,939 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:43,984 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,058 INFO [httpx] HTTP Request: PUT https://chat.stream-io-api.com/api/v2/chat/messages/c3e01275-65e4-467f-b493-90ccd6728368?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,173 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,183 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ovh0x-ddc29ba10d0e/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,234 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,298 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,324 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,406 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,418 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,511 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,517 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,571 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,631 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,671 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,746 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,833 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:44,854 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,971 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:44,987 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,072 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,079 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,208 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,287 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,321 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,327 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,441 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,469 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,551 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,611 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,631 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,687 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,720 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ovh0x-ddc29ba10d0e/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:12:45,801 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:45,915 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:46,029 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:46,141 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:46,255 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/e4bdef57-7fa4-4151-bb30-b91a632ee4ca/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:12:53,865 INFO [getstream.video.rtc.connection_manager] Subscriber offer received
+2026-07-05 12:13:00,999 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 12:13:01,001 WARNING [google_genai._api_client] Both GOOGLE_API_KEY and GEMINI_API_KEY are set. Using GOOGLE_API_KEY.
+2026-07-05 12:13:01,016 INFO [__main__] Vision Agent joining Stream call default/audio-mr7ozujj-3007f2ac11e5.
+2026-07-05 12:13:01,167 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/users?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:01,287 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:01,403 INFO [httpx] HTTP Request: GET https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:01,415 INFO [__main__] Loaded lesson metadata for call audio-mr7ozujj-3007f2ac11e5: language=Spanish lesson=Travel & Directions.
+2026-07-05 12:13:01,672 INFO [getstream.video.rtc.connection_manager] Connecting to SFU
+2026-07-05 12:13:01,680 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 12:13:01,680 INFO [getstream.video.rtc.coordinator.ws] Connecting to coordinator
+2026-07-05 12:13:01,926 INFO [getstream.video.rtc.coordinator.ws] Successfully connected and authenticated
+2026-07-05 12:13:01,930 INFO [getstream] getstream connection pool: max_conns_per_host=5 idle_timeout=55.0s connect_timeout=10.0s request_timeout=30.0s user_http_client=False
+2026-07-05 12:13:01,950 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/join?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:01,955 INFO [getstream.video.rtc.pc] creating subscriber peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478'], username='1659766/default:audio-mr7ozujj-3007f2ac11e5/lingua-ai-teacher/iHLPJMgaCZ0YVwig77fHUA', credential='BK39/dBNMvsUKWyo2KJSYfOARLanPp7a', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7ozujj-3007f2ac11e5/lingua-ai-teacher/iHLPJMgaCZ0YVwig77fHUA', credential='BK39/dBNMvsUKWyo2KJSYfOARLanPp7a', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783293181:', credential='fBoraBw0n9rabaBsF80bZoC07bY=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783293181:', credential='fBoraBw0n9rabaBsF80bZoC07bY=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 12:13:01,955 INFO [getstream.video.rtc.connection_utils] Connecting to WebSocket at wss://sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com/ws
+2026-07-05 12:13:02,012 INFO [websocket] Websocket connected
+2026-07-05 12:13:02,026 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter started (interval=8000ms)
+2026-07-05 12:13:02,026 INFO [getstream.video.rtc.connection_manager] Successfully connected to SFU
+2026-07-05 12:13:02,026 INFO [getstream.video.rtc.network_monitor] Starting network connectivity monitoring
+2026-07-05 12:13:02,026 INFO [getstream.video.rtc.peer_connection] Adding tracks: 0 tracks
+2026-07-05 12:13:02,026 INFO [getstream.video.rtc.pc] Creating publisher peer connection with configuration: RTCConfiguration(iceServers=[RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478'], username='1659766/default:audio-mr7ozujj-3007f2ac11e5/lingua-ai-teacher/iHLPJMgaCZ0YVwig77fHUA', credential='BK39/dBNMvsUKWyo2KJSYfOARLanPp7a', credentialType='password'), RTCIceServer(urls=['turn:sfu-oci-london-vp1-9a2e1aeeda81.stream-io-video.com:3478?transport=tcp'], username='1659766/default:audio-mr7ozujj-3007f2ac11e5/lingua-ai-teacher/iHLPJMgaCZ0YVwig77fHUA', credential='BK39/dBNMvsUKWyo2KJSYfOARLanPp7a', credentialType='password'), RTCIceServer(urls=['turns:turn.stream-io-video.com:443?transport=tcp'], username='1783293181:', credential='fBoraBw0n9rabaBsF80bZoC07bY=', credentialType='password'), RTCIceServer(urls=['turn:turn.stream-io-video.com:443?transport=udp'], username='1783293181:', credential='fBoraBw0n9rabaBsF80bZoC07bY=', credentialType='password')], bundlePolicy=<RTCBundlePolicy.MAX_BUNDLE: 'max-bundle'>)
+2026-07-05 12:13:02,027 INFO [getstream.video.rtc.peer_connection] Added relayed audio track 8a30ca5c-7b15-4795-9337-1399a2c37422
+2026-07-05 12:13:02,027 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to gathering
+2026-07-05 12:13:02,052 INFO [aioice.turn] TURN allocation created ('140.238.103.56', 32860) (expires in 600 seconds)
+2026-07-05 12:13:02,052 INFO [getstream.video.rtc.pc] Publisher ICE gathering state changed to complete
+2026-07-05 12:13:02,053 INFO [getstream.video.rtc.pc] Publisher: All ICE candidates have been gathered.
+2026-07-05 12:13:02,076 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5?api_key=yemm87zdfwgj&connection_id=6a16b986-0a1d-360e-0300-000000299a38 "HTTP/1.1 201 Created"
+2026-07-05 12:13:02,094 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 12:13:02,095 WARNING [aiortc.rtcpeerconnection] RTCPeerConnection addIceCandidate called without remote description
+2026-07-05 12:13:02,095 INFO [getstream.video.rtc.pc] Waiting for publisher connection with 15.0s timeout
+2026-07-05 12:13:02,095 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to checking
+2026-07-05 12:13:02,095 INFO [getstream.video.rtc.pc] Publisher connection state changed to connecting
+2026-07-05 12:13:02,095 INFO [aioice.ice] Connection(26) Check CandidatePair(('192.168.1.231', 57352) -> ('140.238.103.56', 60320)) State.FROZEN -> State.WAITING
+2026-07-05 12:13:02,095 INFO [aioice.ice] Connection(26) Check CandidatePair(('169.254.104.229', 54877) -> ('140.238.103.56', 60320)) State.FROZEN -> State.WAITING
+2026-07-05 12:13:02,095 INFO [aioice.ice] Connection(26) Check CandidatePair(('192.168.1.231', 57352) -> ('140.238.103.56', 57870)) State.FROZEN -> State.WAITING
+2026-07-05 12:13:02,095 INFO [aioice.ice] Connection(26) Check CandidatePair(('140.238.103.56', 32860) -> ('140.238.103.56', 60320)) State.FROZEN -> State.WAITING
+2026-07-05 12:13:02,095 INFO [aioice.ice] Connection(26) Check CandidatePair(('192.168.1.231', 57352) -> ('140.238.103.56', 60320)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:13:02,108 INFO [aioice.ice] Connection(26) Check CandidatePair(('192.168.1.231', 57352) -> ('140.238.103.56', 60320)) nominating pair
+2026-07-05 12:13:02,117 INFO [aioice.ice] Connection(26) Check CandidatePair(('169.254.104.229', 54877) -> ('140.238.103.56', 60320)) State.WAITING -> State.IN_PROGRESS
+2026-07-05 12:13:02,119 INFO [aioice.ice] Connection(26) Check CandidatePair(('192.168.1.231', 57352) -> ('140.238.103.56', 60320)) State.IN_PROGRESS -> State.SUCCEEDED
+2026-07-05 12:13:02,119 INFO [aioice.ice] Connection(26) Check CandidatePair(('192.168.1.231', 57352) -> ('140.238.103.56', 57870)) State.WAITING -> State.FAILED
+2026-07-05 12:13:02,119 INFO [aioice.ice] Connection(26) Check CandidatePair(('169.254.104.229', 54877) -> ('140.238.103.56', 57870)) State.FROZEN -> State.FAILED
+2026-07-05 12:13:02,119 INFO [aioice.ice] Connection(26) Check CandidatePair(('140.238.103.56', 32860) -> ('140.238.103.56', 60320)) State.WAITING -> State.FAILED
+2026-07-05 12:13:02,119 INFO [aioice.ice] Connection(26) Check CandidatePair(('140.238.103.56', 32860) -> ('140.238.103.56', 57870)) State.FROZEN -> State.FAILED
+2026-07-05 12:13:02,119 INFO [aioice.ice] Connection(26) ICE completed
+2026-07-05 12:13:02,139 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to completed
+2026-07-05 12:13:02,153 INFO [getstream.video.rtc.pc] Publisher connection state changed to connected
+2026-07-05 12:13:02,153 INFO [getstream.video.rtc.pc] Publisher successfully connected
+2026-07-05 12:13:02,179 INFO [getstream.video.rtc.tracks] Handling track published: lingua-ai-teacher - c593520b-ece5-47b2-8252-3379cc28765d - 1
+2026-07-05 12:13:02,269 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ozujj-3007f2ac11e5/query?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:02,273 INFO [__main__] Vision Agent joined call audio-mr7ozujj-3007f2ac11e5. Sending greeting.
+2026-07-05 12:13:02,273 INFO [__main__] Vision Agent greeting completed for call audio-mr7ozujj-3007f2ac11e5.
+2026-07-05 12:13:03,011 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/chat/channels/messaging/audio-mr7ozujj-3007f2ac11e5/message?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:03,039 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:03,214 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:03,354 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:03,360 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:03,380 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:03,557 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:03,560 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:03,740 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:03,741 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:03,923 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:03,928 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,001 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,035 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,064 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,149 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,324 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,327 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,572 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,578 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,579 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,689 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,724 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,790 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:04,804 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,913 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:04,935 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:05,027 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:05,078 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:05,139 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:05,196 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:05,235 INFO [httpx] HTTP Request: POST https://chat.stream-io-api.com/api/v2/video/call/default/audio-mr7ozujj-3007f2ac11e5/event?api_key=yemm87zdfwgj "HTTP/1.1 201 Created"
+2026-07-05 12:13:05,257 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:05,380 INFO [httpx] HTTP Request: PATCH https://chat.stream-io-api.com/api/v2/chat/messages/9f4d16a5-a3a3-4770-9f53-5f736e7b05a7/ephemeral?api_key=yemm87zdfwgj "HTTP/1.1 200 OK"
+2026-07-05 12:13:07,228 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 12:13:07,229 INFO [getstream.video.rtc.stats_reporter] SfuStatsReporter stopped
+2026-07-05 12:13:07,229 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 12:13:07,229 INFO [getstream.video.rtc.network_monitor] Stopping network connectivity monitoring
+2026-07-05 12:13:07,232 INFO [getstream.video.rtc.pc] Publisher ICE connection state changed to closed
+2026-07-05 12:13:07,232 INFO [getstream.video.rtc.pc] Publisher connection state changed to closed
+2026-07-05 12:13:07,245 INFO [aioice.turn] TURN allocation deleted ('140.238.103.56', 32860)
+2026-07-05 12:13:09,263 INFO [getstream.video.rtc.coordinator.ws] Disconnecting from coordinator
+2026-07-05 12:13:10,272 INFO [getstream.video.rtc.coordinator.ws] Disconnected from coordinator
+2026-07-05 12:13:10,272 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 12:13:10,272 INFO [getstream.video.rtc.connection_manager] Leaving the call
+2026-07-05 12:13:10,272 INFO [getstream.video.rtc.recording] RecordingManager cleanup completed
+2026-07-05 12:13:10,272 INFO [getstream.video.rtc.connection_manager] Call left and connections closed
+2026-07-05 12:13:10,273 INFO [__main__] Vision Agent finished call audio-mr7ozujj-3007f2ac11e5.

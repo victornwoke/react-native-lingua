@@ -26,6 +26,9 @@ export function useHomeDashboard() {
   const completedLessonIdsByLanguageId = useLessonProgressStore(
     (state) => state.completedLessonIdsByLanguageId,
   );
+  const completedPlanItemIdsByDate = useLessonProgressStore(
+    (state) => state.completedPlanItemIdsByDate,
+  );
   const todayXp = useLessonProgressStore(
     (state) => state.dailyXpByDate[getTodayDateKey()] ?? 0,
   );
@@ -48,9 +51,24 @@ export function useHomeDashboard() {
     const completedLessonIds =
       completedLessonIdsByLanguageId[selectedLanguage.id] ?? [];
     const completedLessonCount = completedLessonIds.length;
-    const planLessonComplete = earnedXp > 0;
-    const planConversationComplete = earnedXp >= Math.ceil(dailyGoalXp * 0.7);
-    const planNewWordsComplete = earnedXp >= dailyGoalXp;
+    const todayPlanItemIds =
+      completedPlanItemIdsByDate[getTodayDateKey()]?.[selectedLanguage.id] ??
+      [];
+    const planLessonComplete = todayPlanItemIds.includes("lesson");
+    const planConversationComplete =
+      todayPlanItemIds.includes("conversation");
+    const planNewWordsComplete = todayPlanItemIds.includes("new-words");
+    const remainingXp = Math.max(dailyGoalXp - earnedXp, 0);
+    const dailyGoalMessage =
+      earnedXp === 0
+        ? "Start your first lesson today"
+        : remainingXp === 0
+          ? "Daily goal complete"
+          : `${remainingXp} XP to go`;
+    const progressLabel =
+      completedLessonCount === 0
+        ? `${languageLessons.length} lessons waiting`
+        : `${completedLessonCount} of ${languageLessons.length} lessons complete`;
     const planItems: TodayPlanItem[] = [
       {
         id: "lesson",
@@ -88,9 +106,11 @@ export function useHomeDashboard() {
       currentLesson,
       completedLessonCount,
       dailyGoalXp,
+      dailyGoalMessage,
       earnedXp,
       lessonCount: languageLessons.length,
       planItems,
+      progressLabel,
       selectedLanguage,
       streakCount,
       unitLabel,
@@ -98,6 +118,7 @@ export function useHomeDashboard() {
   }, [
     activeLessonIdByLanguageId,
     completedLessonIdsByLanguageId,
+    completedPlanItemIdsByDate,
     selectedLanguageId,
     streakCount,
     todayXp,

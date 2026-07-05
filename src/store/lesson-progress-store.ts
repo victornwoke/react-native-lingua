@@ -6,10 +6,16 @@ import { getPersistStorage } from "./persist-storage";
 
 const LESSON_PROGRESS_STORAGE_KEY = "lesson-progress-storage";
 
+export type DailyPlanItemId = "lesson" | "conversation" | "new-words";
+
 type LessonProgressState = {
   activeLessonIdByLanguageId: Partial<Record<Language["id"], Lesson["id"]>>;
   completedLessonIdsByLanguageId: Partial<
     Record<Language["id"], Lesson["id"][]>
+  >;
+  completedPlanItemIdsByDate: Record<
+    string,
+    Partial<Record<Language["id"], DailyPlanItemId[]>>
   >;
   dailyXpByDate: Record<string, number>;
   lastCompletedDate: string | null;
@@ -18,6 +24,10 @@ type LessonProgressState = {
     languageId: Language["id"],
     lessonId: Lesson["id"],
     xpReward: number,
+  ) => void;
+  markDailyPlanItemComplete: (
+    languageId: Language["id"],
+    itemId: DailyPlanItemId,
   ) => void;
   setActiveLessonId: (
     languageId: Language["id"],
@@ -50,6 +60,7 @@ export const useLessonProgressStore = create<LessonProgressState>()(
     (set) => ({
       activeLessonIdByLanguageId: {},
       completedLessonIdsByLanguageId: {},
+      completedPlanItemIdsByDate: {},
       dailyXpByDate: {},
       lastCompletedDate: null,
       streakCount: 0,
@@ -76,6 +87,12 @@ export const useLessonProgressStore = create<LessonProgressState>()(
               ...state.completedLessonIdsByLanguageId,
               [languageId]: nextCompletedLessonIds,
             },
+            completedPlanItemIdsByDate: markPlanItemsComplete(
+              state.completedPlanItemIdsByDate,
+              todayKey,
+              languageId,
+              ["lesson", "conversation", "new-words"],
+            ),
             dailyXpByDate: {
               ...state.dailyXpByDate,
               [todayKey]: currentDailyXp + xpReward,
@@ -84,6 +101,18 @@ export const useLessonProgressStore = create<LessonProgressState>()(
             streakCount,
           };
         });
+      },
+      markDailyPlanItemComplete: (languageId, itemId) => {
+        const todayKey = getTodayDateKey();
+
+        set((state) => ({
+          completedPlanItemIdsByDate: markPlanItemsComplete(
+            state.completedPlanItemIdsByDate,
+            todayKey,
+            languageId,
+            [itemId],
+          ),
+        }));
       },
       setActiveLessonId: (languageId, lessonId) => {
         set((state) => ({
@@ -100,3 +129,24 @@ export const useLessonProgressStore = create<LessonProgressState>()(
     },
   ),
 );
+
+function markPlanItemsComplete(
+  completedPlanItemIdsByDate: LessonProgressState["completedPlanItemIdsByDate"],
+  dateKey: string,
+  languageId: Language["id"],
+  itemIds: DailyPlanItemId[],
+) {
+  const completedByLanguageId = completedPlanItemIdsByDate[dateKey] ?? {};
+  const completedItemIds = completedByLanguageId[languageId] ?? [];
+  const nextCompletedItemIds = Array.from(
+    new Set([...completedItemIds, ...itemIds]),
+  );
+
+  return {
+    ...completedPlanItemIdsByDate,
+    [dateKey]: {
+      ...completedByLanguageId,
+      [languageId]: nextCompletedItemIds,
+    },
+  };
+}
