@@ -18,6 +18,10 @@ import {
   useHomeDashboard,
   useStartVoiceCall,
 } from "@/hooks/use-home-dashboard";
+import {
+  useChangeLanguage,
+  useContinueLearning,
+} from "@/hooks/use-navigation-handlers";
 
 const greetingsByLanguageId: Record<string, string> = {
   french: "Bonjour",
@@ -62,6 +66,15 @@ export default function HomeScreen() {
     currentLesson,
     selectedLanguage,
   });
+  const handleContinueLearning = useContinueLearning({
+    currentLesson,
+    eventName: "continue_learning_tapped",
+    selectedLanguage,
+  });
+  const handleChangeLanguage = useChangeLanguage({
+    eventName: "change_language_tapped",
+    selectedLanguage,
+  });
 
   useEffect(() => {
     posthog.capture("home_dashboard_viewed", {
@@ -79,30 +92,6 @@ export default function HomeScreen() {
     selectedLanguage.name,
     streakCount,
   ]);
-
-  function handleContinueLearning() {
-    posthog.capture("continue_learning_tapped", {
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-      lesson_id: currentLesson?.id ?? null,
-      lesson_title: currentLesson?.title ?? null,
-    });
-
-    if (!currentLesson) {
-      router.push("/learn" as Href);
-      return;
-    }
-
-    router.push(`/lesson/${currentLesson.id}` as Href);
-  }
-
-  function handleChangeLanguage() {
-    posthog.capture("change_language_tapped", {
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-    });
-    router.push("/language-selection" as Href);
-  }
 
   function handleOpenProfile() {
     router.push("/profile" as Href);

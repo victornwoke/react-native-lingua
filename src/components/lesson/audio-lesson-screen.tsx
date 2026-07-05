@@ -25,6 +25,7 @@ import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
 
 const LEARN_ROUTE = "/learn" as Href;
+const MIN_LESSON_DURATION_SECONDS = 30;
 
 export function AudioLessonScreen() {
   const router = useRouter();
@@ -73,9 +74,16 @@ export function AudioLessonScreen() {
 
   async function handleEndCallPress() {
     await streamAudioCall.endCall();
-    lessonCompletedRef.current = true;
 
-    if (lesson) {
+    const startedAt = lessonStartedAtRef.current;
+    const elapsedSeconds = startedAt
+      ? Math.round((Date.now() - startedAt) / 1000)
+      : 0;
+    const meetsMinimumDuration = elapsedSeconds >= MIN_LESSON_DURATION_SECONDS;
+
+    if (lesson && meetsMinimumDuration) {
+      lessonCompletedRef.current = true;
+
       const languageLessons = getSortedLessonsForLanguage(lesson.languageId);
       const currentLessonIndex = languageLessons.findIndex(
         (item) => item.id === lesson.id,
@@ -93,6 +101,14 @@ export function AudioLessonScreen() {
         lesson_id: lesson.id,
         lesson_number: getLessonNumber(lesson),
         xp_reward: lesson.xpReward,
+      });
+    } else if (lesson && !meetsMinimumDuration) {
+      posthog.capture("lesson_ended_early", {
+        elapsed_seconds: elapsedSeconds,
+        language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
+        lesson_id: lesson.id,
+        lesson_number: getLessonNumber(lesson),
+        minimum_required_seconds: MIN_LESSON_DURATION_SECONDS,
       });
     }
 

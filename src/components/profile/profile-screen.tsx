@@ -1,5 +1,4 @@
 import { useClerk, useUser } from "@clerk/expo";
-import { type Href, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { usePostHog } from "posthog-react-native";
@@ -7,6 +6,10 @@ import { Alert, Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { images } from "@/constants/images";
+import {
+  useChangeLanguage,
+  useContinueLearning,
+} from "@/hooks/use-navigation-handlers";
 import { useProfileDashboard } from "@/hooks/use-profile-dashboard";
 
 type ProfileMetric = {
@@ -15,9 +18,6 @@ type ProfileMetric = {
   label: string;
   value: string;
 };
-
-const CHANGE_LANGUAGE_ROUTE = "/language-selection" as Href;
-const LEARN_ROUTE = "/learn" as Href;
 
 function getDisplayName(user: ReturnType<typeof useUser>["user"]) {
   if (!user) {
@@ -62,7 +62,6 @@ function formatDateLabel(dateKey: string | null, todayDateKey: string) {
 }
 
 export function ProfileScreen() {
-  const router = useRouter();
   const { signOut } = useClerk();
   const { user } = useUser();
   const posthog = usePostHog();
@@ -85,6 +84,15 @@ export function ProfileScreen() {
     unitLabel,
     wordsLearned,
   } = useProfileDashboard();
+  const handleContinueLearning = useContinueLearning({
+    currentLesson,
+    eventName: "profile_continue_learning_tapped",
+    selectedLanguage,
+  });
+  const handleChangeLanguage = useChangeLanguage({
+    eventName: "profile_change_language_tapped",
+    selectedLanguage,
+  });
   const displayName = getDisplayName(user);
   const email = user?.primaryEmailAddress?.emailAddress ?? "Signed in";
   const initials = getInitials(displayName);
@@ -115,25 +123,6 @@ export function ProfileScreen() {
       value: `${wordsLearned}`,
     },
   ];
-
-  function handleChangeLanguage() {
-    posthog.capture("profile_change_language_tapped", {
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-    });
-    router.push(CHANGE_LANGUAGE_ROUTE);
-  }
-
-  function handleContinueLearning() {
-    posthog.capture("profile_continue_learning_tapped", {
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-      lesson_id: currentLesson?.id ?? null,
-      lesson_title: currentLesson?.title ?? null,
-    });
-
-    router.push(currentLesson ? (`/lesson/${currentLesson.id}` as Href) : LEARN_ROUTE);
-  }
 
   function handleSignOut() {
     Alert.alert("Sign out?", "You can sign back in anytime.", [
