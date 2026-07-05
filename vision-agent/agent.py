@@ -3,7 +3,7 @@ import logging
 import os
 import secrets
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal, cast
 
 from dotenv import load_dotenv
 from fastapi import HTTPException, Request, status
@@ -24,6 +24,7 @@ DEFAULT_LANGUAGE_NAME = "the selected language"
 DEFAULT_LESSON_TITLE = "today's lesson"
 LIVE_SPEECH_EVENT_KIND = "lingua.live_speech"
 LIVE_SPEECH_EVENT_TEXT_LIMIT = 1_200
+MAX_LEARNER_ACTIVITY_SECONDS = 13.0
 VISION_AGENT_AUTH_PREFIX = "Bearer "
 
 logger = logging.getLogger(__name__)
@@ -32,8 +33,19 @@ logger = logging.getLogger(__name__)
 load_dotenv(ROOT_DIR / ".env")
 load_dotenv(Path(__file__).resolve().parent / ".env")
 
+logging.basicConfig(
+    level=os.getenv("VISION_AGENT_LOG_LEVEL", "INFO").upper(),
+    format="%(asctime)s %(levelname)s [%(name)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler(Path(__file__).resolve().parent / "agent.log"),
+    ],
+)
+
 
 LessonMetadata = dict[str, str]
+ActivitySignal = Literal["activity_start", "activity_end"]
+activity_timeout_tasks: dict[str, asyncio.Task[None]] = {}
 
 
 def get_gemini_api_key() -> str | None:
@@ -390,15 +402,28 @@ async def create_agent(**kwargs: Any) -> Agent:
 
 
 async def join_call(agent: Agent, call_type: str, call_id: str, **kwargs: Any) -> None:
+    logger.info("Vision Agent joining Stream call %s/%s.", call_type, call_id)
     call = await agent.create_call(call_type, call_id)
     metadata = await load_lesson_metadata(call)
+    logger.info(
+        "Loaded lesson metadata for call %s: language=%s lesson=%s.",
+        call_id,
+        metadata.get("languageName", "unknown"),
+        metadata.get("lessonTitle", "unknown"),
+    )
     instructions = Instructions(build_teacher_instructions(metadata))
     agent.instructions = instructions
     agent.llm.set_instructions(instructions)
 
     async with agent.join(call):
+        logger.info("Vision Agent joined call %s. Sending greeting.", call_id)
         await agent.simple_response(text=build_greeting(metadata))
-        await agent.finish()
+        logger.info("Vision Agent greeting completed for call %s.", call_id)
+
+        try:
+            await agent.finish()
+        finally:
+            logger.info("Vision Agent finished call %s.", call_id)
 
 
 async def load_lesson_metadata(call: Any) -> LessonMetadata:
@@ -504,6 +529,7 @@ async def interrupt_session(
     call_id: str, session_id: str, request: Request
 ) -> Response:
     require_agent_control_auth(request)
+    logger.info("Interrupt requested for Vision Agent session %s.", session_id)
 
     session = launcher.get_session(session_id)
 
@@ -514,7 +540,6 @@ async def interrupt_session(
         )
 
     await session.agent._flow.interrupt()
-    await send_realtime_activity_signal(session.agent, "activity_start")
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
@@ -527,6 +552,7 @@ async def start_activity(
     call_id: str, session_id: str, request: Request
 ) -> Response:
     require_agent_control_auth(request)
+    logger.info("Activity start requested for Vision Agent session %s.", session_id)
 
     session = launcher.get_session(session_id)
 
@@ -536,7 +562,12 @@ async def start_activity(
             detail=f"Session with id '{session_id}' not found",
         )
 
-    await send_realtime_activity_signal(session.agent, "activity_start")
+    await send_realtime_activity_signal_or_raise(
+        session.agent,
+        "activity_start",
+        session_id,
+    )
+    schedule_activity_timeout(session.agent, session_id)
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
@@ -547,6 +578,7 @@ async def start_activity(
 )
 async def end_activity(call_id: str, session_id: str, request: Request) -> Response:
     require_agent_control_auth(request)
+    logger.info("Activity end requested for Vision Agent session %s.", session_id)
 
     session = launcher.get_session(session_id)
 
@@ -556,18 +588,100 @@ async def end_activity(call_id: str, session_id: str, request: Request) -> Respo
             detail=f"Session with id '{session_id}' not found",
         )
 
-    await send_realtime_activity_signal(session.agent, "activity_end")
+    try:
+        await send_realtime_activity_signal_or_raise(
+            session.agent,
+            "activity_end",
+            session_id,
+        )
+    finally:
+        cancel_activity_timeout(session_id)
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
 
-async def send_realtime_activity_signal(agent: Agent, signal: str) -> None:
+def schedule_activity_timeout(agent: Agent, session_id: str) -> None:
+    cancel_activity_timeout(session_id)
+    activity_timeout_tasks[session_id] = asyncio.create_task(
+        end_activity_after_timeout(agent, session_id)
+    )
+
+
+def cancel_activity_timeout(session_id: str) -> None:
+    task = activity_timeout_tasks.pop(session_id, None)
+
+    if task is not None:
+        task.cancel()
+
+
+async def end_activity_after_timeout(agent: Agent, session_id: str) -> None:
+    try:
+        await asyncio.sleep(MAX_LEARNER_ACTIVITY_SECONDS)
+        logger.warning(
+            "Auto-ending learner activity for Vision Agent session %s.",
+            session_id,
+        )
+        await send_realtime_activity_signal_or_raise(
+            agent,
+            "activity_end",
+            session_id,
+        )
+    except asyncio.CancelledError:
+        return
+    except Exception:
+        logger.exception(
+            "Could not auto-end learner activity for Vision Agent session %s.",
+            session_id,
+        )
+    finally:
+        activity_timeout_tasks.pop(session_id, None)
+
+
+def ensure_realtime_session_or_raise(agent: Agent, session_id: str) -> None:
     realtime_session = getattr(agent.llm, "_real_session", None)
 
     if realtime_session is None:
-        return
+        logger.warning(
+            "Realtime session is unavailable for Vision Agent session %s.",
+            session_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Realtime session is not available",
+        )
 
-    await realtime_session.send_realtime_input(**{signal: {}})
+
+async def send_realtime_activity_signal_or_raise(
+    agent: Agent,
+    signal: ActivitySignal,
+    session_id: str,
+) -> None:
+    ensure_realtime_session_or_raise(agent, session_id)
+    realtime_session = cast(Any, agent.llm)._real_session
+
+    try:
+        await realtime_session.send_realtime_input(
+            **get_activity_signal_payload(signal)
+        )
+    except Exception as err:
+        logger.exception(
+            "Could not send %s signal for Vision Agent session %s.",
+            signal,
+            session_id,
+        )
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Realtime session could not accept activity",
+        ) from err
+
+
+def get_activity_signal_payload(
+    signal: ActivitySignal,
+) -> dict[str, gemini_types.ActivityStart | gemini_types.ActivityEnd]:
+    if signal == "activity_start":
+        return {"activity_start": gemini_types.ActivityStart()}
+
+    return {"activity_end": gemini_types.ActivityEnd()}
 
 
 if __name__ == "__main__":

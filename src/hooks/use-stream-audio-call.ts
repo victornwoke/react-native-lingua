@@ -468,6 +468,14 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       return;
     }
 
+    if (!agentSessionRef.current || !agentTokenRef.current) {
+      setErrorMessage("The AI teacher is still connecting. Try again in a moment.");
+      setAgentStatus((currentStatus) =>
+        currentStatus === "failed" ? "failed" : "connecting",
+      );
+      return;
+    }
+
     wantsToTalkRef.current = true;
     setIsTalkControlBusy(true);
 
@@ -513,7 +521,21 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       });
     } catch (error) {
       clearTalkTurnTimeout(talkTurnTimeoutRef);
+      wantsToTalkRef.current = false;
+      await withTimeout(
+        call.microphone.disable(),
+        MIC_DISABLE_TIMEOUT_MS,
+        "Could not stop the microphone in time.",
+      ).catch(() => undefined);
+      await queueAgentControl(agentControlQueueRef, () =>
+        endAgentActivityIfActive({
+          agentSessionRef,
+          clerkSessionToken: agentTokenRef.current,
+          setAgentStatus,
+        }),
+      );
       muteSpeakerOutput(callManagerRef.current, false);
+      setIsMicOn(false);
       console.error("Failed to start Stream microphone.", error);
       setErrorMessage(
         error instanceof Error
@@ -687,6 +709,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   }, []);
 
   const canUseCall = status === "joined";
+  const canTalkToAgent =
+    canUseCall && agentStatus === "connected";
   const statusLabel = isMicOn
     ? "Listening..."
     : getStatusLabel(status, errorMessage);
@@ -699,7 +723,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       status === "loading" ||
       status === "error",
     canToggleCamera: false,
-    canToggleMic: canUseCall && !isIosSimulator && !isTalkControlBusy,
+    canToggleMic: canTalkToAgent && !isIosSimulator && !isTalkControlBusy,
     captionStatus,
     displayName,
     errorMessage,
@@ -1072,9 +1096,11 @@ async function restartAgentIfSessionMissing({
   result: AgentControlResult;
   setAgentStatus: (status: AgentConnectionStatus) => void;
 }) {
-  if (!result.missingSession) {
+  if (!result.missingSession && !result.shouldRestart) {
     return;
   }
+
+  console.info("Restarting Vision Agent session after stale control response.");
 
   await restartCurrentAgentSession({
     agentSessionRef,
@@ -1099,6 +1125,12 @@ async function restartCurrentAgentSession({
   }
 
   agentSessionRef.current = null;
+  await stopAgentSession({
+    callId: agentSession.callId,
+    clerkSessionToken,
+    sessionId: agentSession.sessionId,
+  }).catch(() => undefined);
+
   await startAgentForCall(
     agentSession.callId,
     agentSession.callType,

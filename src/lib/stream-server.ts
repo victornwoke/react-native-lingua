@@ -204,6 +204,12 @@ export async function handleAgentControlRequest(
     const callId = getRequiredString(body.callId);
     const sessionId = getRequiredString(body.sessionId);
 
+    console.info(
+      `Vision Agent control requested: ${actionSuffix}`,
+      callId,
+      sessionId,
+    );
+
     if (!callId || !sessionId) {
       return Response.json(
         { message: "callId and sessionId are required." },
@@ -225,6 +231,14 @@ export async function handleAgentControlRequest(
 
     if (visionResponse.status === 404) {
       return Response.json({ missingSession: true, success: false });
+    }
+
+    if (visionResponse.status === 409) {
+      return Response.json({
+        missingSession: false,
+        shouldRestart: true,
+        success: false,
+      });
     }
 
     if (!visionResponse.ok) {

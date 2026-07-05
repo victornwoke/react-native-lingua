@@ -5,9 +5,14 @@ import { images } from "@/constants/images";
 type DailyGoalCardProps = {
   currentXp: number;
   goalXp: number;
+  statusText: string;
 };
 
-export function DailyGoalCard({ currentXp, goalXp }: DailyGoalCardProps) {
+export function DailyGoalCard({
+  currentXp,
+  goalXp,
+  statusText,
+}: DailyGoalCardProps) {
   const progressPercent = Math.min(Math.max(currentXp / goalXp, 0), 1) * 100;
 
   return (
@@ -26,6 +31,13 @@ export function DailyGoalCard({ currentXp, goalXp }: DailyGoalCardProps) {
               / {goalXp} XP
             </Text>
           </View>
+
+          <Text
+            numberOfLines={1}
+            className="mt-[4px] max-w-[190px] font-poppins-semibold text-[12px] leading-[17px] text-[#9A6B37]"
+          >
+            {statusText}
+          </Text>
         </View>
 
         <Image

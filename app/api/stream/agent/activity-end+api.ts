@@ -1,4 +1,4 @@
-import { handleAgentControlRequest } from "../_server";
+import { handleAgentControlRequest } from "@/lib/stream-server";
 
 export async function POST(request: Request) {
   return handleAgentControlRequest(request, {

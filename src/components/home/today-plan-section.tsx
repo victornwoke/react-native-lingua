@@ -1,8 +1,10 @@
 import { SymbolView, type SymbolViewProps } from "expo-symbols";
 import { Pressable, Text, View } from "react-native";
 
+import type { DailyPlanItemId } from "@/store/lesson-progress-store";
+
 type TodayPlanItem = {
-  id: string;
+  id: DailyPlanItemId;
   icon: SymbolViewProps["name"];
   iconColor: string;
   title: string;
@@ -12,16 +14,26 @@ type TodayPlanItem = {
 
 type TodayPlanSectionProps = {
   items: TodayPlanItem[];
+  onItemPress: (item: TodayPlanItem) => void;
+  onViewAllPress: () => void;
 };
 
-export function TodayPlanSection({ items }: TodayPlanSectionProps) {
+export function TodayPlanSection({
+  items,
+  onItemPress,
+  onViewAllPress,
+}: TodayPlanSectionProps) {
   return (
     <View className="mt-[20px]">
       <View className="flex-row items-center justify-between">
         <Text className="font-poppins-bold text-[18px] leading-[24px] text-[#111832]">
           Today&apos;s plan
         </Text>
-        <Pressable className="min-h-[28px] justify-center px-1 active:opacity-80">
+        <Pressable
+          accessibilityRole="button"
+          onPress={onViewAllPress}
+          className="min-h-[28px] justify-center px-1 active:opacity-80"
+        >
           <Text className="font-poppins-bold text-[16px] leading-[22px] text-[#6545F6]">
             View all
           </Text>
@@ -30,7 +42,13 @@ export function TodayPlanSection({ items }: TodayPlanSectionProps) {
 
       <View className="mt-[14px] gap-[12px]">
         {items.map((item) => (
-          <View key={item.id} className="flex-row items-center">
+          <Pressable
+            key={item.id}
+            accessibilityRole="button"
+            accessibilityState={item.isComplete ? { checked: true } : undefined}
+            onPress={() => onItemPress(item)}
+            className="min-h-[54px] flex-row items-center rounded-[14px] active:bg-[#F8F7FF]"
+          >
             <View
               className="h-[44px] w-[44px] items-center justify-center rounded-[11px]"
               style={{ backgroundColor: item.iconColor }}
@@ -71,7 +89,7 @@ export function TodayPlanSection({ items }: TodayPlanSectionProps) {
                 </Text>
               ) : null}
             </View>
-          </View>
+          </Pressable>
         ))}
       </View>
     </View>
