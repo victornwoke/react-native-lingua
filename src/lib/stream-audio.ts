@@ -1,10 +1,11 @@
 import { getApiUrl } from "@/lib/api";
 
 import type { Language, Lesson } from "../../types/learning";
+import type { StreamAudioCallData } from "../../types/stream";
 
 export type StreamAudioSession = {
   apiKey: string;
-  callData: Record<string, unknown>;
+  callData: StreamAudioCallData;
   callId: string;
   callType: string;
   languageName: string;
@@ -50,22 +51,15 @@ type StopAgentSessionParams = {
   clerkSessionToken: string;
 };
 
-type InterruptAgentSessionParams = {
+type AgentSessionControlParams = {
   callId: string;
   sessionId: string;
   clerkSessionToken: string;
 };
 
-type StartAgentActivityParams = {
-  callId: string;
-  sessionId: string;
-  clerkSessionToken: string;
-};
-
-type EndAgentActivityParams = {
-  callId: string;
-  sessionId: string;
-  clerkSessionToken: string;
+type AgentControlRequestOptions = AgentSessionControlParams & {
+  fallbackResult: AgentControlResult;
+  path: string;
 };
 
 export async function createStreamAudioSession({
@@ -97,8 +91,7 @@ export async function createStreamAudioSession({
       | undefined;
 
     throw new Error(
-      getAudioSessionErrorMessage(error?.message) ??
-        "Could not start the audio lesson.",
+      error?.message ?? "Could not start the audio lesson.",
     );
   }
 
@@ -164,56 +157,55 @@ export async function interruptAgentSession({
   callId,
   sessionId,
   clerkSessionToken,
-}: InterruptAgentSessionParams): Promise<AgentControlResult> {
-  try {
-    const response = await fetch(getApiUrl("/api/stream/agent/interrupt"), {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${clerkSessionToken}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ callId, sessionId }),
-    });
-
-    return readAgentControlResult(response);
-  } catch {
-    // Non-fatal — local push-to-talk still mutes playback and enables the mic.
-    return { missingSession: false, success: false };
-  }
+}: AgentSessionControlParams): Promise<AgentControlResult> {
+  return requestAgentControl({
+    callId,
+    clerkSessionToken,
+    fallbackResult: { missingSession: false, success: false },
+    path: "/api/stream/agent/interrupt",
+    sessionId,
+  });
 }
 
 export async function startAgentActivity({
   callId,
   sessionId,
   clerkSessionToken,
-}: StartAgentActivityParams): Promise<AgentControlResult> {
-  try {
-    const response = await fetch(
-      getApiUrl("/api/stream/agent/activity-start"),
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${clerkSessionToken}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ callId, sessionId }),
-      },
-    );
-
-    return readAgentControlResult(response);
-  } catch {
-    // Non-fatal — local push-to-talk still enables the mic.
-    return { missingSession: false, success: false };
-  }
+}: AgentSessionControlParams): Promise<AgentControlResult> {
+  return requestAgentControl({
+    callId,
+    clerkSessionToken,
+    fallbackResult: { missingSession: false, success: false },
+    path: "/api/stream/agent/activity-start",
+    sessionId,
+  });
 }
 
 export async function endAgentActivity({
   callId,
   sessionId,
   clerkSessionToken,
-}: EndAgentActivityParams): Promise<AgentControlResult> {
+}: AgentSessionControlParams): Promise<AgentControlResult> {
+  // Non-fatal failure here only affects one activity window; the next press can
+  // still start a fresh one.
+  return requestAgentControl({
+    callId,
+    clerkSessionToken,
+    fallbackResult: { missingSession: false, success: false },
+    path: "/api/stream/agent/activity-end",
+    sessionId,
+  });
+}
+
+async function requestAgentControl({
+  callId,
+  sessionId,
+  clerkSessionToken,
+  fallbackResult,
+  path,
+}: AgentControlRequestOptions): Promise<AgentControlResult> {
   try {
-    const response = await fetch(getApiUrl("/api/stream/agent/activity-end"), {
+    const response = await fetch(getApiUrl(path), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${clerkSessionToken}`,
@@ -224,17 +216,8 @@ export async function endAgentActivity({
 
     return readAgentControlResult(response);
   } catch {
-    // Non-fatal — the next press can still start a fresh activity window.
-    return { missingSession: false, success: false };
+    return fallbackResult;
   }
-}
-
-function getAudioSessionErrorMessage(message: string | undefined) {
-  if (!message) {
-    return undefined;
-  }
-
-  return message;
 }
 
 async function readAgentControlResult(

@@ -1,4 +1,3 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
@@ -25,7 +24,7 @@ export const useLanguageStore = create<LanguageState>()(
         set({ selectedLanguageId: languageId });
       },
       clearLanguageSelectionForTesting: async () => {
-        await AsyncStorage.removeItem(LANGUAGE_STORAGE_KEY);
+        await getPersistStorage().removeItem(LANGUAGE_STORAGE_KEY);
         set({ selectedLanguageId: null });
       },
       setHasHydrated: (hasHydrated) => {

@@ -121,6 +121,7 @@ POSTHOG_HOST=https://eu.i.posthog.com
 
 STREAM_API_KEY=replace_with_your_stream_api_key
 STREAM_API_SECRET=replace_with_your_stream_api_secret
+VISION_AGENT_SHARED_SECRET=replace_with_a_random_shared_agent_secret
 GEMINI_API_KEY=replace_with_your_google_gemini_api_key
 ```
 
@@ -133,7 +134,7 @@ VISION_AGENT_SERVER_URL=https://your-agent-server.example.com
 Important security notes:
 
 - `EXPO_PUBLIC_*` values are bundled into the client and are public.
-- `CLERK_SECRET_KEY`, `CLERK_JWT_KEY`, `STREAM_API_SECRET`, and `GEMINI_API_KEY` must stay server-side.
+- `CLERK_SECRET_KEY`, `CLERK_JWT_KEY`, `STREAM_API_SECRET`, `VISION_AGENT_SHARED_SECRET`, and `GEMINI_API_KEY` must stay server-side.
 - Never commit `.env`, App Store Connect API keys, Google service account JSON files, or private signing material.
 - For EAS builds, store secrets in EAS environment variables/secrets instead of hardcoding them.
 
@@ -773,7 +774,7 @@ Check:
 
 - The app still works without the agent because the route skips gracefully when the agent is not configured.
 - `vision-agent` server is running.
-- `STREAM_API_KEY`, `STREAM_API_SECRET`, and `GEMINI_API_KEY` are available to the agent.
+- `STREAM_API_KEY`, `STREAM_API_SECRET`, `VISION_AGENT_SHARED_SECRET`, and `GEMINI_API_KEY` are available to the agent.
 - `VISION_AGENT_SERVER_URL` points to the deployed agent in production.
 - The app server can reach the agent URL.
 

@@ -1,6 +1,10 @@
 import { languages } from "../../../data/languages";
 import { lessons } from "../../../data/lessons";
 import type { LessonActivity } from "../../../types/learning";
+import type {
+  CallCustomData,
+  StreamAudioCallData,
+} from "../../../types/stream";
 import {
   STREAM_CALL_TYPE,
   STREAM_MAX_ID_LENGTH,
@@ -82,6 +86,7 @@ export async function POST(request: Request) {
     const serverToken = await createStreamToken({ server: true }, apiSecret);
 
     await streamRequest({
+      errorMessage: "Could not prepare your Stream audio profile.",
       method: "POST",
       path: "/api/v2/users",
       serverToken,
@@ -102,35 +107,36 @@ export async function POST(request: Request) {
     });
 
     const callId = createStreamAudioCallId();
-    const callData = {
+    const customData: CallCustomData = {
+      audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+      activities: lesson.activities.map(formatLessonActivity).join("; "),
+      clerkUserId: verifiedClerkUserId,
+      conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
+      correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
+      estimatedMinutes: `${lesson.estimatedMinutes} minutes`,
+      goals: lesson.goals.map((g) => g.description).join("; "),
+      languageCode: language.code,
+      languageId: language.id,
+      languageName: language.name,
+      languageNativeName: language.nativeName,
+      lessonDescription: lesson.description,
+      lessonId: lesson.id,
+      lessonLevel: lesson.level,
+      lessonTitle: lesson.title,
+      phrases: lesson.phrases
+        .map((p) => `${p.text} (${p.translation})`)
+        .join("; "),
+      streamUserId,
+      teacherPersona: lesson.aiTeacherPrompt.persona,
+      teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
+      vocabulary: lesson.vocabulary
+        .map((v) => `${v.term}: ${v.translation}`)
+        .join("; "),
+    };
+    const callData: StreamAudioCallData = {
       created_by_id: streamUserId,
       members: [{ user_id: streamUserId, role: "admin" }],
-      custom: {
-        audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
-        activities: lesson.activities.map(formatLessonActivity).join("; "),
-        clerkUserId: verifiedClerkUserId,
-        conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
-        correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
-        estimatedMinutes: `${lesson.estimatedMinutes} minutes`,
-        goals: lesson.goals.map((g) => g.description).join("; "),
-        languageCode: language.code,
-        languageId: language.id,
-        languageName: language.name,
-        languageNativeName: language.nativeName,
-        lessonDescription: lesson.description,
-        lessonId: lesson.id,
-        lessonLevel: lesson.level,
-        lessonTitle: lesson.title,
-        phrases: lesson.phrases
-          .map((p) => `${p.text} (${p.translation})`)
-          .join("; "),
-        streamUserId,
-        teacherPersona: lesson.aiTeacherPrompt.persona,
-        teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
-        vocabulary: lesson.vocabulary
-          .map((v) => `${v.term}: ${v.translation}`)
-          .join("; "),
-      },
+      custom: customData,
       settings_override: {
         audio: {
           default_device: "speaker",
@@ -155,6 +161,7 @@ export async function POST(request: Request) {
     };
 
     await streamRequest({
+      errorMessage: "Could not create the Stream audio lesson call.",
       method: "POST",
       path: `/api/v2/video/call/${STREAM_CALL_TYPE}/${callId}`,
       serverToken,

@@ -1,11 +1,12 @@
 import asyncio
 import logging
 import os
+import secrets
 from pathlib import Path
 from typing import Any
 
 from dotenv import load_dotenv
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
 from fastapi.responses import Response
 from getstream.models import ChannelInput
 from google.genai import types as gemini_types
@@ -23,6 +24,7 @@ DEFAULT_LANGUAGE_NAME = "the selected language"
 DEFAULT_LESSON_TITLE = "today's lesson"
 LIVE_SPEECH_EVENT_KIND = "lingua.live_speech"
 LIVE_SPEECH_EVENT_TEXT_LIMIT = 1_200
+VISION_AGENT_AUTH_PREFIX = "Bearer "
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +46,32 @@ def require_env(keys: tuple[str, ...]) -> None:
     if missing_keys:
         missing = ", ".join(missing_keys)
         raise RuntimeError(f"Missing required environment variable(s): {missing}")
+
+
+def require_agent_control_auth(request: Request) -> None:
+    expected_token = os.getenv("VISION_AGENT_SHARED_SECRET")
+
+    if not expected_token:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Vision Agent control auth is not configured",
+        )
+
+    authorization = request.headers.get("authorization")
+
+    if not authorization or not authorization.startswith(VISION_AGENT_AUTH_PREFIX):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Missing Vision Agent control token",
+        )
+
+    token = authorization[len(VISION_AGENT_AUTH_PREFIX) :].strip()
+
+    if not secrets.compare_digest(token, expected_token):
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid Vision Agent control token",
+        )
 
 
 def build_teacher_instructions(metadata: LessonMetadata) -> str:
@@ -472,7 +500,11 @@ runner = Runner(launcher)
     "/calls/{call_id}/sessions/{session_id}/interrupt",
     summary="Interrupt an active agent response",
 )
-async def interrupt_session(call_id: str, session_id: str) -> Response:
+async def interrupt_session(
+    call_id: str, session_id: str, request: Request
+) -> Response:
+    require_agent_control_auth(request)
+
     session = launcher.get_session(session_id)
 
     if session is None or session.call_id != call_id:
@@ -491,7 +523,11 @@ async def interrupt_session(call_id: str, session_id: str) -> Response:
     "/calls/{call_id}/sessions/{session_id}/activity-start",
     summary="Mark the start of user activity",
 )
-async def start_activity(call_id: str, session_id: str) -> Response:
+async def start_activity(
+    call_id: str, session_id: str, request: Request
+) -> Response:
+    require_agent_control_auth(request)
+
     session = launcher.get_session(session_id)
 
     if session is None or session.call_id != call_id:
@@ -509,7 +545,9 @@ async def start_activity(call_id: str, session_id: str) -> Response:
     "/calls/{call_id}/sessions/{session_id}/activity-end",
     summary="Mark the end of user activity",
 )
-async def end_activity(call_id: str, session_id: str) -> Response:
+async def end_activity(call_id: str, session_id: str, request: Request) -> Response:
+    require_agent_control_auth(request)
+
     session = launcher.get_session(session_id)
 
     if session is None or session.call_id != call_id:
