@@ -1,11 +1,22 @@
 import { languages } from "../../../data/languages";
 import { lessons } from "../../../data/lessons";
-import { RouteError, getVerifiedClerkUserId } from "./_server";
+import type { LessonActivity } from "../../../types/learning";
+import type {
+  CallCustomData,
+  StreamAudioCallData,
+} from "../../../types/stream";
+import {
+  STREAM_CALL_TYPE,
+  STREAM_MAX_ID_LENGTH,
+  RouteError,
+  createStreamToken,
+  getRequiredString,
+  getVerifiedClerkUserId,
+  streamRequest,
+  toStreamId,
+} from "./_server";
 
-const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
 const STREAM_AUDIO_CALL_ID_PREFIX = "audio";
-const STREAM_MAX_ID_LENGTH = 64;
-const STREAM_CALL_TYPE = "default";
 const TOKEN_VALIDITY_SECONDS = 60 * 60;
 
 type AudioCallRequestBody = {
@@ -14,13 +25,6 @@ type AudioCallRequestBody = {
   lessonId?: unknown;
   userImageUrl?: unknown;
   userName?: unknown;
-};
-
-type StreamRequestOptions = {
-  body: Record<string, unknown>;
-  method: "POST";
-  path: string;
-  serverToken: string;
 };
 
 export async function POST(request: Request) {
@@ -82,6 +86,7 @@ export async function POST(request: Request) {
     const serverToken = await createStreamToken({ server: true }, apiSecret);
 
     await streamRequest({
+      errorMessage: "Could not prepare your Stream audio profile.",
       method: "POST",
       path: "/api/v2/users",
       serverToken,
@@ -102,51 +107,66 @@ export async function POST(request: Request) {
     });
 
     const callId = createStreamAudioCallId();
+    const customData: CallCustomData = {
+      audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
+      activities: lesson.activities.map(formatLessonActivity).join("; "),
+      clerkUserId: verifiedClerkUserId,
+      conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
+      correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
+      estimatedMinutes: `${lesson.estimatedMinutes} minutes`,
+      goals: lesson.goals.map((g) => g.description).join("; "),
+      languageCode: language.code,
+      languageId: language.id,
+      languageName: language.name,
+      languageNativeName: language.nativeName,
+      lessonDescription: lesson.description,
+      lessonId: lesson.id,
+      lessonLevel: lesson.level,
+      lessonTitle: lesson.title,
+      phrases: lesson.phrases
+        .map((p) => `${p.text} (${p.translation})`)
+        .join("; "),
+      streamUserId,
+      teacherPersona: lesson.aiTeacherPrompt.persona,
+      teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
+      vocabulary: lesson.vocabulary
+        .map((v) => `${v.term}: ${v.translation}`)
+        .join("; "),
+    };
+    const callData: StreamAudioCallData = {
+      created_by_id: streamUserId,
+      members: [{ user_id: streamUserId, role: "admin" }],
+      custom: customData,
+      settings_override: {
+        audio: {
+          default_device: "speaker",
+          mic_default_on: false,
+          speaker_default_on: true,
+        },
+        transcription: {
+          closed_caption_mode: "auto-on",
+          language: "auto",
+          mode: "auto-on",
+          speech_segment_config: {
+            max_speech_caption_ms: 1_500,
+            silence_duration_ms: 450,
+          },
+        },
+        video: {
+          camera_default_on: false,
+          enabled: false,
+          target_resolution: { height: 240, width: 240 },
+        },
+      },
+    };
 
     await streamRequest({
+      errorMessage: "Could not create the Stream audio lesson call.",
       method: "POST",
       path: `/api/v2/video/call/${STREAM_CALL_TYPE}/${callId}`,
       serverToken,
       body: {
-        video: true,
-        data: {
-          created_by_id: streamUserId,
-          members: [{ user_id: streamUserId, role: "admin" }],
-          custom: {
-            audioInstructions: lesson.aiTeacherPrompt.audioInstructions,
-            clerkUserId: verifiedClerkUserId,
-            conversationStarter: lesson.aiTeacherPrompt.conversationStarter,
-            correctionStyle: lesson.aiTeacherPrompt.correctionStyle,
-            goals: lesson.goals.map((g) => g.description).join("; "),
-            languageId: language.id,
-            languageName: language.name,
-            lessonDescription: lesson.description,
-            lessonId: lesson.id,
-            lessonTitle: lesson.title,
-            phrases: lesson.phrases
-              .map((p) => `${p.text} (${p.translation})`)
-              .join("; "),
-            streamUserId,
-            teacherPersona: lesson.aiTeacherPrompt.persona,
-            teachingObjective: lesson.aiTeacherPrompt.teachingObjective,
-            vocabulary: lesson.vocabulary
-              .map((v) => `${v.term}: ${v.translation}`)
-              .join("; "),
-          },
-          settings_override: {
-            audio: {
-              default_device: "speaker",
-              mic_default_on: true,
-              speaker_default_on: true,
-            },
-            video: {
-              camera_default_on: false,
-              enabled: true,
-              target_resolution: { height: 480, width: 640 },
-            },
-          },
-          video: true,
-        },
+        data: callData,
       },
     });
 
@@ -160,6 +180,7 @@ export async function POST(request: Request) {
 
     return Response.json({
       apiKey,
+      callData,
       callId,
       callType: STREAM_CALL_TYPE,
       languageName: language.name,
@@ -181,15 +202,6 @@ export async function POST(request: Request) {
 
     console.error("Failed to create Stream audio call.", error);
 
-    if (error instanceof StreamApiError) {
-      return Response.json(
-        {
-          message: error.message,
-        },
-        { status: 502 },
-      );
-    }
-
     return Response.json(
       {
         message: "Could not start the Stream audio lesson.",
@@ -199,31 +211,28 @@ export async function POST(request: Request) {
   }
 }
 
-class StreamApiError extends Error {}
-
-function getRequiredString(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
-}
-
 function getOptionalString(value: unknown) {
   return typeof value === "string" && value.trim().length > 0
     ? value.trim()
     : undefined;
 }
 
-function toStreamId(value: string) {
-  const sanitizedValue = value.replace(/[^A-Za-z0-9@_-]/g, "_");
+function formatLessonActivity(activity: LessonActivity, index: number) {
+  const label = `Practice ${index + 1}`;
 
-  if (sanitizedValue.length <= STREAM_MAX_ID_LENGTH) {
-    return sanitizedValue;
+  if (activity.type === "multiple-choice") {
+    return `${label}: ${activity.prompt} Answer: ${activity.correctOption}`;
   }
 
-  const hashSuffix = createStableHash(sanitizedValue);
-  const prefixLength = STREAM_MAX_ID_LENGTH - hashSuffix.length - 1;
+  if (activity.type === "translation" || activity.type === "phrase-builder") {
+    return `${label}: ${activity.prompt} Answer: ${activity.answer}`;
+  }
 
-  return `${sanitizedValue.slice(0, prefixLength)}_${hashSuffix}`;
+  if (activity.type === "speaking-practice") {
+    return `${label}: ${activity.prompt} Expected response: ${activity.expectedResponse}`;
+  }
+
+  return `${label}: ${activity.prompt}`;
 }
 
 function createStreamAudioCallId() {
@@ -232,122 +241,4 @@ function createStreamAudioCallId() {
   const callId = [STREAM_AUDIO_CALL_ID_PREFIX, timestampId, randomId].join("-");
 
   return callId.slice(0, STREAM_MAX_ID_LENGTH);
-}
-
-function createStableHash(value: string) {
-  let hash = 0;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash = Math.imul(31, hash) + value.charCodeAt(index);
-    hash |= 0;
-  }
-
-  return Math.abs(hash).toString(36);
-}
-
-async function streamRequest({
-  body,
-  method,
-  path,
-  serverToken,
-}: StreamRequestOptions) {
-  const apiKey = process.env.STREAM_API_KEY;
-  const url = `${STREAM_API_BASE_URL}${path}?api_key=${apiKey}`;
-  const response = await fetch(url, {
-    method,
-    headers: {
-      Authorization: serverToken,
-      "Content-Type": "application/json",
-      "stream-auth-type": "jwt",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const errorBody = await readStreamError(response);
-    const message = getStreamErrorMessage(errorBody);
-
-    throw new StreamApiError(
-      message
-        ? `Stream request failed with ${response.status}: ${message}`
-        : `Stream request failed with ${response.status}.`,
-    );
-  }
-
-  return response.json();
-}
-
-async function readStreamError(response: Response) {
-  const contentType = response.headers.get("Content-Type");
-
-  if (contentType?.includes("application/json")) {
-    return response.json().catch(() => undefined);
-  }
-
-  return response.text().catch(() => undefined);
-}
-
-function getStreamErrorMessage(errorBody: unknown) {
-  if (typeof errorBody === "string") {
-    return errorBody.trim() || undefined;
-  }
-
-  if (!errorBody || typeof errorBody !== "object") {
-    return undefined;
-  }
-
-  const message = "message" in errorBody ? errorBody.message : undefined;
-
-  if (typeof message === "string" && message.trim().length > 0) {
-    return message.trim();
-  }
-
-  return JSON.stringify(errorBody);
-}
-
-async function createStreamToken(
-  payload: Record<string, unknown>,
-  secret: string,
-) {
-  const issuedAt = Math.floor((Date.now() - 1000) / 1000);
-  const normalizedPayload = {
-    iat: issuedAt,
-    ...payload,
-  };
-  const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const tokenPayload = base64UrlEncode(JSON.stringify(normalizedPayload));
-  const signatureInput = `${header}.${tokenPayload}`;
-  const signature = await signHmacSha256(signatureInput, secret);
-
-  return `${signatureInput}.${base64UrlEncode(signature)}`;
-}
-
-async function signHmacSha256(value: string, secret: string) {
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { hash: "SHA-256", name: "HMAC" },
-    false,
-    ["sign"],
-  );
-
-  return crypto.subtle.sign("HMAC", key, encoder.encode(value));
-}
-
-function base64UrlEncode(value: string | ArrayBuffer) {
-  const bytes =
-    typeof value === "string"
-      ? new TextEncoder().encode(value)
-      : new Uint8Array(value);
-  let binary = "";
-
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
 }

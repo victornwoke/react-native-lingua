@@ -10,7 +10,8 @@ Required variables:
 
 - `STREAM_API_KEY`
 - `STREAM_API_SECRET`
-- `OPENAI_API_KEY`
+- `VISION_AGENT_SHARED_SECRET`
+- `GEMINI_API_KEY` (or `GOOGLE_API_KEY`)
 
 ## Run Locally
 

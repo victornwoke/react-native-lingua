@@ -2,8 +2,8 @@
 name: Agent
 description: Use when building real-time voice and video AI agents, deploying conversational AI to production, integrating with phone networks, adding computer vision to agents, or connecting to external tools and knowledge bases. Agents handle call lifecycle, audio/video routing, turn-taking, and deployment automatically.
 metadata:
-    mintlify-proj: agent
-    version: "1.0"
+  mintlify-proj: agent
+  version: "1.0"
 ---
 
 # Vision Agents Skill
@@ -15,6 +15,7 @@ Vision Agents is an open-source Python framework for building real-time voice an
 ## When to Use
 
 Reach for this skill when:
+
 - Building voice agents that listen, reason, and speak in real time
 - Creating video agents that analyze camera feeds with computer vision or VLMs
 - Deploying agents to production with Docker, Kubernetes, or HTTP servers
@@ -28,10 +29,10 @@ Reach for this skill when:
 
 ### Agent Modes
 
-| Mode | Best For | Setup |
-|------|----------|-------|
-| **Realtime** | Lowest latency, simplest setup | Single provider (OpenAI, Gemini, Qwen) handles speech end-to-end |
-| **Custom Pipeline** | Full control, mixed providers | Separate STT, LLM, TTS components |
+| Mode                | Best For                       | Setup                                                         |
+| ------------------- | ------------------------------ | ------------------------------------------------------------- |
+| **Realtime**        | Lowest latency, simplest setup | Single provider (Gemini, Qwen, xAI) handles speech end-to-end |
+| **Custom Pipeline** | Full control, mixed providers  | Separate STT, LLM, TTS components                             |
 
 ### Core Agent Constructor
 
@@ -60,75 +61,75 @@ agent = Agent(
 
 ### Essential Methods
 
-| Method | Purpose |
-|--------|---------|
-| `await agent.create_call(call_type, call_id)` | Create a call on the edge provider |
-| `async with agent.join(call):` | Join a call (must be async context manager) |
-| `await agent.simple_response(text)` | Send text to LLM, speak response via TTS |
-| `await agent.say(text)` | Speak text directly, bypassing LLM |
-| `await agent.finish()` | Wait for call to end gracefully |
-| `await agent.close()` | Clean up resources (called automatically on context exit) |
-| `@agent.llm.register_function()` | Register a Python function as a tool for the LLM |
+| Method                                        | Purpose                                                   |
+| --------------------------------------------- | --------------------------------------------------------- |
+| `await agent.create_call(call_type, call_id)` | Create a call on the edge provider                        |
+| `async with agent.join(call):`                | Join a call (must be async context manager)               |
+| `await agent.simple_response(text)`           | Send text to LLM, speak response via TTS                  |
+| `await agent.say(text)`                       | Speak text directly, bypassing LLM                        |
+| `await agent.finish()`                        | Wait for call to end gracefully                           |
+| `await agent.close()`                         | Clean up resources (called automatically on context exit) |
+| `@agent.llm.register_function()`              | Register a Python function as a tool for the LLM          |
 
 ### Plugin Categories (35+ integrations)
 
-| Category | Examples | Install |
-|----------|----------|---------|
-| **Realtime** | OpenAI, Gemini, Qwen, xAI, Inworld | `uv add vision-agents[openai]` |
-| **LLM** | Anthropic, OpenRouter, Kimi, MiniMax | `uv add vision-agents[anthropic]` |
-| **STT** | Deepgram, ElevenLabs, Cartesia, Fast-Whisper | `uv add vision-agents[deepgram]` |
-| **TTS** | ElevenLabs, Cartesia, Kokoro, Pocket | `uv add vision-agents[elevenlabs]` |
-| **Vision** | YOLO, Moondream, NVIDIA, Roboflow, TwelveLabs | `uv add vision-agents[ultralytics]` |
-| **Avatars** | Anam, LiveAvatar, LemonSlice | `uv add vision-agents[anam]` |
-| **Telephony** | Twilio, Telnyx | `uv add vision-agents[twilio]` |
+| Category      | Examples                                      | Install                             |
+| ------------- | --------------------------------------------- | ----------------------------------- |
+| **Realtime**  | Gemini, Qwen, xAI, Inworld                    | `uv add vision-agents[gemini]`      |
+| **LLM**       | Anthropic, OpenRouter, Kimi, MiniMax          | `uv add vision-agents[anthropic]`   |
+| **STT**       | Deepgram, ElevenLabs, Cartesia, Fast-Whisper  | `uv add vision-agents[deepgram]`    |
+| **TTS**       | ElevenLabs, Cartesia, Kokoro, Pocket          | `uv add vision-agents[elevenlabs]`  |
+| **Vision**    | YOLO, Moondream, NVIDIA, Roboflow, TwelveLabs | `uv add vision-agents[ultralytics]` |
+| **Avatars**   | Anam, LiveAvatar, LemonSlice                  | `uv add vision-agents[anam]`        |
+| **Telephony** | Twilio, Telnyx                                | `uv add vision-agents[twilio]`      |
 
 ### Deployment Modes
 
-| Mode | Use Case | Command |
-|------|----------|---------|
-| **Console** | Local dev, testing | `uv run agent.py run` |
+| Mode            | Use Case                        | Command                                            |
+| --------------- | ------------------------------- | -------------------------------------------------- |
+| **Console**     | Local dev, testing              | `uv run agent.py run`                              |
 | **HTTP Server** | Single container, multi-session | `uv run agent.py serve --host 0.0.0.0 --port 8080` |
-| **Docker** | Cloud deployment | Build with `Dockerfile` (CPU) or `Dockerfile.gpu` |
-| **Kubernetes** | Horizontal scaling, production | Use Helm chart + Redis session registry |
+| **Docker**      | Cloud deployment                | Build with `Dockerfile` (CPU) or `Dockerfile.gpu`  |
+| **Kubernetes**  | Horizontal scaling, production  | Use Helm chart + Redis session registry            |
 
 ## Decision Guidance
 
 ### Realtime vs Custom Pipeline
 
-| Decision | Realtime | Custom Pipeline |
-|----------|----------|-----------------|
-| **Latency** | Lowest (single connection) | Slightly higher (STT → LLM → TTS chain) |
-| **Setup** | One line: `llm=gemini.Realtime()` | Three lines: STT, LLM, TTS |
-| **Provider Mix** | Single provider only | Mix any STT, LLM, TTS |
-| **Function Calling** | Limited (provider-dependent) | Full support via `@llm.register_function()` |
-| **Turn Detection** | Built-in | Separate plugin or provider-built-in |
-| **When to Use** | Prototyping, demos, lowest latency | Production, custom tools, multi-provider |
+| Decision             | Realtime                           | Custom Pipeline                             |
+| -------------------- | ---------------------------------- | ------------------------------------------- |
+| **Latency**          | Lowest (single connection)         | Slightly higher (STT → LLM → TTS chain)     |
+| **Setup**            | One line: `llm=gemini.Realtime()`  | Three lines: STT, LLM, TTS                  |
+| **Provider Mix**     | Single provider only               | Mix any STT, LLM, TTS                       |
+| **Function Calling** | Limited (provider-dependent)       | Full support via `@llm.register_function()` |
+| **Turn Detection**   | Built-in                           | Separate plugin or provider-built-in        |
+| **When to Use**      | Prototyping, demos, lowest latency | Production, custom tools, multi-provider    |
 
 ### STT Provider Choice
 
-| Provider | Best For | Notes |
-|----------|----------|-------|
-| **Deepgram** | General purpose | Built-in turn detection, eager mode reduces latency |
-| **ElevenLabs** | High quality | Built-in VAD, ~150ms latency |
-| **Fast-Whisper** | Local, no API key | CPU/GPU accelerated, runs on your machine |
-| **Cartesia** | Low latency | Streaming PCM, turn detection |
+| Provider         | Best For          | Notes                                               |
+| ---------------- | ----------------- | --------------------------------------------------- |
+| **Deepgram**     | General purpose   | Built-in turn detection, eager mode reduces latency |
+| **ElevenLabs**   | High quality      | Built-in VAD, ~150ms latency                        |
+| **Fast-Whisper** | Local, no API key | CPU/GPU accelerated, runs on your machine           |
+| **Cartesia**     | Low latency       | Streaming PCM, turn detection                       |
 
 ### TTS Provider Choice
 
-| Provider | Best For | Notes |
-|----------|----------|-------|
-| **ElevenLabs** | Natural voices | Highly realistic, multilingual |
-| **Cartesia** | Ultra-low latency | Sonic model, ~100ms |
-| **Kokoro** | Local, free | Runs on CPU, no API key |
-| **OpenAI** | Simplicity | gpt-4o-mini-tts, streaming |
+| Provider       | Best For           | Notes                                                |
+| -------------- | ------------------ | ---------------------------------------------------- |
+| **ElevenLabs** | Natural voices     | Highly realistic, multilingual                       |
+| **Cartesia**   | Ultra-low latency  | Sonic model, ~100ms                                  |
+| **Kokoro**     | Local, free        | Runs on CPU, no API key                              |
+| **Gemini**     | Native voice stack | Live API for realtime, TTS models for narrated audio |
 
 ### Video Agent Approach
 
-| Approach | Best For | Setup |
-|----------|----------|-------|
-| **Realtime with fps** | Native video streaming | `llm=gemini.Realtime(fps=3)` |
-| **VLM** | Video understanding, analysis | `llm=nvidia.VLM(fps=1, frame_buffer_seconds=10)` |
-| **Processors** | Detection, pose, segmentation | `processors=[ultralytics.YOLOPoseProcessor()]` |
+| Approach              | Best For                      | Setup                                            |
+| --------------------- | ----------------------------- | ------------------------------------------------ |
+| **Realtime with fps** | Native video streaming        | `llm=gemini.Realtime(fps=3)`                     |
+| **VLM**               | Video understanding, analysis | `llm=nvidia.VLM(fps=1, frame_buffer_seconds=10)` |
+| **Processors**        | Detection, pose, segmentation | `processors=[ultralytics.YOLOPoseProcessor()]`   |
 
 ## Workflow
 
@@ -153,11 +154,11 @@ load_dotenv()
 
 async def create_agent(**kwargs) -> Agent:
     llm = gemini.LLM()
-    
+
     @llm.register_function(description="Get weather for a location")
     async def get_weather(location: str) -> dict:
         return {"temp": "72F", "condition": "sunny"}
-    
+
     return Agent(
         edge=getstream.Edge(),
         agent_user=User(name="Assistant", id="agent"),
@@ -192,6 +193,7 @@ Register functions with `@llm.register_function()`. The LLM calls them automatic
 ### 5. Deploy
 
 **Single container:**
+
 ```bash
 docker buildx build --platform linux/amd64 -t my-agent .
 docker run -e STREAM_API_KEY=... -p 8080:8080 my-agent
@@ -243,6 +245,7 @@ Before submitting agent code:
 **Comprehensive navigation:** https://visionagents.ai/llms.txt
 
 **Critical docs:**
+
 - [Quickstart](/introduction/quickstart) — 5-minute setup
 - [Voice Agents](/introduction/voice-agents) — Realtime vs custom pipeline, function calling
 - [Integrations](/integrations/introduction-to-integrations) — 35+ provider plugins

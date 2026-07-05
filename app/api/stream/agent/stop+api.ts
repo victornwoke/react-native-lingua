@@ -1,8 +1,9 @@
 import {
-    RouteError,
-    assertStreamCallOwner,
-    getVerifiedClerkUserId,
-    normalizeBaseUrl,
+  RouteError,
+  assertStreamCallOwner,
+  getRequiredString,
+  getVerifiedClerkUserId,
+  resolveVisionAgentServerUrl,
 } from "../_server";
 
 type StopAgentRequestBody = {
@@ -21,7 +22,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const visionAgentServerUrl = process.env.VISION_AGENT_SERVER_URL;
+    const visionAgentServerUrl = resolveVisionAgentServerUrl();
 
     if (!visionAgentServerUrl) {
       return Response.json({ skipped: true });
@@ -41,7 +42,7 @@ export async function POST(request: Request) {
     const verifiedClerkUserId = await getVerifiedClerkUserId(authorization);
     await assertStreamCallOwner(callId, verifiedClerkUserId);
 
-    const endpoint = `${normalizeBaseUrl(visionAgentServerUrl)}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}`;
+    const endpoint = `${visionAgentServerUrl}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}`;
     const visionResponse = await fetch(endpoint, {
       method: "DELETE",
       signal: AbortSignal.timeout(8_000),
@@ -87,10 +88,4 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
-
-function getRequiredString(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
 }

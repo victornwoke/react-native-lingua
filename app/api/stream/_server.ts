@@ -1,7 +1,7 @@
 const CLERK_API_BASE_URL = "https://api.clerk.com/v1";
-const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
-const STREAM_CALL_TYPE = "default";
-const STREAM_MAX_ID_LENGTH = 64;
+export const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
+export const STREAM_CALL_TYPE = "default";
+export const STREAM_MAX_ID_LENGTH = 64;
 const CLERK_REQUEST_TIMEOUT_MS = 5_000;
 const STREAM_REQUEST_TIMEOUT_MS = 8_000;
 
@@ -26,9 +26,23 @@ type JwtHeader = {
 };
 
 type StreamRequestOptions = {
-  method: "GET";
+  body?: Record<string, unknown>;
+  errorMessage?: string;
+  method: "GET" | "POST";
   path: string;
   serverToken: string;
+};
+
+type AgentControlRequestBody = {
+  callId?: unknown;
+  sessionId?: unknown;
+};
+
+type AgentControlRequestOptions = {
+  actionSuffix: string;
+  genericErrorMessage: string;
+  logLabel: string;
+  unauthenticatedMessage: string;
 };
 
 export class RouteError extends Error {
@@ -104,6 +118,7 @@ export async function assertStreamCallOwner(
 
   const serverToken = await createStreamToken({ server: true }, apiSecret);
   const response = await streamRequest({
+    errorMessage: "Could not verify Stream call ownership.",
     method: "GET",
     path: `/api/v2/video/call/${STREAM_CALL_TYPE}/${encodeURIComponent(callId)}`,
     serverToken,
@@ -134,6 +149,121 @@ export async function assertStreamCallOwner(
 
 export function normalizeBaseUrl(value: string) {
   return value.replace(/\/$/g, "");
+}
+
+export function resolveVisionAgentServerUrl() {
+  const visionAgentServerUrl =
+    process.env.VISION_AGENT_SERVER_URL ??
+    (process.env.NODE_ENV !== "production"
+      ? "http://127.0.0.1:8080"
+      : undefined);
+
+  return visionAgentServerUrl
+    ? normalizeBaseUrl(visionAgentServerUrl)
+    : undefined;
+}
+
+export function getRequiredString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
+}
+
+export async function handleAgentControlRequest(
+  request: Request,
+  {
+    actionSuffix,
+    genericErrorMessage,
+    logLabel,
+    unauthenticatedMessage,
+  }: AgentControlRequestOptions,
+) {
+  try {
+    const authorization = request.headers.get("Authorization");
+
+    if (!authorization?.startsWith("Bearer ")) {
+      return Response.json(
+        { message: unauthenticatedMessage },
+        { status: 401 },
+      );
+    }
+
+    const visionAgentServerUrl = resolveVisionAgentServerUrl();
+
+    if (!visionAgentServerUrl) {
+      return Response.json({ skipped: true });
+    }
+
+    const agentControlSecret = process.env.VISION_AGENT_SHARED_SECRET;
+
+    if (!agentControlSecret) {
+      throw new RouteError("Add VISION_AGENT_SHARED_SECRET to your .env.", 500);
+    }
+
+    const body = (await request.json()) as AgentControlRequestBody;
+    const callId = getRequiredString(body.callId);
+    const sessionId = getRequiredString(body.sessionId);
+
+    if (!callId || !sessionId) {
+      return Response.json(
+        { message: "callId and sessionId are required." },
+        { status: 400 },
+      );
+    }
+
+    const verifiedClerkUserId = await getVerifiedClerkUserId(authorization);
+    await assertStreamCallOwner(callId, verifiedClerkUserId);
+
+    const endpoint = `${visionAgentServerUrl}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}/${actionSuffix}`;
+    const visionResponse = await fetch(endpoint, {
+      headers: {
+        Authorization: `Bearer ${agentControlSecret}`,
+      },
+      method: "POST",
+      signal: AbortSignal.timeout(3_000),
+    });
+
+    if (visionResponse.status === 404) {
+      return Response.json({ missingSession: true, success: false });
+    }
+
+    if (!visionResponse.ok) {
+      const payload = (await visionResponse.json().catch(() => undefined)) as
+        | {
+            detail?: string;
+          }
+        | undefined;
+      const detail =
+        typeof payload?.detail === "string" && payload.detail.trim().length > 0
+          ? payload.detail.trim()
+          : genericErrorMessage;
+
+      return Response.json(
+        {
+          message: detail,
+        },
+        {
+          status:
+            visionResponse.status >= 400 && visionResponse.status < 600
+              ? visionResponse.status
+              : 502,
+        },
+      );
+    }
+
+    return Response.json({ missingSession: false, success: true });
+  } catch (error) {
+    if (error instanceof RouteError) {
+      return Response.json(
+        { message: error.message },
+        { status: error.status },
+      );
+    }
+
+    console.info(logLabel, error instanceof Error ? error.message : error);
+
+    return Response.json({ message: genericErrorMessage }, { status: 503 });
+  }
 }
 
 function parseJwt(token: string) {
@@ -280,7 +410,9 @@ function getInactiveClerkSessionMessage(status: string | undefined) {
   return "Your Clerk session is not active. Please sign in again.";
 }
 
-async function streamRequest({
+export async function streamRequest({
+  body,
+  errorMessage = "Could not complete the Stream request.",
   method,
   path,
   serverToken,
@@ -301,14 +433,15 @@ async function streamRequest({
         "Content-Type": "application/json",
         "stream-auth-type": "jwt",
       },
+      body: body ? JSON.stringify(body) : undefined,
       signal: AbortSignal.timeout(STREAM_REQUEST_TIMEOUT_MS),
     });
   } catch {
-    throw new RouteError("Could not verify Stream call ownership.", 503);
+    throw new RouteError(errorMessage, 503);
   }
 
   if (!response.ok) {
-    throw new RouteError("Could not verify Stream call ownership.", 503);
+    throw new RouteError(errorMessage, 503);
   }
 
   return response.json();
@@ -367,7 +500,7 @@ function getCreatedById(value: Record<string, unknown> | undefined) {
   return undefined;
 }
 
-function toStreamId(value: string) {
+export function toStreamId(value: string) {
   const sanitizedValue = value.replace(/[^A-Za-z0-9@_-]/g, "_");
 
   if (sanitizedValue.length <= STREAM_MAX_ID_LENGTH) {
@@ -391,7 +524,7 @@ function createStableHash(value: string) {
   return Math.abs(hash).toString(36);
 }
 
-async function createStreamToken(
+export async function createStreamToken(
   payload: Record<string, unknown>,
   secret: string,
 ) {
@@ -408,7 +541,7 @@ async function createStreamToken(
   return `${signatureInput}.${base64UrlEncode(signature)}`;
 }
 
-async function signHmacSha256(value: string, secret: string) {
+export async function signHmacSha256(value: string, secret: string) {
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -421,7 +554,7 @@ async function signHmacSha256(value: string, secret: string) {
   return crypto.subtle.sign("HMAC", key, encoder.encode(value));
 }
 
-function base64UrlEncode(value: string | ArrayBuffer) {
+export function base64UrlEncode(value: string | ArrayBuffer) {
   const bytes =
     typeof value === "string"
       ? new TextEncoder().encode(value)

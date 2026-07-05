@@ -1,9 +1,11 @@
 import { getApiUrl } from "@/lib/api";
 
 import type { Language, Lesson } from "../../types/learning";
+import type { StreamAudioCallData } from "../../types/stream";
 
 export type StreamAudioSession = {
   apiKey: string;
+  callData: StreamAudioCallData;
   callId: string;
   callType: string;
   languageName: string;
@@ -18,8 +20,14 @@ export type StreamAudioSession = {
 
 export type AgentSession = {
   callId: string;
+  callType: string;
   sessionId: string;
   sessionStartedAt?: string;
+};
+
+export type AgentControlResult = {
+  missingSession: boolean;
+  success: boolean;
 };
 
 type CreateStreamAudioSessionParams = {
@@ -41,6 +49,17 @@ type StopAgentSessionParams = {
   callId: string;
   sessionId: string;
   clerkSessionToken: string;
+};
+
+type AgentSessionControlParams = {
+  callId: string;
+  sessionId: string;
+  clerkSessionToken: string;
+};
+
+type AgentControlRequestOptions = AgentSessionControlParams & {
+  fallbackResult: AgentControlResult;
+  path: string;
 };
 
 export async function createStreamAudioSession({
@@ -72,8 +91,7 @@ export async function createStreamAudioSession({
       | undefined;
 
     throw new Error(
-      getAudioSessionErrorMessage(error?.message) ??
-        "Could not start the audio lesson.",
+      error?.message ?? "Could not start the audio lesson.",
     );
   }
 
@@ -106,11 +124,14 @@ export async function startAgentSession({
     | undefined;
 
   // Server not configured or unreachable — skip silently.
-  if (!response.ok || payload?.skipped) {
+  if (!response.ok || !payload || payload?.skipped) {
     return null;
   }
 
-  return payload as AgentSession;
+  return {
+    ...payload,
+    callType,
+  } as AgentSession;
 }
 
 export async function stopAgentSession({
@@ -132,10 +153,82 @@ export async function stopAgentSession({
   }
 }
 
-function getAudioSessionErrorMessage(message: string | undefined) {
-  if (!message) {
-    return undefined;
-  }
+export async function interruptAgentSession({
+  callId,
+  sessionId,
+  clerkSessionToken,
+}: AgentSessionControlParams): Promise<AgentControlResult> {
+  return requestAgentControl({
+    callId,
+    clerkSessionToken,
+    fallbackResult: { missingSession: false, success: false },
+    path: "/api/stream/agent/interrupt",
+    sessionId,
+  });
+}
 
-  return message;
+export async function startAgentActivity({
+  callId,
+  sessionId,
+  clerkSessionToken,
+}: AgentSessionControlParams): Promise<AgentControlResult> {
+  return requestAgentControl({
+    callId,
+    clerkSessionToken,
+    fallbackResult: { missingSession: false, success: false },
+    path: "/api/stream/agent/activity-start",
+    sessionId,
+  });
+}
+
+export async function endAgentActivity({
+  callId,
+  sessionId,
+  clerkSessionToken,
+}: AgentSessionControlParams): Promise<AgentControlResult> {
+  // Non-fatal failure here only affects one activity window; the next press can
+  // still start a fresh one.
+  return requestAgentControl({
+    callId,
+    clerkSessionToken,
+    fallbackResult: { missingSession: false, success: false },
+    path: "/api/stream/agent/activity-end",
+    sessionId,
+  });
+}
+
+async function requestAgentControl({
+  callId,
+  sessionId,
+  clerkSessionToken,
+  fallbackResult,
+  path,
+}: AgentControlRequestOptions): Promise<AgentControlResult> {
+  try {
+    const response = await fetch(getApiUrl(path), {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${clerkSessionToken}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ callId, sessionId }),
+    });
+
+    return readAgentControlResult(response);
+  } catch {
+    return fallbackResult;
+  }
+}
+
+async function readAgentControlResult(
+  response: Response,
+): Promise<AgentControlResult> {
+  const payload = (await response.json().catch(() => undefined)) as
+    | Partial<AgentControlResult>
+    | undefined;
+
+  return {
+    missingSession: Boolean(payload?.missingSession),
+    success: response.ok && payload?.success !== false,
+  };
 }

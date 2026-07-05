@@ -1,8 +1,8 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
 import type { Language, Lesson } from "../../types/learning";
+import { getPersistStorage } from "./persist-storage";
 
 const LESSON_PROGRESS_STORAGE_KEY = "lesson-progress-storage";
 
@@ -29,7 +29,7 @@ export const useLessonProgressStore = create<LessonProgressState>()(
     }),
     {
       name: LESSON_PROGRESS_STORAGE_KEY,
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => getPersistStorage()),
     },
   ),
 );

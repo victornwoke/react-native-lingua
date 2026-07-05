@@ -8,6 +8,7 @@ import { useEffect, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PostHogProvider } from "posthog-react-native";
 
+import { PostHogUserIdentifier } from "@/components/posthog-user-identifier";
 import { colors, useAppFonts } from "@/theme";
 import { posthog } from "@/lib/posthog";
 
@@ -67,6 +68,7 @@ export default function RootLayout() {
             maxElementsCaptured: 20,
           }}
         >
+          <PostHogUserIdentifier />
           <Stack
             screenOptions={{
               contentStyle: { backgroundColor: colors.neutral.background },

@@ -19,6 +19,7 @@ import { ScreenHeader } from "@/components/screen-header";
 import { SearchBar } from "@/components/search-bar";
 import { images } from "@/constants/images";
 import { clerkAuthOptions } from "@/lib/clerk-auth";
+import { identifyPostHogUser } from "@/lib/posthog";
 import { useLanguageStore } from "@/store/language-store";
 
 import { languages } from "../data/languages";
@@ -36,7 +37,7 @@ const learnerCounts: Record<string, string> = {
 };
 
 export default function LanguageSelectionScreen() {
-  const { isLoaded, isSignedIn } = useAuth(clerkAuthOptions);
+  const { isLoaded, isSignedIn, userId } = useAuth(clerkAuthOptions);
   const storedLanguageId = useLanguageStore(
     (state) => state.selectedLanguageId,
   );
@@ -61,6 +62,7 @@ export default function LanguageSelectionScreen() {
     <LanguageSelectionContent
       storedLanguageId={storedLanguageId}
       setStoredLanguageId={setStoredLanguageId}
+      userId={userId}
     />
   );
 }
@@ -68,11 +70,13 @@ export default function LanguageSelectionScreen() {
 type LanguageSelectionContentProps = {
   storedLanguageId: string | null;
   setStoredLanguageId: (languageId: string) => void;
+  userId: string | null | undefined;
 };
 
 function LanguageSelectionContent({
   storedLanguageId,
   setStoredLanguageId,
+  userId,
 }: LanguageSelectionContentProps) {
   const router = useRouter();
   const posthog = usePostHog();
@@ -113,10 +117,15 @@ function LanguageSelectionContent({
 
     const selectedLanguage = languages.find((l) => l.id === selectedLanguageId);
     posthog.capture("language_selected", {
-      language_id: selectedLanguageId,
+      language_code: selectedLanguage?.code ?? selectedLanguageId,
       language_name: selectedLanguage?.name ?? selectedLanguageId,
     });
     setStoredLanguageId(selectedLanguageId);
+
+    if (userId) {
+      identifyPostHogUser(userId, { selectedLanguageId });
+    }
+
     router.replace(HOME_ROUTE);
   }
 

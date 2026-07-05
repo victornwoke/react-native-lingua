@@ -26,6 +26,8 @@ import {
 
 import { images } from "@/constants/images";
 import { clerkAuthOptions } from "@/lib/clerk-auth";
+import { identifyPostHogUser } from "@/lib/posthog";
+import { useLanguageStore } from "@/store/language-store";
 
 import { VerificationModal } from "./verification-modal";
 
@@ -143,6 +145,9 @@ export function AuthScreen({ mode }: AuthScreenProps) {
   const { signUp, fetchStatus: signUpFetchStatus } = useSignUp();
   const { startSSOFlow } = useSSO();
   const posthog = usePostHog();
+  const selectedLanguageId = useLanguageStore(
+    (state) => state.selectedLanguageId,
+  );
   const { height } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const scrollViewRef = useRef<ScrollView>(null);
@@ -312,9 +317,9 @@ export function AuthScreen({ mode }: AuthScreenProps) {
 
         const newUserId = signUp.createdUserId;
         if (newUserId) {
-          posthog.identify(newUserId, {
-            $set: { email: email.trim() },
-            $set_once: { first_sign_up_date: new Date().toISOString() },
+          identifyPostHogUser(newUserId, {
+            isSignUp: true,
+            selectedLanguageId,
           });
         }
         posthog.capture("sign_up_completed", { method: "email" });
@@ -410,13 +415,25 @@ export function AuthScreen({ mode }: AuthScreenProps) {
     });
 
     try {
-      const { createdSessionId, setActive } = await startSSOFlow({
+      const {
+        createdSessionId,
+        setActive,
+        signUp: socialSignUp,
+      } = await startSSOFlow({
         strategy: option.strategy,
         redirectUrl: SSO_CALLBACK_URL,
       });
 
       if (createdSessionId && setActive) {
         await setActive({ session: createdSessionId });
+
+        if (mode === "sign-up" && socialSignUp?.createdUserId) {
+          identifyPostHogUser(socialSignUp.createdUserId, {
+            isSignUp: true,
+            selectedLanguageId,
+          });
+        }
+
         posthog.capture(
           mode === "sign-up" ? "sign_up_completed" : "sign_in_completed",
           {

@@ -1,40 +1,32 @@
-import { useMemo } from "react";
+import { type Href, useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
+import { useCallback, useMemo } from "react";
 
 import type { TodayPlanItem } from "@/components/home/today-plan-section";
+import {
+  getActiveLessonForLanguage,
+  getSelectedLearningLanguage,
+  getSortedUnitsForLanguage,
+} from "@/lib/lesson-selection";
 import { useLanguageStore } from "@/store/language-store";
-
-import { languages } from "../../data/languages";
-import { lessons } from "../../data/lessons";
-import { units } from "../../data/units";
+import { useLessonProgressStore } from "@/store/lesson-progress-store";
+import type { Language, Lesson } from "../../types/learning";
 
 export function useHomeDashboard() {
   const selectedLanguageId = useLanguageStore(
     (state) => state.selectedLanguageId,
   );
+  const activeLessonIdByLanguageId = useLessonProgressStore(
+    (state) => state.activeLessonIdByLanguageId,
+  );
 
   return useMemo(() => {
-    const selectedLanguage =
-      languages.find((language) => language.id === selectedLanguageId) ??
-      languages[0];
-    const languageUnits = units
-      .filter((unit) => unit.languageId === selectedLanguage.id)
-      .sort((firstUnit, secondUnit) => firstUnit.order - secondUnit.order);
-    const languageLessons = lessons
-      .filter((lesson) => lesson.languageId === selectedLanguage.id)
-      .sort((firstLesson, secondLesson) => {
-        const firstUnitOrder =
-          languageUnits.find((unit) => unit.id === firstLesson.unitId)?.order ??
-          0;
-        const secondUnitOrder =
-          languageUnits.find((unit) => unit.id === secondLesson.unitId)
-            ?.order ?? 0;
-
-        return (
-          firstUnitOrder - secondUnitOrder ||
-          firstLesson.order - secondLesson.order
-        );
-      });
-    const currentLesson = languageLessons[1] ?? languageLessons[0];
+    const selectedLanguage = getSelectedLearningLanguage(selectedLanguageId);
+    const languageUnits = getSortedUnitsForLanguage(selectedLanguage.id);
+    const currentLesson = getActiveLessonForLanguage(
+      selectedLanguage.id,
+      activeLessonIdByLanguageId,
+    );
     const currentUnit = languageUnits.find(
       (unit) => unit.id === currentLesson?.unitId,
     );
@@ -75,11 +67,51 @@ export function useHomeDashboard() {
     ];
 
     return {
+      currentLesson,
       dailyGoalXp,
       earnedXp,
       planItems,
       selectedLanguage,
       unitLabel,
     };
-  }, [selectedLanguageId]);
+  }, [activeLessonIdByLanguageId, selectedLanguageId]);
+}
+
+type UseStartVideoCallOptions = {
+  currentLesson: Lesson | undefined;
+  selectedLanguage: Language;
+};
+
+export function useStartVideoCall({
+  currentLesson,
+  selectedLanguage,
+}: UseStartVideoCallOptions) {
+  const router = useRouter();
+  const posthog = usePostHog();
+  const setActiveLessonId = useLessonProgressStore(
+    (state) => state.setActiveLessonId,
+  );
+
+  return useCallback(() => {
+    if (!currentLesson) {
+      router.push("/learn" as Href);
+      return;
+    }
+
+    setActiveLessonId(selectedLanguage.id, currentLesson.id);
+    posthog.capture("ai_teacher_started", {
+      language_id: selectedLanguage.id,
+      language_name: selectedLanguage.name,
+      lesson_id: currentLesson.id,
+      lesson_title: currentLesson.title,
+    });
+    router.push(`/lesson/${currentLesson.id}` as Href);
+  }, [
+    currentLesson,
+    posthog,
+    router,
+    selectedLanguage.id,
+    selectedLanguage.name,
+    setActiveLessonId,
+  ]);
 }
