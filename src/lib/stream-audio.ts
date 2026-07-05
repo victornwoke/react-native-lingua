@@ -19,8 +19,14 @@ export type StreamAudioSession = {
 
 export type AgentSession = {
   callId: string;
+  callType: string;
   sessionId: string;
   sessionStartedAt?: string;
+};
+
+export type AgentControlResult = {
+  missingSession: boolean;
+  success: boolean;
 };
 
 type CreateStreamAudioSessionParams = {
@@ -45,6 +51,12 @@ type StopAgentSessionParams = {
 };
 
 type InterruptAgentSessionParams = {
+  callId: string;
+  sessionId: string;
+  clerkSessionToken: string;
+};
+
+type StartAgentActivityParams = {
   callId: string;
   sessionId: string;
   clerkSessionToken: string;
@@ -119,11 +131,14 @@ export async function startAgentSession({
     | undefined;
 
   // Server not configured or unreachable — skip silently.
-  if (!response.ok || payload?.skipped) {
+  if (!response.ok || !payload || payload?.skipped) {
     return null;
   }
 
-  return payload as AgentSession;
+  return {
+    ...payload,
+    callType,
+  } as AgentSession;
 }
 
 export async function stopAgentSession({
@@ -149,9 +164,9 @@ export async function interruptAgentSession({
   callId,
   sessionId,
   clerkSessionToken,
-}: InterruptAgentSessionParams): Promise<void> {
+}: InterruptAgentSessionParams): Promise<AgentControlResult> {
   try {
-    await fetch(getApiUrl("/api/stream/agent/interrupt"), {
+    const response = await fetch(getApiUrl("/api/stream/agent/interrupt"), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${clerkSessionToken}`,
@@ -159,8 +174,36 @@ export async function interruptAgentSession({
       },
       body: JSON.stringify({ callId, sessionId }),
     });
+
+    return readAgentControlResult(response);
   } catch {
     // Non-fatal — local push-to-talk still mutes playback and enables the mic.
+    return { missingSession: false, success: false };
+  }
+}
+
+export async function startAgentActivity({
+  callId,
+  sessionId,
+  clerkSessionToken,
+}: StartAgentActivityParams): Promise<AgentControlResult> {
+  try {
+    const response = await fetch(
+      getApiUrl("/api/stream/agent/activity-start"),
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${clerkSessionToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ callId, sessionId }),
+      },
+    );
+
+    return readAgentControlResult(response);
+  } catch {
+    // Non-fatal — local push-to-talk still enables the mic.
+    return { missingSession: false, success: false };
   }
 }
 
@@ -168,9 +211,9 @@ export async function endAgentActivity({
   callId,
   sessionId,
   clerkSessionToken,
-}: EndAgentActivityParams): Promise<void> {
+}: EndAgentActivityParams): Promise<AgentControlResult> {
   try {
-    await fetch(getApiUrl("/api/stream/agent/activity-end"), {
+    const response = await fetch(getApiUrl("/api/stream/agent/activity-end"), {
       method: "POST",
       headers: {
         Authorization: `Bearer ${clerkSessionToken}`,
@@ -178,8 +221,11 @@ export async function endAgentActivity({
       },
       body: JSON.stringify({ callId, sessionId }),
     });
+
+    return readAgentControlResult(response);
   } catch {
     // Non-fatal — the next press can still start a fresh activity window.
+    return { missingSession: false, success: false };
   }
 }
 
@@ -189,4 +235,17 @@ function getAudioSessionErrorMessage(message: string | undefined) {
   }
 
   return message;
+}
+
+async function readAgentControlResult(
+  response: Response,
+): Promise<AgentControlResult> {
+  const payload = (await response.json().catch(() => undefined)) as
+    | Partial<AgentControlResult>
+    | undefined;
+
+  return {
+    missingSession: Boolean(payload?.missingSession),
+    success: response.ok && payload?.success !== false,
+  };
 }

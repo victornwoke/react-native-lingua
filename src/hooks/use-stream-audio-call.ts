@@ -2,12 +2,12 @@ import { useAuth, useSession, useUser } from "@clerk/expo";
 import Constants from "expo-constants";
 import * as Device from "expo-device";
 import {
-  type MutableRefObject,
   useCallback,
   useEffect,
   useMemo,
   useRef,
   useState,
+  type MutableRefObject,
 } from "react";
 import { Platform } from "react-native";
 
@@ -15,9 +15,10 @@ import { clerkAuthOptions } from "@/lib/clerk-auth";
 import {
   createStreamAudioSession,
   endAgentActivity,
-  interruptAgentSession,
+  startAgentActivity,
   startAgentSession,
   stopAgentSession,
+  type AgentControlResult,
   type AgentSession,
   type StreamAudioSession,
 } from "@/lib/stream-audio";
@@ -91,8 +92,12 @@ type StreamCall = {
     eventName: "custom",
     callback: (event: StreamCustomEvent) => void,
   ) => () => void;
-  startClosedCaptions: (options?: StreamClosedCaptionsOptions) => Promise<unknown>;
-  stopClosedCaptions: (options?: { stop_transcription?: boolean }) => Promise<unknown>;
+  startClosedCaptions: (
+    options?: StreamClosedCaptionsOptions,
+  ) => Promise<unknown>;
+  stopClosedCaptions: (options?: {
+    stop_transcription?: boolean;
+  }) => Promise<unknown>;
   updateClosedCaptionSettings: (config: {
     maxVisibleCaptions?: number;
     visibilityDurationMs?: number;
@@ -177,16 +182,21 @@ const isIosSimulator = Platform.OS === "ios" && !Device.isDevice;
 const AGENT_USER_ID = "lingua-ai-teacher";
 const LIVE_SPEECH_EVENT_KIND = "lingua.live_speech";
 const MAX_LIVE_CAPTIONS = 8;
+const MAX_LEARNER_TURN_MS = 12_000;
+const MIC_ENABLE_TIMEOUT_MS = 3_000;
+const MIC_DISABLE_TIMEOUT_MS = 1_500;
 
 export function useStreamAudioCall(lesson: Lesson | undefined) {
   const { getToken, isLoaded, isSignedIn, userId } = useAuth(clerkAuthOptions);
   const { session } = useSession();
   const { user } = useUser();
   const selectedLanguage = useSelectedLanguage();
+  const [isMicOn, setIsMicOn] = useState(false);
+  const [isTalkControlBusy, setIsTalkControlBusy] = useState(false);
   const [status, setStatus] = useState<StreamAudioCallStatus>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isCameraOn, setIsCameraOn] = useState(false);
-  const [isMicOn, setIsMicOn] = useState(!isIosSimulator);
+
   const [agentStatus, setAgentStatus] = useState<AgentConnectionStatus>("idle");
   const [captionStatus, setCaptionStatus] =
     useState<UseStreamAudioCallResult["captionStatus"]>("idle");
@@ -199,6 +209,9 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
   const agentTokenRef = useRef<string | null>(null);
   const captionsSubscriptionRef = useRef<StreamSubscription | null>(null);
   const liveSpeechSubscriptionRef = useRef<(() => void) | null>(null);
+  const stopTalkingRef = useRef<() => Promise<void>>(async () => undefined);
+  const talkTurnTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const agentControlQueueRef = useRef<Promise<void>>(Promise.resolve());
 
   const language = useMemo(() => {
     const lessonLanguage = languages.find(
@@ -246,9 +259,11 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       setErrorMessage(null);
       setIsCameraOn(false);
       setIsMicOn(false);
+      setIsTalkControlBusy(false);
       setAgentStatus("idle");
       setCaptionStatus("idle");
       setLiveCaptions([]);
+      agentControlQueueRef.current = Promise.resolve();
       setStatus("loading");
 
       const clerkSessionToken = await getToken({ skipCache: true });
@@ -360,6 +375,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
       setIsCameraOn(false);
       setIsMicOn(false);
+      setIsTalkControlBusy(false);
       setStatus("joined");
 
       // Start agent asynchronously — do not block the call join
@@ -377,12 +393,15 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       clientRef.current = null;
       callManagerRef.current = null;
       wantsToTalkRef.current = false;
+      clearTalkTurnTimeout(talkTurnTimeoutRef);
+      agentControlQueueRef.current = Promise.resolve();
       captionsSubscriptionRef.current?.unsubscribe();
       captionsSubscriptionRef.current = null;
       liveSpeechSubscriptionRef.current?.();
       liveSpeechSubscriptionRef.current = null;
       setIsCameraOn(false);
       setIsMicOn(false);
+      setIsTalkControlBusy(false);
       setCaptionStatus("unavailable");
       setLiveCaptions([]);
       setErrorMessage(getStreamAudioErrorMessage(error));
@@ -450,23 +469,50 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     }
 
     wantsToTalkRef.current = true;
+    setIsTalkControlBusy(true);
 
     try {
       setErrorMessage(null);
       muteSpeakerOutput(callManagerRef.current, true);
+      await queueAgentControl(agentControlQueueRef, () =>
+        startAgentActivityIfActive({
+          agentSessionRef,
+          clerkSessionToken: agentTokenRef.current,
+          setAgentStatus,
+        }),
+      );
+      await withTimeout(
+        call.microphone.enable(),
+        MIC_ENABLE_TIMEOUT_MS,
+        "Could not start the microphone in time.",
+      );
       setIsMicOn(true);
-      interruptAgentIfActive(agentSessionRef.current, agentTokenRef.current);
-      await call.microphone.enable();
 
       if (!wantsToTalkRef.current) {
-        await call.microphone.disable().catch(() => undefined);
+        await withTimeout(
+          call.microphone.disable(),
+          MIC_DISABLE_TIMEOUT_MS,
+          "Could not stop the microphone in time.",
+        ).catch(() => undefined);
+        await queueAgentControl(agentControlQueueRef, () =>
+          endAgentActivityIfActive({
+            agentSessionRef,
+            clerkSessionToken: agentTokenRef.current,
+            setAgentStatus,
+          }),
+        );
         muteSpeakerOutput(callManagerRef.current, false);
         setIsMicOn(false);
+        setIsTalkControlBusy(false);
         return;
       }
 
       setIsMicOn(true);
+      scheduleTalkTurnTimeout(talkTurnTimeoutRef, () => {
+        void stopTalkingRef.current();
+      });
     } catch (error) {
+      clearTalkTurnTimeout(talkTurnTimeoutRef);
       muteSpeakerOutput(callManagerRef.current, false);
       console.error("Failed to start Stream microphone.", error);
       setErrorMessage(
@@ -474,30 +520,56 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
           ? error.message
           : "Could not start the microphone.",
       );
+    } finally {
+      setIsTalkControlBusy(false);
     }
   }, [status]);
 
   const stopTalking = useCallback(async () => {
+    setIsTalkControlBusy(true);
+    clearTalkTurnTimeout(talkTurnTimeoutRef);
     wantsToTalkRef.current = false;
     const call = callRef.current;
 
     if (!call) {
-      endAgentActivityIfActive(agentSessionRef.current, agentTokenRef.current);
+      await queueAgentControl(agentControlQueueRef, () =>
+        endAgentActivityIfActive({
+          agentSessionRef,
+          clerkSessionToken: agentTokenRef.current,
+          setAgentStatus,
+        }),
+      );
       muteSpeakerOutput(callManagerRef.current, false);
       setIsMicOn(false);
+      setIsTalkControlBusy(false);
       return;
     }
 
     try {
-      await call.microphone.disable();
+      await withTimeout(
+        call.microphone.disable(),
+        MIC_DISABLE_TIMEOUT_MS,
+        "Could not stop the microphone in time.",
+      );
     } catch (error) {
       console.error("Failed to stop Stream microphone.", error);
     } finally {
-      endAgentActivityIfActive(agentSessionRef.current, agentTokenRef.current);
+      await queueAgentControl(agentControlQueueRef, () =>
+        endAgentActivityIfActive({
+          agentSessionRef,
+          clerkSessionToken: agentTokenRef.current,
+          setAgentStatus,
+        }),
+      );
       muteSpeakerOutput(callManagerRef.current, false);
       setIsMicOn(false);
+      setIsTalkControlBusy(false);
     }
   }, []);
+
+  useEffect(() => {
+    stopTalkingRef.current = stopTalking;
+  }, [stopTalking]);
 
   const toggleTalking = useCallback(async () => {
     if (isMicOn) {
@@ -532,13 +604,16 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
     }
 
     if (!call) {
+      setIsTalkControlBusy(false);
       setStatus("ended");
       return;
     }
 
     try {
       setErrorMessage(null);
-      await call.stopClosedCaptions({ stop_transcription: false }).catch(() => undefined);
+      await call
+        .stopClosedCaptions({ stop_transcription: false })
+        .catch(() => undefined);
       await call.leave();
     } catch (error) {
       console.error("Failed to leave Stream call.", error);
@@ -549,6 +624,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       clientRef.current = null;
       callManagerRef.current = null;
       wantsToTalkRef.current = false;
+      clearTalkTurnTimeout(talkTurnTimeoutRef);
+      agentControlQueueRef.current = Promise.resolve();
 
       if (client?.disconnectUser) {
         await client.disconnectUser().catch(() => undefined);
@@ -558,6 +635,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
 
       setIsCameraOn(false);
       setIsMicOn(false);
+      setIsTalkControlBusy(false);
       setCaptionStatus("idle");
       setLiveCaptions([]);
       setStatus("ended");
@@ -576,6 +654,8 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       clientRef.current = null;
       callManagerRef.current = null;
       wantsToTalkRef.current = false;
+      clearTalkTurnTimeout(talkTurnTimeoutRef);
+      agentControlQueueRef.current = Promise.resolve();
       agentSessionRef.current = null;
       agentTokenRef.current = null;
       captionsSubscriptionRef.current = null;
@@ -619,7 +699,7 @@ export function useStreamAudioCall(lesson: Lesson | undefined) {
       status === "loading" ||
       status === "error",
     canToggleCamera: false,
-    canToggleMic: canUseCall && !isIosSimulator,
+    canToggleMic: canUseCall && !isIosSimulator && !isTalkControlBusy,
     captionStatus,
     displayName,
     errorMessage,
@@ -713,7 +793,9 @@ async function startLiveCaptions(
 function subscribeToLiveCaptions(
   call: StreamCall,
   learnerUserId: string,
-  setLiveCaptions: (updater: (captions: LiveCaption[]) => LiveCaption[]) => void,
+  setLiveCaptions: (
+    updater: (captions: LiveCaption[]) => LiveCaption[],
+  ) => void,
 ) {
   return call.state.closedCaptions$.subscribe((captions) => {
     if (captions.length === 0) {
@@ -736,7 +818,9 @@ function subscribeToLiveCaptions(
 
 function subscribeToLiveSpeechEvents(
   call: StreamCall,
-  setLiveCaptions: (updater: (captions: LiveCaption[]) => LiveCaption[]) => void,
+  setLiveCaptions: (
+    updater: (captions: LiveCaption[]) => LiveCaption[],
+  ) => void,
 ) {
   return call.on("custom", (event) => {
     const payload = getLiveSpeechPayload(event.custom ?? event);
@@ -761,7 +845,9 @@ function subscribeToLiveSpeechEvents(
   });
 }
 
-function getLiveSpeechPayload(value: unknown): NormalizedLiveSpeechPayload | null {
+function getLiveSpeechPayload(
+  value: unknown,
+): NormalizedLiveSpeechPayload | null {
   if (!value || typeof value !== "object") {
     return null;
   }
@@ -862,34 +948,164 @@ function muteSpeakerOutput(
   }
 }
 
-function interruptAgentIfActive(
-  agentSession: AgentSession | null,
-  clerkSessionToken: string | null,
+async function queueAgentControl(
+  queueRef: MutableRefObject<Promise<void>>,
+  task: () => Promise<void>,
 ) {
+  const queuedTask = queueRef.current
+    .catch(() => undefined)
+    .then(task)
+    .catch(() => undefined);
+
+  queueRef.current = queuedTask;
+  await queuedTask;
+}
+
+function clearTalkTurnTimeout(
+  timeoutRef: MutableRefObject<ReturnType<typeof setTimeout> | null>,
+) {
+  if (!timeoutRef.current) {
+    return;
+  }
+
+  clearTimeout(timeoutRef.current);
+  timeoutRef.current = null;
+}
+
+function scheduleTalkTurnTimeout(
+  timeoutRef: MutableRefObject<ReturnType<typeof setTimeout> | null>,
+  onTimeout: () => void,
+) {
+  clearTalkTurnTimeout(timeoutRef);
+  timeoutRef.current = setTimeout(onTimeout, MAX_LEARNER_TURN_MS);
+}
+
+async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+  message: string,
+) {
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
+  try {
+    return await Promise.race([
+      promise,
+      new Promise<never>((_, reject) => {
+        timeoutId = setTimeout(() => {
+          reject(new Error(message));
+        }, timeoutMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+  }
+}
+
+async function startAgentActivityIfActive({
+  agentSessionRef,
+  clerkSessionToken,
+  setAgentStatus,
+}: {
+  agentSessionRef: MutableRefObject<AgentSession | null>;
+  clerkSessionToken: string | null;
+  setAgentStatus: (status: AgentConnectionStatus) => void;
+}) {
+  const agentSession = agentSessionRef.current;
+
   if (!agentSession || !clerkSessionToken) {
     return;
   }
 
-  void interruptAgentSession({
+  const result = await startAgentActivity({
     callId: agentSession.callId,
     sessionId: agentSession.sessionId,
     clerkSessionToken,
+  });
+
+  await restartAgentIfSessionMissing({
+    agentSessionRef,
+    clerkSessionToken,
+    result,
+    setAgentStatus,
   });
 }
 
-function endAgentActivityIfActive(
-  agentSession: AgentSession | null,
-  clerkSessionToken: string | null,
-) {
+async function endAgentActivityIfActive({
+  agentSessionRef,
+  clerkSessionToken,
+  setAgentStatus,
+}: {
+  agentSessionRef: MutableRefObject<AgentSession | null>;
+  clerkSessionToken: string | null;
+  setAgentStatus: (status: AgentConnectionStatus) => void;
+}) {
+  const agentSession = agentSessionRef.current;
+
   if (!agentSession || !clerkSessionToken) {
     return;
   }
 
-  void endAgentActivity({
+  const result = await endAgentActivity({
     callId: agentSession.callId,
     sessionId: agentSession.sessionId,
     clerkSessionToken,
   });
+
+  await restartAgentIfSessionMissing({
+    agentSessionRef,
+    clerkSessionToken,
+    result,
+    setAgentStatus,
+  });
+}
+
+async function restartAgentIfSessionMissing({
+  agentSessionRef,
+  clerkSessionToken,
+  result,
+  setAgentStatus,
+}: {
+  agentSessionRef: MutableRefObject<AgentSession | null>;
+  clerkSessionToken: string;
+  result: AgentControlResult;
+  setAgentStatus: (status: AgentConnectionStatus) => void;
+}) {
+  if (!result.missingSession) {
+    return;
+  }
+
+  await restartCurrentAgentSession({
+    agentSessionRef,
+    clerkSessionToken,
+    setAgentStatus,
+  });
+}
+
+async function restartCurrentAgentSession({
+  agentSessionRef,
+  clerkSessionToken,
+  setAgentStatus,
+}: {
+  agentSessionRef: MutableRefObject<AgentSession | null>;
+  clerkSessionToken: string;
+  setAgentStatus: (status: AgentConnectionStatus) => void;
+}) {
+  const agentSession = agentSessionRef.current;
+
+  if (!agentSession) {
+    return;
+  }
+
+  agentSessionRef.current = null;
+  await startAgentForCall(
+    agentSession.callId,
+    agentSession.callType,
+    clerkSessionToken,
+    agentSessionRef,
+    setAgentStatus,
+  );
 }
 
 async function stopSpeakerAudio() {

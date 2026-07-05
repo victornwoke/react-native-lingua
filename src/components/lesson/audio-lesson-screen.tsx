@@ -68,6 +68,7 @@ export function AudioLessonScreen() {
 
   async function handleEndCallPress() {
     await streamAudioCall.endCall();
+    lessonCompletedRef.current = true;
     handleBackPress();
   }
 
@@ -151,12 +152,23 @@ export function AudioLessonScreen() {
 
   const firstPhrase = lesson.phrases[0];
   const teacherReply = getTeacherReply(lesson);
+  const teacherFallbackTitle = getTeacherCardTitle(
+    lesson,
+    streamAudioCall.status,
+    teacherReply,
+  );
+  const teacherFallbackSubtitle = getTeacherCardSubtitle(
+    lesson,
+    streamAudioCall.status,
+    firstPhrase?.text,
+  );
   const activeCaption = getActiveCaption(
     streamAudioCall.liveCaptions,
     streamAudioCall.isMicOn,
     streamAudioCall.displayName,
-    getTeacherCardTitle(lesson, streamAudioCall.status, teacherReply),
-    getTeacherCardSubtitle(lesson, streamAudioCall.status, firstPhrase?.text),
+    teacherFallbackTitle,
+    teacherFallbackSubtitle,
+    streamAudioCall.status === "joined",
   );
 
   return (
@@ -368,6 +380,7 @@ function getActiveCaption(
   displayName: string,
   teacherFallbackTitle: string,
   teacherFallbackSubtitle: string,
+  shouldUseTeacherFallbackTitle: boolean,
 ): LiveCaption {
   const latestCaption = captions[captions.length - 1];
 
@@ -390,10 +403,9 @@ function getActiveCaption(
     speakerName: "AI Teacher",
     speakerRole: "teacher",
     startTime: "",
-    text:
-      teacherFallbackSubtitle === "Audio lesson in progress"
-        ? teacherFallbackTitle
-        : teacherFallbackSubtitle,
+    text: shouldUseTeacherFallbackTitle
+      ? teacherFallbackTitle
+      : teacherFallbackSubtitle,
   };
 }
 

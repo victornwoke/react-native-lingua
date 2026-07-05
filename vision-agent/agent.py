@@ -124,17 +124,33 @@ def build_teacher_instructions(metadata: LessonMetadata) -> str:
         "- The lesson and practice context above is authoritative. Welcome the learner directly into it.",
         "- Never ask what language the learner wants to study; that was already selected in the app.",
         "- Never teach or mention Thai, Hindi, Korean, Chinese, Japanese, Spanish, German, or any other language unless that is the selected lesson language.",
-        f"- Use English for explanations and only use {language_name} for lesson words and phrases.",
-        "- Stay strictly inside the current lesson goal, vocabulary, phrases, and context.",
-        "- Do not introduce unrelated topics or extra vocabulary beyond tiny English support words.",
+        f"- Use English for explanations and {language_name} only for target words, phrases, examples, and short role-play lines.",
+        "- Treat the lesson as the starting point, not a rigid script.",
+        f"- If the learner asks for a new topic, pivot inside {language_name} with one beginner-friendly mini example.",
+        f"- You may introduce one adjacent {language_name} word or phrase when it helps the learner's request.",
+        "- Do not jump to another language, and do not invent advanced vocabulary lists.",
         f"- Teach {language_name} words and phrases slowly, then give the English meaning.",
+        "",
+        "Interactive teaching mode:",
+        "- Listen to the learner's actual words and respond to their intent first.",
+        "- If the learner is confused, simplify, give a shorter example, and ask one tiny follow-up.",
+        "- If the learner is doing well, offer a choice: repeat, role-play, pronunciation, or one new phrase.",
+        "- If the learner asks a question, answer it briefly before returning to practice.",
+        "- Do not end the lesson after two or three turns. Keep the conversation alive until the learner ends the call.",
+        "- Never decide that the lesson is complete on your own.",
+        "- Never stop because the planned lesson content has been covered.",
+        "- If the learner finishes one mini-practice, immediately offer the next branch: role-play, pronunciation, quiz, personal example, review, or one new phrase.",
+        "- If the learner says they want something different, follow their request inside the selected language instead of forcing the original phrase.",
+        "- If the learner is quiet or gives a short answer, invite them into an easy next step instead of wrapping up.",
+        "- Only give a goodbye or final recap after the learner clearly says they are done, goodbye, stop, or ends the call.",
+        "- Avoid final-sounding phrases like 'great job, that's all' unless the learner says they are done.",
         "- Sound warm, human, energetic, and lesson-focused. Use natural contractions.",
-        "- Keep every response under 24 words unless correcting the learner.",
-        "- Ask for exactly one learner response at the end of each turn, then stop speaking and wait.",
+        "- Keep most responses under 34 words unless the learner asks for an explanation.",
+        "- Ask one clear learner response at the end of each turn, then stop speaking and wait.",
         "- Do not continue the lesson until you hear the learner through the microphone.",
         "- After the learner speaks, react to what they actually said before teaching the next tiny step.",
         f"- Correction style: {correction_style}",
-        "- If the learner asks for something outside this lesson, gently bring them back to this lesson.",
+        f"- If the learner asks for something outside this lesson, adapt it into a tiny {language_name} practice moment when possible.",
         "",
         f"Audio style: {audio_instructions}",
     ]
@@ -179,7 +195,7 @@ def build_greeting(metadata: LessonMetadata) -> str:
             f"Welcome them to {lesson_title}, their {language_label} lesson. "
             f"{context_note}{phrase_note}{activity_note} "
             f"Start immediately with '{conversation_starter}', give its English meaning, "
-            "ask them to repeat it, then stop. Keep the spoken greeting under 22 words."
+            "ask them to repeat it, then listen and adapt. Keep the spoken greeting under 24 words."
         )
 
     if vocabulary:
@@ -190,7 +206,7 @@ def build_greeting(metadata: LessonMetadata) -> str:
             f"Welcome them to {lesson_title}, their {language_label} lesson. "
             f"{context_note}{activity_note} "
             f"Start immediately with '{first_vocab}', give its English meaning, "
-            "ask them to repeat it, then stop. Keep the spoken greeting under 22 words."
+            "ask them to repeat it, then listen and adapt. Keep the spoken greeting under 24 words."
         )
 
     return (
@@ -198,8 +214,8 @@ def build_greeting(metadata: LessonMetadata) -> str:
         "The learner already selected this lesson in the app. "
         f"Welcome them to {lesson_title}, their {language_label} lesson. "
         f"{context_note}{activity_note} "
-        "Teach one short phrase from this lesson, ask them to repeat it, then stop. "
-        "Keep the spoken greeting under 22 words."
+        "Teach one short phrase from this lesson, ask them to repeat it, then listen and adapt. "
+        "Keep the spoken greeting under 24 words."
     )
 
 
@@ -445,7 +461,7 @@ def looks_like_lesson_custom_data(value: Any) -> bool:
 launcher = AgentLauncher(
     create_agent=create_agent,
     join_call=join_call,
-    agent_idle_timeout=90.0,
+    agent_idle_timeout=3_600.0,
     max_sessions_per_call=1,
 )
 
@@ -466,6 +482,24 @@ async def interrupt_session(call_id: str, session_id: str) -> Response:
         )
 
     await session.agent._flow.interrupt()
+    await send_realtime_activity_signal(session.agent, "activity_start")
+
+    return Response(status_code=status.HTTP_202_ACCEPTED)
+
+
+@runner.fast_api.post(
+    "/calls/{call_id}/sessions/{session_id}/activity-start",
+    summary="Mark the start of user activity",
+)
+async def start_activity(call_id: str, session_id: str) -> Response:
+    session = launcher.get_session(session_id)
+
+    if session is None or session.call_id != call_id:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Session with id '{session_id}' not found",
+        )
+
     await send_realtime_activity_signal(session.agent, "activity_start")
 
     return Response(status_code=status.HTTP_202_ACCEPTED)

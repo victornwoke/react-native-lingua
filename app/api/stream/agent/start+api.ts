@@ -1,8 +1,9 @@
 import {
-    RouteError,
-    assertStreamCallOwner,
-    getVerifiedClerkUserId,
-    normalizeBaseUrl,
+  RouteError,
+  assertStreamCallOwner,
+  getRequiredString,
+  getVerifiedClerkUserId,
+  resolveVisionAgentServerUrl,
 } from "../_server";
 
 type StartAgentRequestBody = {
@@ -21,11 +22,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const visionAgentServerUrl =
-      process.env.VISION_AGENT_SERVER_URL ??
-      (process.env.NODE_ENV !== "production"
-        ? "http://127.0.0.1:8080"
-        : undefined);
+    const visionAgentServerUrl = resolveVisionAgentServerUrl();
 
     // Vision Agent server is optional. Skip gracefully when not configured.
     if (!visionAgentServerUrl) {
@@ -43,7 +40,7 @@ export async function POST(request: Request) {
     const verifiedClerkUserId = await getVerifiedClerkUserId(authorization);
     await assertStreamCallOwner(callId, verifiedClerkUserId);
 
-    const endpoint = `${normalizeBaseUrl(visionAgentServerUrl)}/calls/${encodeURIComponent(callId)}/sessions`;
+    const endpoint = `${visionAgentServerUrl}/calls/${encodeURIComponent(callId)}/sessions`;
     const visionResponse = await fetch(endpoint, {
       method: "POST",
       headers: {
@@ -113,12 +110,6 @@ export async function POST(request: Request) {
       { status: 503 },
     );
   }
-}
-
-function getRequiredString(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
 }
 
 function getOptionalString(value: unknown) {

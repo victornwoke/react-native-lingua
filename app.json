@@ -9,8 +9,7 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/images/icon.png",
-      "bundleIdentifier": "com.victornwoke.lingua",
-      "developmentTeam": "UTRZ4RD6M6"
+      "bundleIdentifier": "com.victornwoke.lingua"
     },
     "android": {
       "adaptiveIcon": {

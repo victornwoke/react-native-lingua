@@ -6,7 +6,7 @@ import {
   resolveVisionAgentServerUrl,
 } from "../_server";
 
-type StopAgentRequestBody = {
+type StartAgentActivityRequestBody = {
   callId?: unknown;
   sessionId?: unknown;
 };
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
 
     if (!authorization?.startsWith("Bearer ")) {
       return Response.json(
-        { message: "Sign in before ending an AI teacher session." },
+        { message: "Sign in before updating an AI teacher session." },
         { status: 401 },
       );
     }
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       return Response.json({ skipped: true });
     }
 
-    const body = (await request.json()) as StopAgentRequestBody;
+    const body = (await request.json()) as StartAgentActivityRequestBody;
     const callId = getRequiredString(body.callId);
     const sessionId = getRequiredString(body.sessionId);
 
@@ -42,13 +42,17 @@ export async function POST(request: Request) {
     const verifiedClerkUserId = await getVerifiedClerkUserId(authorization);
     await assertStreamCallOwner(callId, verifiedClerkUserId);
 
-    const endpoint = `${visionAgentServerUrl}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}`;
+    const endpoint = `${visionAgentServerUrl}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}/activity-start`;
     const visionResponse = await fetch(endpoint, {
-      method: "DELETE",
-      signal: AbortSignal.timeout(8_000),
+      method: "POST",
+      signal: AbortSignal.timeout(3_000),
     });
 
-    if (!visionResponse.ok && visionResponse.status !== 404) {
+    if (visionResponse.status === 404) {
+      return Response.json({ missingSession: true, success: false });
+    }
+
+    if (!visionResponse.ok) {
       const payload = (await visionResponse.json().catch(() => undefined)) as
         | {
             detail?: string;
@@ -57,7 +61,7 @@ export async function POST(request: Request) {
       const detail =
         typeof payload?.detail === "string" && payload.detail.trim().length > 0
           ? payload.detail.trim()
-          : "Could not stop the AI teacher session.";
+          : "Could not update the AI teacher session.";
 
       return Response.json(
         {
@@ -72,7 +76,7 @@ export async function POST(request: Request) {
       );
     }
 
-    return Response.json({ success: true });
+    return Response.json({ missingSession: false, success: true });
   } catch (error) {
     if (error instanceof RouteError) {
       return Response.json(
@@ -81,11 +85,14 @@ export async function POST(request: Request) {
       );
     }
 
-    console.error("Failed to stop Vision Agent session.", error);
+    console.info(
+      "Failed to start Vision Agent user activity.",
+      error instanceof Error ? error.message : error,
+    );
 
     return Response.json(
-      { message: "Could not stop the AI teacher session." },
-      { status: 500 },
+      { message: "Could not update the AI teacher session." },
+      { status: 503 },
     );
   }
 }

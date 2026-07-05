@@ -43,10 +43,15 @@ export function identifyPostHogUser(
   userId: string,
   { isSignUp = false, selectedLanguageId }: IdentifyPostHogUserOptions = {},
 ) {
+  const preferredLanguage = getPostHogLanguageCode(selectedLanguageId);
   const properties = {
-    $set: {
-      preferred_language: getPostHogLanguageCode(selectedLanguageId),
-    },
+    ...(preferredLanguage
+      ? {
+          $set: {
+            preferred_language: preferredLanguage,
+          },
+        }
+      : {}),
     ...(isSignUp
       ? {
           $set_once: {

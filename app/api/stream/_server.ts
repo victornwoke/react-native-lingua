@@ -1,7 +1,7 @@
 const CLERK_API_BASE_URL = "https://api.clerk.com/v1";
-const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
-const STREAM_CALL_TYPE = "default";
-const STREAM_MAX_ID_LENGTH = 64;
+export const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
+export const STREAM_CALL_TYPE = "default";
+export const STREAM_MAX_ID_LENGTH = 64;
 const CLERK_REQUEST_TIMEOUT_MS = 5_000;
 const STREAM_REQUEST_TIMEOUT_MS = 8_000;
 
@@ -26,7 +26,8 @@ type JwtHeader = {
 };
 
 type StreamRequestOptions = {
-  method: "GET";
+  body?: Record<string, unknown>;
+  method: "GET" | "POST";
   path: string;
   serverToken: string;
 };
@@ -134,6 +135,24 @@ export async function assertStreamCallOwner(
 
 export function normalizeBaseUrl(value: string) {
   return value.replace(/\/$/g, "");
+}
+
+export function resolveVisionAgentServerUrl() {
+  const visionAgentServerUrl =
+    process.env.VISION_AGENT_SERVER_URL ??
+    (process.env.NODE_ENV !== "production"
+      ? "http://127.0.0.1:8080"
+      : undefined);
+
+  return visionAgentServerUrl
+    ? normalizeBaseUrl(visionAgentServerUrl)
+    : undefined;
+}
+
+export function getRequiredString(value: unknown) {
+  return typeof value === "string" && value.trim().length > 0
+    ? value.trim()
+    : undefined;
 }
 
 function parseJwt(token: string) {
@@ -280,7 +299,8 @@ function getInactiveClerkSessionMessage(status: string | undefined) {
   return "Your Clerk session is not active. Please sign in again.";
 }
 
-async function streamRequest({
+export async function streamRequest({
+  body,
   method,
   path,
   serverToken,
@@ -301,6 +321,7 @@ async function streamRequest({
         "Content-Type": "application/json",
         "stream-auth-type": "jwt",
       },
+      body: body ? JSON.stringify(body) : undefined,
       signal: AbortSignal.timeout(STREAM_REQUEST_TIMEOUT_MS),
     });
   } catch {
@@ -367,7 +388,7 @@ function getCreatedById(value: Record<string, unknown> | undefined) {
   return undefined;
 }
 
-function toStreamId(value: string) {
+export function toStreamId(value: string) {
   const sanitizedValue = value.replace(/[^A-Za-z0-9@_-]/g, "_");
 
   if (sanitizedValue.length <= STREAM_MAX_ID_LENGTH) {
@@ -391,7 +412,7 @@ function createStableHash(value: string) {
   return Math.abs(hash).toString(36);
 }
 
-async function createStreamToken(
+export async function createStreamToken(
   payload: Record<string, unknown>,
   secret: string,
 ) {
@@ -408,7 +429,7 @@ async function createStreamToken(
   return `${signatureInput}.${base64UrlEncode(signature)}`;
 }
 
-async function signHmacSha256(value: string, secret: string) {
+export async function signHmacSha256(value: string, secret: string) {
   const encoder = new TextEncoder();
   const key = await crypto.subtle.importKey(
     "raw",
@@ -421,7 +442,7 @@ async function signHmacSha256(value: string, secret: string) {
   return crypto.subtle.sign("HMAC", key, encoder.encode(value));
 }
 
-function base64UrlEncode(value: string | ArrayBuffer) {
+export function base64UrlEncode(value: string | ArrayBuffer) {
   const bytes =
     typeof value === "string"
       ? new TextEncoder().encode(value)

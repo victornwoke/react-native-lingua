@@ -1,4 +1,5 @@
 import type { Lesson } from "../types/learning";
+import { languages } from "./languages";
 
 type SupplementalLessonSeed = {
   id: string;
@@ -33,7 +34,9 @@ function createSupplementalLesson({
 }: SupplementalLessonSeed): Lesson {
   const vocabularyId = `${id}-vocab-focus`;
   const phraseId = `${id}-phrase-focus`;
-  const languageName = `${languageId[0]?.toUpperCase()}${languageId.slice(1)}`;
+  const languageName =
+    languages.find((language) => language.id === languageId)?.name ??
+    "language";
 
   return {
     id,

@@ -11,8 +11,10 @@ import { DailyGoalCard } from "@/components/home/daily-goal-card";
 import { HomeHeader } from "@/components/home/home-header";
 import { NextUpCard } from "@/components/home/next-up-card";
 import { TodayPlanSection } from "@/components/home/today-plan-section";
-import { useHomeDashboard } from "@/hooks/use-home-dashboard";
-import { useLessonProgressStore } from "@/store/lesson-progress-store";
+import {
+  useHomeDashboard,
+  useStartVideoCall,
+} from "@/hooks/use-home-dashboard";
 
 const greetingsByLanguageId: Record<string, string> = {
   french: "Bonjour",
@@ -38,9 +40,6 @@ export default function HomeScreen() {
   const router = useRouter();
   const posthog = usePostHog();
   const { user } = useUser();
-  const setActiveLessonId = useLessonProgressStore(
-    (state) => state.setActiveLessonId,
-  );
   const {
     currentLesson,
     dailyGoalXp,
@@ -49,6 +48,10 @@ export default function HomeScreen() {
     selectedLanguage,
     unitLabel,
   } = useHomeDashboard();
+  const handleStartVideoCall = useStartVideoCall({
+    currentLesson,
+    selectedLanguage,
+  });
 
   useEffect(() => {
     posthog.capture("home_dashboard_viewed", {
@@ -65,22 +68,6 @@ export default function HomeScreen() {
       language_name: selectedLanguage.name,
     });
     router.push("/learn" as Href);
-  }
-
-  function handleStartVideoCall() {
-    if (!currentLesson) {
-      router.push("/learn" as Href);
-      return;
-    }
-
-    setActiveLessonId(selectedLanguage.id, currentLesson.id);
-    posthog.capture("ai_teacher_started", {
-      language_id: selectedLanguage.id,
-      language_name: selectedLanguage.name,
-      lesson_id: currentLesson.id,
-      lesson_title: currentLesson.title,
-    });
-    router.push(`/lesson/${currentLesson.id}` as Href);
   }
 
   return (

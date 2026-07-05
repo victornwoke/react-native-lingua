@@ -1,8 +1,9 @@
 import {
-    RouteError,
-    assertStreamCallOwner,
-    getVerifiedClerkUserId,
-    normalizeBaseUrl,
+  RouteError,
+  assertStreamCallOwner,
+  getRequiredString,
+  getVerifiedClerkUserId,
+  resolveVisionAgentServerUrl,
 } from "../_server";
 
 type EndAgentActivityRequestBody = {
@@ -21,11 +22,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const visionAgentServerUrl =
-      process.env.VISION_AGENT_SERVER_URL ??
-      (process.env.NODE_ENV !== "production"
-        ? "http://127.0.0.1:8080"
-        : undefined);
+    const visionAgentServerUrl = resolveVisionAgentServerUrl();
 
     if (!visionAgentServerUrl) {
       return Response.json({ skipped: true });
@@ -45,13 +42,17 @@ export async function POST(request: Request) {
     const verifiedClerkUserId = await getVerifiedClerkUserId(authorization);
     await assertStreamCallOwner(callId, verifiedClerkUserId);
 
-    const endpoint = `${normalizeBaseUrl(visionAgentServerUrl)}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}/activity-end`;
+    const endpoint = `${visionAgentServerUrl}/calls/${encodeURIComponent(callId)}/sessions/${encodeURIComponent(sessionId)}/activity-end`;
     const visionResponse = await fetch(endpoint, {
       method: "POST",
       signal: AbortSignal.timeout(3_000),
     });
 
-    if (!visionResponse.ok && visionResponse.status !== 404) {
+    if (visionResponse.status === 404) {
+      return Response.json({ missingSession: true, success: false });
+    }
+
+    if (!visionResponse.ok) {
       const payload = (await visionResponse.json().catch(() => undefined)) as
         | {
             detail?: string;
@@ -75,7 +76,7 @@ export async function POST(request: Request) {
       );
     }
 
-    return Response.json({ success: true });
+    return Response.json({ missingSession: false, success: true });
   } catch (error) {
     if (error instanceof RouteError) {
       return Response.json(
@@ -94,10 +95,4 @@ export async function POST(request: Request) {
       { status: 503 },
     );
   }
-}
-
-function getRequiredString(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
 }

@@ -1,12 +1,18 @@
 import { languages } from "../../../data/languages";
 import { lessons } from "../../../data/lessons";
 import type { LessonActivity } from "../../../types/learning";
-import { RouteError, getVerifiedClerkUserId } from "./_server";
+import {
+  STREAM_CALL_TYPE,
+  STREAM_MAX_ID_LENGTH,
+  RouteError,
+  createStreamToken,
+  getRequiredString,
+  getVerifiedClerkUserId,
+  streamRequest,
+  toStreamId,
+} from "./_server";
 
-const STREAM_API_BASE_URL = "https://video.stream-io-api.com";
 const STREAM_AUDIO_CALL_ID_PREFIX = "audio";
-const STREAM_MAX_ID_LENGTH = 64;
-const STREAM_CALL_TYPE = "default";
 const TOKEN_VALIDITY_SECONDS = 60 * 60;
 
 type AudioCallRequestBody = {
@@ -15,13 +21,6 @@ type AudioCallRequestBody = {
   lessonId?: unknown;
   userImageUrl?: unknown;
   userName?: unknown;
-};
-
-type StreamRequestOptions = {
-  body: Record<string, unknown>;
-  method: "POST";
-  path: string;
-  serverToken: string;
 };
 
 export async function POST(request: Request) {
@@ -153,7 +152,6 @@ export async function POST(request: Request) {
           target_resolution: { height: 240, width: 240 },
         },
       },
-      video: false,
     };
 
     await streamRequest({
@@ -197,15 +195,6 @@ export async function POST(request: Request) {
 
     console.error("Failed to create Stream audio call.", error);
 
-    if (error instanceof StreamApiError) {
-      return Response.json(
-        {
-          message: error.message,
-        },
-        { status: 502 },
-      );
-    }
-
     return Response.json(
       {
         message: "Could not start the Stream audio lesson.",
@@ -213,14 +202,6 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   }
-}
-
-class StreamApiError extends Error {}
-
-function getRequiredString(value: unknown) {
-  return typeof value === "string" && value.trim().length > 0
-    ? value.trim()
-    : undefined;
 }
 
 function getOptionalString(value: unknown) {
@@ -247,141 +228,10 @@ function formatLessonActivity(activity: LessonActivity, index: number) {
   return `${label}: ${activity.prompt}`;
 }
 
-function toStreamId(value: string) {
-  const sanitizedValue = value.replace(/[^A-Za-z0-9@_-]/g, "_");
-
-  if (sanitizedValue.length <= STREAM_MAX_ID_LENGTH) {
-    return sanitizedValue;
-  }
-
-  const hashSuffix = createStableHash(sanitizedValue);
-  const prefixLength = STREAM_MAX_ID_LENGTH - hashSuffix.length - 1;
-
-  return `${sanitizedValue.slice(0, prefixLength)}_${hashSuffix}`;
-}
-
 function createStreamAudioCallId() {
   const timestampId = Date.now().toString(36);
   const randomId = crypto.randomUUID().replace(/-/g, "").slice(0, 12);
   const callId = [STREAM_AUDIO_CALL_ID_PREFIX, timestampId, randomId].join("-");
 
   return callId.slice(0, STREAM_MAX_ID_LENGTH);
-}
-
-function createStableHash(value: string) {
-  let hash = 0;
-
-  for (let index = 0; index < value.length; index += 1) {
-    hash = Math.imul(31, hash) + value.charCodeAt(index);
-    hash |= 0;
-  }
-
-  return Math.abs(hash).toString(36);
-}
-
-async function streamRequest({
-  body,
-  method,
-  path,
-  serverToken,
-}: StreamRequestOptions) {
-  const apiKey = process.env.STREAM_API_KEY;
-  const url = `${STREAM_API_BASE_URL}${path}?api_key=${apiKey}`;
-  const response = await fetch(url, {
-    method,
-    headers: {
-      Authorization: serverToken,
-      "Content-Type": "application/json",
-      "stream-auth-type": "jwt",
-    },
-    body: JSON.stringify(body),
-  });
-
-  if (!response.ok) {
-    const errorBody = await readStreamError(response);
-    const message = getStreamErrorMessage(errorBody);
-
-    throw new StreamApiError(
-      message
-        ? `Stream request failed with ${response.status}: ${message}`
-        : `Stream request failed with ${response.status}.`,
-    );
-  }
-
-  return response.json();
-}
-
-async function readStreamError(response: Response) {
-  const contentType = response.headers.get("Content-Type");
-
-  if (contentType?.includes("application/json")) {
-    return response.json().catch(() => undefined);
-  }
-
-  return response.text().catch(() => undefined);
-}
-
-function getStreamErrorMessage(errorBody: unknown) {
-  if (typeof errorBody === "string") {
-    return errorBody.trim() || undefined;
-  }
-
-  if (!errorBody || typeof errorBody !== "object") {
-    return undefined;
-  }
-
-  const message = "message" in errorBody ? errorBody.message : undefined;
-
-  if (typeof message === "string" && message.trim().length > 0) {
-    return message.trim();
-  }
-
-  return JSON.stringify(errorBody);
-}
-
-async function createStreamToken(
-  payload: Record<string, unknown>,
-  secret: string,
-) {
-  const issuedAt = Math.floor((Date.now() - 1000) / 1000);
-  const normalizedPayload = {
-    iat: issuedAt,
-    ...payload,
-  };
-  const header = base64UrlEncode(JSON.stringify({ alg: "HS256", typ: "JWT" }));
-  const tokenPayload = base64UrlEncode(JSON.stringify(normalizedPayload));
-  const signatureInput = `${header}.${tokenPayload}`;
-  const signature = await signHmacSha256(signatureInput, secret);
-
-  return `${signatureInput}.${base64UrlEncode(signature)}`;
-}
-
-async function signHmacSha256(value: string, secret: string) {
-  const encoder = new TextEncoder();
-  const key = await crypto.subtle.importKey(
-    "raw",
-    encoder.encode(secret),
-    { hash: "SHA-256", name: "HMAC" },
-    false,
-    ["sign"],
-  );
-
-  return crypto.subtle.sign("HMAC", key, encoder.encode(value));
-}
-
-function base64UrlEncode(value: string | ArrayBuffer) {
-  const bytes =
-    typeof value === "string"
-      ? new TextEncoder().encode(value)
-      : new Uint8Array(value);
-  let binary = "";
-
-  bytes.forEach((byte) => {
-    binary += String.fromCharCode(byte);
-  });
-
-  return btoa(binary)
-    .replace(/\+/g, "-")
-    .replace(/\//g, "_")
-    .replace(/=+$/g, "");
 }

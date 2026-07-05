@@ -1,6 +1,6 @@
 import "../global.css";
 
-import { ClerkProvider, useAuth } from "@clerk/expo";
+import { ClerkProvider } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { Stack, useGlobalSearchParams, usePathname } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
@@ -8,10 +8,9 @@ import { useEffect, useRef } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { PostHogProvider } from "posthog-react-native";
 
+import { PostHogUserIdentifier } from "@/components/posthog-user-identifier";
 import { colors, useAppFonts } from "@/theme";
-import { clerkAuthOptions } from "@/lib/clerk-auth";
-import { identifyPostHogUser, posthog } from "@/lib/posthog";
-import { useLanguageStore } from "@/store/language-store";
+import { posthog } from "@/lib/posthog";
 
 void SplashScreen.preventAutoHideAsync();
 
@@ -80,35 +79,4 @@ export default function RootLayout() {
       </ClerkProvider>
     </GestureHandlerRootView>
   );
-}
-
-function PostHogUserIdentifier() {
-  const { isLoaded, isSignedIn, userId } = useAuth(clerkAuthOptions);
-  const selectedLanguageId = useLanguageStore(
-    (state) => state.selectedLanguageId,
-  );
-  const hasHydrated = useLanguageStore((state) => state.hasHydrated);
-  const previousIdentifyKey = useRef<string | null>(null);
-
-  useEffect(() => {
-    if (!isLoaded || !hasHydrated) {
-      return;
-    }
-
-    if (!isSignedIn || !userId) {
-      previousIdentifyKey.current = null;
-      return;
-    }
-
-    const identifyKey = `${userId}:${selectedLanguageId ?? "none"}`;
-
-    if (previousIdentifyKey.current === identifyKey) {
-      return;
-    }
-
-    identifyPostHogUser(userId, { selectedLanguageId });
-    previousIdentifyKey.current = identifyKey;
-  }, [hasHydrated, isLoaded, isSignedIn, selectedLanguageId, userId]);
-
-  return null;
 }

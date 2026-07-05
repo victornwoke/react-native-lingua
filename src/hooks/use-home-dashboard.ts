@@ -1,4 +1,6 @@
-import { useMemo } from "react";
+import { type Href, useRouter } from "expo-router";
+import { usePostHog } from "posthog-react-native";
+import { useCallback, useMemo } from "react";
 
 import type { TodayPlanItem } from "@/components/home/today-plan-section";
 import {
@@ -8,6 +10,7 @@ import {
 } from "@/lib/lesson-selection";
 import { useLanguageStore } from "@/store/language-store";
 import { useLessonProgressStore } from "@/store/lesson-progress-store";
+import type { Language, Lesson } from "../../types/learning";
 
 export function useHomeDashboard() {
   const selectedLanguageId = useLanguageStore(
@@ -72,4 +75,43 @@ export function useHomeDashboard() {
       unitLabel,
     };
   }, [activeLessonIdByLanguageId, selectedLanguageId]);
+}
+
+type UseStartVideoCallOptions = {
+  currentLesson: Lesson | undefined;
+  selectedLanguage: Language;
+};
+
+export function useStartVideoCall({
+  currentLesson,
+  selectedLanguage,
+}: UseStartVideoCallOptions) {
+  const router = useRouter();
+  const posthog = usePostHog();
+  const setActiveLessonId = useLessonProgressStore(
+    (state) => state.setActiveLessonId,
+  );
+
+  return useCallback(() => {
+    if (!currentLesson) {
+      router.push("/learn" as Href);
+      return;
+    }
+
+    setActiveLessonId(selectedLanguage.id, currentLesson.id);
+    posthog.capture("ai_teacher_started", {
+      language_id: selectedLanguage.id,
+      language_name: selectedLanguage.name,
+      lesson_id: currentLesson.id,
+      lesson_title: currentLesson.title,
+    });
+    router.push(`/lesson/${currentLesson.id}` as Href);
+  }, [
+    currentLesson,
+    posthog,
+    router,
+    selectedLanguage.id,
+    selectedLanguage.name,
+    setActiveLessonId,
+  ]);
 }
