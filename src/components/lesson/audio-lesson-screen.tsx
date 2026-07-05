@@ -25,6 +25,7 @@ import { lessons } from "../../../data/lessons";
 import type { Lesson } from "../../../types/learning";
 
 const LEARN_ROUTE = "/learn" as Href;
+const MIN_ENGAGEMENT_DURATION_MS = 15000; // 15 seconds minimum call duration
 
 export function AudioLessonScreen() {
   const router = useRouter();
@@ -76,24 +77,37 @@ export function AudioLessonScreen() {
     lessonCompletedRef.current = true;
 
     if (lesson) {
-      const languageLessons = getSortedLessonsForLanguage(lesson.languageId);
-      const currentLessonIndex = languageLessons.findIndex(
-        (item) => item.id === lesson.id,
-      );
-      const nextLesson = languageLessons[currentLessonIndex + 1];
+      const startedAt = lessonStartedAtRef.current;
+      const callDuration = startedAt ? Date.now() - startedAt : 0;
+      const hasMinimumEngagement = callDuration >= MIN_ENGAGEMENT_DURATION_MS;
 
-      completeLesson(lesson.languageId, lesson.id, lesson.xpReward);
+      if (hasMinimumEngagement) {
+        const languageLessons = getSortedLessonsForLanguage(lesson.languageId);
+        const currentLessonIndex = languageLessons.findIndex(
+          (item) => item.id === lesson.id,
+        );
+        const nextLesson = languageLessons[currentLessonIndex + 1];
 
-      if (nextLesson) {
-        setActiveLessonId(lesson.languageId, nextLesson.id);
+        completeLesson(lesson.languageId, lesson.id, lesson.xpReward);
+
+        if (nextLesson) {
+          setActiveLessonId(lesson.languageId, nextLesson.id);
+        }
+
+        posthog.capture("lesson_completed", {
+          language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
+          lesson_id: lesson.id,
+          lesson_number: getLessonNumber(lesson),
+          xp_reward: lesson.xpReward,
+        });
+      } else {
+        posthog.capture("lesson_ended_insufficient_engagement", {
+          call_duration_ms: callDuration,
+          language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
+          lesson_id: lesson.id,
+          lesson_number: getLessonNumber(lesson),
+        });
       }
-
-      posthog.capture("lesson_completed", {
-        language: getPostHogLanguageCode(lesson.languageId) ?? lesson.languageId,
-        lesson_id: lesson.id,
-        lesson_number: getLessonNumber(lesson),
-        xp_reward: lesson.xpReward,
-      });
     }
 
     handleBackPress();

@@ -43,7 +43,15 @@ export async function POST(request: Request) {
 
     await getVerifiedClerkUserId(authorization);
 
-    const body = (await request.json()) as InterpretRequestBody;
+    let body: InterpretRequestBody;
+    try {
+      body = (await request.json()) as InterpretRequestBody;
+    } catch {
+      return Response.json(
+        { message: "Invalid JSON in request body." },
+        { status: 400 },
+      );
+    }
     const languageId = getRequiredString(body.languageId);
     const text = getRequiredString(body.text);
 

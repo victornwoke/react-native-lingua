@@ -559,6 +559,7 @@ async def start_activity(
         )
 
     ensure_realtime_session_or_raise(session.agent, session_id)
+    schedule_activity_timeout(session.agent, session_id)
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
@@ -580,6 +581,7 @@ async def end_activity(call_id: str, session_id: str, request: Request) -> Respo
         )
 
     ensure_realtime_session_or_raise(session.agent, session_id)
+    cancel_activity_timeout(session_id)
 
     return Response(status_code=status.HTTP_202_ACCEPTED)
 
